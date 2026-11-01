@@ -1,0 +1,8 @@
+__pycache__/
+*.py[cod]
+/build/
+/dist/
+/portable_data/
+/portable.mode
+.venv/
+*.spec

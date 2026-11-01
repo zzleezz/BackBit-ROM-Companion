@@ -1,0 +1,129 @@
+name: Build standalone packages
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      onefile:
+        description: "Also build single-file executables"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write   # needed to create the GitHub Release on tag pushes
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHON_VERSION: "3.12"
+  QT_QPA_PLATFORM: offscreen
+
+jobs:
+  test:
+    name: Tests (Python ${{ matrix.python }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.10", "3.13"]
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python }}
+          cache: pip
+      - name: Qt runtime libraries
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends libegl1 libgl1 libxkbcommon0 libfontconfig1 libdbus-1-3 fonts-dejavu-core
+      - run: pip install -r requirements.txt
+      - run: python -m unittest discover -s tests -v
+
+  build:
+    name: Build ${{ matrix.label }}
+    needs: test
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: windows-latest, label: windows-x64 }
+          - { os: macos-latest, label: macos-arm64 }      # Apple Silicon
+          - { os: macos-15-intel, label: macos-x64 }      # Intel Macs
+          - { os: ubuntu-22.04, label: linux-x64 }        # older glibc = runs on more distros
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+      - name: Qt runtime libraries (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends libegl1 libgl1 libxkbcommon0 libxkbcommon-x11-0 libfontconfig1 libdbus-1-3 libxcb-cursor0 fonts-dejavu-core
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt -r requirements-dev.txt
+      - name: Unit tests
+        run: python -m unittest discover -s tests
+      - name: Build one-folder package
+        run: python build.py --clean --archive
+      - name: Build one-file executable
+        # PyInstaller deprecates one-file windowed apps on macOS, so the .app bundle is the macOS deliverable.
+        if: runner.os != 'macOS' && (startsWith(github.ref, 'refs/tags/v') || inputs.onefile)
+        run: python build.py --onefile --archive
+      - name: Smoke-test the frozen build
+        shell: bash
+        run: |
+          python - <<'EOF'
+          import os, subprocess, sys
+          from pathlib import Path
+          dist = Path("dist")
+          if sys.platform == "darwin":
+              exe = dist / "BackBitROMCompanion.app" / "Contents" / "MacOS" / "BackBitROMCompanion"
+          elif sys.platform.startswith("win"):
+              exe = dist / "BackBitROMCompanion" / "BackBitROMCompanion.exe"
+          else:
+              exe = dist / "BackBitROMCompanion" / "BackBitROMCompanion"
+          assert exe.exists(), exe
+          import tempfile
+          tmp = Path(tempfile.mkdtemp())
+          report = tmp / "smoke.txt"
+          env = dict(os.environ, QT_QPA_PLATFORM="offscreen", BACKBIT_SMOKE_TEST=str(report),
+                     BACKBIT_DATA_DIR=str(tmp / "userdata"))
+          r = subprocess.run([str(exe)], env=env, timeout=180)
+          text = report.read_text() if report.exists() else ""
+          print(text)
+          assert r.returncode == 0, r.returncode
+          assert text.startswith("SMOKE OK") and "icon=True" in text and "frozen=True" in text, text
+          EOF
+      - uses: actions/upload-artifact@v4
+        with:
+          name: BackBitROMCompanion-${{ matrix.label }}
+          path: |
+            dist/*.zip
+            dist/*.tar.gz
+          if-no-files-found: error
+          retention-days: 30
+
+  release:
+    name: Publish GitHub Release
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: release
+          merge-multiple: true
+      - run: ls -la release
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: release/*
+          generate_release_notes: true
+          fail_on_unmatched_files: true
