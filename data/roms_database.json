@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "name": "BackBit ROM Companion - built-in ROM database",
-  "hash_source_note": "All SHA-1 / CRC32 values were transcribed from MAME driver sources (mamedev/mame master): sinclair/spectrum.cpp, sinclair/spec128.cpp, sinclair/zx.cpp, commodore/c64.cpp, devices/bus/cbmiec/c1541.cpp, amstrad/amstrad.cpp, atari/atari400.cpp, acorn/bbcb.cpp. A null hash means no verified whole-chip hash is published; the chip is then identified through its bank entries. Phase 2: hashes for added machines were transcribed from the corresponding MAME drivers (fetched 2026-11-01). Combined 32KB hashes for the Spectrum 128/+2 were computed from the MAME-verified 16KB banks; the C64C 251913-01 bank split was verified by CRC32 composition. Phase 3: Dragon 64 package/sockets, Lynx and Archimedes socket numbering and the Jupiter Ace C1/D1 grid positions were confirmed against real boards (user-supplied).",
+  "hash_source_note": "All SHA-1 / CRC32 values were transcribed from MAME driver sources (mamedev/mame master): sinclair/spectrum.cpp, sinclair/spec128.cpp, sinclair/zx.cpp, commodore/c64.cpp, devices/bus/cbmiec/c1541.cpp, amstrad/amstrad.cpp, atari/atari400.cpp, acorn/bbcb.cpp. A null hash means no verified whole-chip hash is published; the chip is then identified through its bank entries. Phase 2: hashes for added machines were transcribed from the corresponding MAME drivers (fetched 2026-11-01). Combined 32KB hashes for the Spectrum 128/+2 were computed from the MAME-verified 16KB banks; the C64C 251913-01 bank split was verified by CRC32 composition. Phase 3: Dragon 64 package/sockets, Lynx and Archimedes socket numbering and the Jupiter Ace C1/D1 grid positions were confirmed against real boards (user-supplied). Commodore Amiga hashes: amiga/amiga.cpp.",
   "machines": [
     {
       "id": "zx_spectrum_48k",
@@ -6343,6 +6343,1656 @@
           "replacement": "27C128 with the image.",
           "warnings": [],
           "notes": []
+        }
+      ]
+    },
+    {
+      "id": "amiga1000",
+      "name": "Commodore Amiga 1000",
+      "manufacturer": "Commodore",
+      "year": 1985,
+      "short": "A1000",
+      "roms": [
+        {
+          "id": "a1000_u5n",
+          "name": "Bootstrap ROM - high byte (252179-01)",
+          "label": "A1000 Boot U5N",
+          "description": "Amiga 1000 bootstrap ROM. The A1000 loads Kickstart from floppy into WOM; this pair only holds the boot code. Two 8-bit chips form the 16-bit word.",
+          "part_numbers": [
+            "252179-01"
+          ],
+          "socket": "U5N",
+          "size": 32768,
+          "pins": 28,
+          "chip_type": "23256 mask ROM (32KB, 8-bit)",
+          "backbit": [
+            {
+              "setting": "23256",
+              "pins": 28,
+              "chip": "Original 23256 mask ROM"
+            },
+            {
+              "setting": "27256",
+              "pins": 28,
+              "chip": "27256 / 27C256 EPROM replacement"
+            }
+          ],
+          "sha1": "2155b4887f064c5e01e0a2ebb4a0cc2a3e88d9e8",
+          "crc32": "76bd46ec",
+          "source": "MAME amiga/amiga.cpp - 252179-01.u5n",
+          "replacement": "27C256 EPROM programmed with this chip's image.",
+          "warnings": [
+            "One of a pair: U5N holds the HIGH byte and U5P the LOW byte of each 16-bit word. Do not swap them."
+          ],
+          "notes": [
+            "MAME loads U5N at even (high) and U5P at odd (low) byte addresses."
+          ]
+        },
+        {
+          "id": "a1000_u5p",
+          "name": "Bootstrap ROM - low byte (252180-01)",
+          "label": "A1000 Boot U5P",
+          "description": "Amiga 1000 bootstrap ROM. The A1000 loads Kickstart from floppy into WOM; this pair only holds the boot code. Two 8-bit chips form the 16-bit word.",
+          "part_numbers": [
+            "252180-01"
+          ],
+          "socket": "U5P",
+          "size": 32768,
+          "pins": 28,
+          "chip_type": "23256 mask ROM (32KB, 8-bit)",
+          "backbit": [
+            {
+              "setting": "23256",
+              "pins": 28,
+              "chip": "Original 23256 mask ROM"
+            },
+            {
+              "setting": "27256",
+              "pins": 28,
+              "chip": "27256 / 27C256 EPROM replacement"
+            }
+          ],
+          "sha1": "2c307d02f10ad332a479b50767fd0463efc2844b",
+          "crc32": "dd516b6d",
+          "source": "MAME amiga/amiga.cpp - 252180-01.u5p",
+          "replacement": "27C256 EPROM programmed with this chip's image.",
+          "warnings": [
+            "One of a pair: U5N holds the HIGH byte and U5P the LOW byte of each 16-bit word. Do not swap them."
+          ],
+          "notes": [
+            "MAME loads U5N at even (high) and U5P at odd (low) byte addresses."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "amiga500",
+      "name": "Commodore Amiga 500 / 2000",
+      "manufacturer": "Commodore",
+      "year": 1987,
+      "short": "A500",
+      "roms": [
+        {
+          "id": "a500_ks12",
+          "name": "Kickstart 1.2 (33.180)",
+          "label": "KS1.2 33.180",
+          "description": "Kickstart 1.2, fitted to early A500 and A2000 machines.",
+          "part_numbers": [
+            "315093-01"
+          ],
+          "socket": "U6 (A500) / U500 (A2000)",
+          "size": 262144,
+          "pins": 40,
+          "chip_type": "256KB (2Mbit) 16-bit mask ROM",
+          "backbit": [
+            {
+              "setting": "27400",
+              "pins": 40,
+              "chip": "Original 40-pin 16-bit 256KB (2Mbit) mask ROM - reads as 512KB with the image twice"
+            }
+          ],
+          "sha1": "11f9e62cf299f72184835b7b2a70a16333fc0d88",
+          "crc32": "a6ce1636",
+          "source": "MAME amiga/amiga.cpp - 315093-01.u2",
+          "replacement": "27C400 (40-pin, 16-bit) EPROM with the 256KB image burned twice (into both halves), or a 2Mbit 27C400-pinout part. Check the byte order your programmer expects.",
+          "warnings": [
+            "256KB (2Mbit) chip: the BackBit 27400 setting reads 512KB, so the dump should hold this 256KB image twice (the chip has no top address line). Tab 2 recognises the doubled image. The tester's own sha.txt lookup sees the 512KB read, so it will not match this 256KB hash: read a known-good chip once and add that dump in Tab 4 to give the tester the exact hash.",
+            "16-bit byte order: depending on the reader, a dump may hold the two bytes of every 16-bit word in the opposite order to this database image. Tab 2 (Inspector) and Tab 3 (Compare) detect a byte-swapped image automatically and report it as a match."
+          ],
+          "notes": []
+        },
+        {
+          "id": "a500_ks13",
+          "name": "Kickstart 1.3 (34.5)",
+          "label": "KS1.3 34.5",
+          "description": "Kickstart 1.3, the most common A500 / A2000 ROM.",
+          "part_numbers": [
+            "315093-02"
+          ],
+          "socket": "U6 (A500) / U500 (A2000)",
+          "size": 262144,
+          "pins": 40,
+          "chip_type": "256KB (2Mbit) 16-bit mask ROM",
+          "backbit": [
+            {
+              "setting": "27400",
+              "pins": 40,
+              "chip": "Original 40-pin 16-bit 256KB (2Mbit) mask ROM - reads as 512KB with the image twice"
+            }
+          ],
+          "sha1": "891e9a547772fe0c6c19b610baf8bc4ea7fcb785",
+          "crc32": "c4f0f55f",
+          "source": "MAME amiga/amiga.cpp - 315093-02.u2",
+          "replacement": "27C400 (40-pin, 16-bit) EPROM with the 256KB image burned twice (into both halves), or a 2Mbit 27C400-pinout part. Check the byte order your programmer expects.",
+          "warnings": [
+            "256KB (2Mbit) chip: the BackBit 27400 setting reads 512KB, so the dump should hold this 256KB image twice (the chip has no top address line). Tab 2 recognises the doubled image. The tester's own sha.txt lookup sees the 512KB read, so it will not match this 256KB hash: read a known-good chip once and add that dump in Tab 4 to give the tester the exact hash.",
+            "16-bit byte order: depending on the reader, a dump may hold the two bytes of every 16-bit word in the opposite order to this database image. Tab 2 (Inspector) and Tab 3 (Compare) detect a byte-swapped image automatically and report it as a match."
+          ],
+          "notes": []
+        },
+        {
+          "id": "a500_ks204",
+          "name": "Kickstart 2.04 (37.175)",
+          "label": "KS2.04 37.175",
+          "description": "Kickstart 2.04 upgrade ROM for A500 / A2000 (also the A500+ and early A600 ROM).",
+          "part_numbers": [
+            "390979-01",
+            "363968-01 (upgrade with jumper wire)"
+          ],
+          "socket": "U6 (A500) / U500 (A2000)",
+          "size": 524288,
+          "pins": 40,
+          "chip_type": "512KB (4Mbit) 16-bit mask ROM",
+          "backbit": [
+            {
+              "setting": "27400",
+              "pins": 40,
+              "chip": "Original 40-pin 16-bit 512KB mask ROM, or 27C400 EPROM replacement"
+            }
+          ],
+          "sha1": "c5839f5cb98a7a8947065c3ed2f14f5f42e334a1",
+          "crc32": "c3bdb240",
+          "source": "MAME amiga/amiga.cpp - 390979-01.u2",
+          "replacement": "27C400 (40-pin, 16-bit, 512KB) EPROM programmed with the image. Use a 27C400-pinout part: a 27C4096 / 27C1024 has a different 40-pin layout and needs an adapter. Check the byte order your programmer expects.",
+          "warnings": [
+            "The tester's sha.txt lookup only matches if the BackBit saves the bytes in the same order as this database image. If a known-good chip does not show its label, open the dump in Tab 2: if it reports a byte-swapped match, add that dump in Tab 4 so the tester gets the hash in its own byte order.",
+            "16-bit byte order: depending on the reader, a dump may hold the two bytes of every 16-bit word in the opposite order to this database image. Tab 2 (Inspector) and Tab 3 (Compare) detect a byte-swapped image automatically and report it as a match."
+          ],
+          "notes": [
+            "MAME notes the Kickstart 2.04 upgrade was also sold as a special version with a jumper wire, needed on some early motherboard revisions (P/N 363968-01)."
+          ]
+        },
+        {
+          "id": "a500_ks31",
+          "name": "Kickstart 3.1 (40.63)",
+          "label": "KS3.1 40.63",
+          "description": "Kickstart 3.1 upgrade ROM for the A500 / A500+ / A600 / A2000.",
+          "part_numbers": [
+            "Kickstart 3.1 40.063"
+          ],
+          "socket": "U6 (A500) / U500 (A2000)",
+          "size": 524288,
+          "pins": 40,
+          "chip_type": "512KB (4Mbit) 16-bit mask ROM",
+          "backbit": [
+            {
+              "setting": "27400",
+              "pins": 40,
+              "chip": "Original 40-pin 16-bit 512KB mask ROM, or 27C400 EPROM replacement"
+            }
+          ],
+          "sha1": "3b7f1493b27e212830f989f26ca76c02049f09ca",
+          "crc32": "fc24ae0d",
+          "source": "MAME amiga/amiga.cpp - kick40063.u2",
+          "replacement": "27C400 (40-pin, 16-bit, 512KB) EPROM programmed with the image. Use a 27C400-pinout part: a 27C4096 / 27C1024 has a different 40-pin layout and needs an adapter. Check the byte order your programmer expects.",
+          "warnings": [
+            "The tester's sha.txt lookup only matches if the BackBit saves the bytes in the same order as this database image. If a known-good chip does not show its label, open the dump in Tab 2: if it reports a byte-swapped match, add that dump in Tab 4 so the tester gets the hash in its own byte order.",
+            "16-bit byte order: depending on the reader, a dump may hold the two bytes of every 16-bit word in the opposite order to this database image. Tab 2 (Inspector) and Tab 3 (Compare) detect a byte-swapped image automatically and report it as a match."
+          ],
+          "notes": []
+        },
+        {
+          "id": "a500_ks32",
+          "name": "Kickstart 3.2 (47.96)",
+          "label": "KS3.2 47.96",
+          "description": "Kickstart 3.2 for the A500 / A500+ / A600 / A2000.",
+          "part_numbers": [
+            "Hyperion Kickstart 3.2"
+          ],
+          "socket": "U6 (A500) / U500 (A2000)",
+          "size": 524288,
+          "pins": 40,
+          "chip_type": "512KB (4Mbit) 16-bit mask ROM",
+          "backbit": [
+            {
+              "setting": "27400",
+              "pins": 40,
+              "chip": "Original 40-pin 16-bit 512KB mask ROM, or 27C400 EPROM replacement"
+            }
+          ],
+          "sha1": "b88e364daf23c9c9920e548b0d3d944e65b1031d",
+          "crc32": "8173d7b6",
+          "source": "MAME amiga/amiga.cpp - kick47096.u2",
+          "replacement": "27C400 (40-pin, 16-bit, 512KB) EPROM programmed with the image. Use a 27C400-pinout part: a 27C4096 / 27C1024 has a different 40-pin layout and needs an adapter. Check the byte order your programmer expects.",
+          "warnings": [
+            "The tester's sha.txt lookup only matches if the BackBit saves the bytes in the same order as this database image. If a known-good chip does not show its label, open the dump in Tab 2: if it reports a byte-swapped match, add that dump in Tab 4 so the tester gets the hash in its own byte order.",
+            "16-bit byte order: depending on the reader, a dump may hold the two bytes of every 16-bit word in the opposite order to this database image. Tab 2 (Inspector) and Tab 3 (Compare) detect a byte-swapped image automatically and report it as a match."
+          ],
+          "notes": [
+            "Kickstart 3.2.x is a 2021+ release by Hyperion Entertainment, sold as replacement ROM chips."
+          ]
+        },
+        {
+          "id": "a500_ks321",
+          "name": "Kickstart 3.2.1 (47.102)",
+          "label": "KS3.2.1 47.102",
+          "description": "Kickstart 3.2.1 for the A500 / A500+ / A600 / A2000.",
+          "part_numbers": [
+            "Hyperion Kickstart 3.2.1"
+          ],
+          "socket": "U6 (A500) / U500 (A2000)",
+          "size": 524288,
+          "pins": 40,
+          "chip_type": "512KB (4Mbit) 16-bit mask ROM",
+          "backbit": [
+            {
+              "setting": "27400",
+              "pins": 40,
+              "chip": "Original 40-pin 16-bit 512KB mask ROM, or 27C400 EPROM replacement"
+            }
+          ],
+          "sha1": "8f64ada68a7f128ba782e8dc9fa583344171590a",
+          "crc32": "4f078456",
+          "source": "MAME amiga/amiga.cpp - kick47102.u2",
+          "replacement": "27C400 (40-pin, 16-bit, 512KB) EPROM programmed with the image. Use a 27C400-pinout part: a 27C4096 / 27C1024 has a different 40-pin layout and needs an adapter. Check the byte order your programmer expects.",
+          "warnings": [
+            "The tester's sha.txt lookup only matches if the BackBit saves the bytes in the same order as this database image. If a known-good chip does not show its label, open the dump in Tab 2: if it reports a byte-swapped match, add that dump in Tab 4 so the tester gets the hash in its own byte order.",
+            "16-bit byte order: depending on the reader, a dump may hold the two bytes of every 16-bit word in the opposite order to this database image. Tab 2 (Inspector) and Tab 3 (Compare) detect a byte-swapped image automatically and report it as a match."
+          ],
+          "notes": [
+            "Kickstart 3.2.x is a 2021+ release by Hyperion Entertainment, sold as replacement ROM chips."
+          ]
+        },
+        {
+          "id": "a500_ks322",
+          "name": "Kickstart 3.2.2 (47.111)",
+          "label": "KS3.2.2 47.111",
+          "description": "Kickstart 3.2.2 for the A500 / A500+ / A600 / A2000.",
+          "part_numbers": [
+            "Hyperion Kickstart 3.2.2"
+          ],
+          "socket": "U6 (A500) / U500 (A2000)",
+          "size": 524288,
+          "pins": 40,
+          "chip_type": "512KB (4Mbit) 16-bit mask ROM",
+          "backbit": [
+            {
+              "setting": "27400",
+              "pins": 40,
+              "chip": "Original 40-pin 16-bit 512KB mask ROM, or 27C400 EPROM replacement"
+            }
+          ],
+          "sha1": "7d5ebe686b69d59a863cc77a36b2cd60359a9ed2",
+          "crc32": "e4458462",
+          "source": "MAME amiga/amiga.cpp - kick47111.u2",
+          "replacement": "27C400 (40-pin, 16-bit, 512KB) EPROM programmed with the image. Use a 27C400-pinout part: a 27C4096 / 27C1024 has a different 40-pin layout and needs an adapter. Check the byte order your programmer expects.",
+          "warnings": [
+            "The tester's sha.txt lookup only matches if the BackBit saves the bytes in the same order as this database image. If a known-good chip does not show its label, open the dump in Tab 2: if it reports a byte-swapped match, add that dump in Tab 4 so the tester gets the hash in its own byte order.",
+            "16-bit byte order: depending on the reader, a dump may hold the two bytes of every 16-bit word in the opposite order to this database image. Tab 2 (Inspector) and Tab 3 (Compare) detect a byte-swapped image automatically and report it as a match."
+          ],
+          "notes": [
+            "Kickstart 3.2.x is a 2021+ release by Hyperion Entertainment, sold as replacement ROM chips."
+          ]
+        },
+        {
+          "id": "a500_logica",
+          "name": "Logica Diagnostic 2.0",
+          "label": "Logica2 Diag",
+          "description": "Diagnostic ROM for the A500 / A500+ / A600 / A2000 Kickstart socket.",
+          "part_numbers": [
+            "Logica Diagnostic 2.0"
+          ],
+          "socket": "U6 (A500) / U500 (A2000)",
+          "size": 524288,
+          "pins": 40,
+          "chip_type": "512KB (4Mbit) 16-bit mask ROM",
+          "backbit": [
+            {
+              "setting": "27400",
+              "pins": 40,
+              "chip": "Original 40-pin 16-bit 512KB mask ROM, or 27C400 EPROM replacement"
+            }
+          ],
+          "sha1": "ba10d16166b2e2d6177c979c99edf8462b21651e",
+          "crc32": "8484f426",
+          "source": "MAME amiga/amiga.cpp - logica2.u2",
+          "replacement": "27C400 (40-pin, 16-bit, 512KB) EPROM programmed with the image. Use a 27C400-pinout part: a 27C4096 / 27C1024 has a different 40-pin layout and needs an adapter. Check the byte order your programmer expects.",
+          "warnings": [
+            "The tester's sha.txt lookup only matches if the BackBit saves the bytes in the same order as this database image. If a known-good chip does not show its label, open the dump in Tab 2: if it reports a byte-swapped match, add that dump in Tab 4 so the tester gets the hash in its own byte order.",
+            "16-bit byte order: depending on the reader, a dump may hold the two bytes of every 16-bit word in the opposite order to this database image. Tab 2 (Inspector) and Tab 3 (Compare) detect a byte-swapped image automatically and report it as a match."
+          ],
+          "notes": [
+            "Logica Diagnostic 2.0 is a diagnostic ROM fitted in place of Kickstart to test RAM, custom chips and ports - useful on the bench, not a factory ROM."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "amiga500p",
+      "name": "Commodore Amiga 500 Plus",
+      "manufacturer": "Commodore",
+      "year": 1991,
+      "short": "A500+",
+      "roms": [
+        {
+          "id": "a500p_ks204",
+          "name": "Kickstart 2.04 (37.175)",
+          "label": "KS2.04 37.175",
+          "description": "Kickstart 2.04, the factory A500 Plus ROM.",
+          "part_numbers": [
+            "390979-01"
+          ],
+          "socket": "U6",
+          "size": 524288,
+          "pins": 40,
+          "chip_type": "512KB (4Mbit) 16-bit mask ROM",
+          "backbit": [
+            {
+              "setting": "27400",
+              "pins": 40,
+              "chip": "Original 40-pin 16-bit 512KB mask ROM, or 27C400 EPROM replacement"
+            }
+          ],
+          "sha1": "c5839f5cb98a7a8947065c3ed2f14f5f42e334a1",
+          "crc32": "c3bdb240",
+          "source": "MAME amiga/amiga.cpp - 390979-01.u6",
+          "replacement": "27C400 (40-pin, 16-bit, 512KB) EPROM programmed with the image. Use a 27C400-pinout part: a 27C4096 / 27C1024 has a different 40-pin layout and needs an adapter. Check the byte order your programmer expects.",
+          "warnings": [
+            "The tester's sha.txt lookup only matches if the BackBit saves the bytes in the same order as this database image. If a known-good chip does not show its label, open the dump in Tab 2: if it reports a byte-swapped match, add that dump in Tab 4 so the tester gets the hash in its own byte order.",
+            "16-bit byte order: depending on the reader, a dump may hold the two bytes of every 16-bit word in the opposite order to this database image. Tab 2 (Inspector) and Tab 3 (Compare) detect a byte-swapped image automatically and report it as a match."
+          ],
+          "notes": []
+        },
+        {
+          "id": "a500p_ks31",
+          "name": "Kickstart 3.1 (40.63)",
+          "label": "KS3.1 40.63",
+          "description": "Kickstart 3.1 upgrade ROM.",
+          "part_numbers": [
+            "Kickstart 3.1 40.063"
+          ],
+          "socket": "U6",
+          "size": 524288,
+          "pins": 40,
+          "chip_type": "512KB (4Mbit) 16-bit mask ROM",
+          "backbit": [
+            {
+              "setting": "27400",
+              "pins": 40,
+              "chip": "Original 40-pin 16-bit 512KB mask ROM, or 27C400 EPROM replacement"
+            }
+          ],
+          "sha1": "3b7f1493b27e212830f989f26ca76c02049f09ca",
+          "crc32": "fc24ae0d",
+          "source": "MAME amiga/amiga.cpp - kick40063.u6",
+          "replacement": "27C400 (40-pin, 16-bit, 512KB) EPROM programmed with the image. Use a 27C400-pinout part: a 27C4096 / 27C1024 has a different 40-pin layout and needs an adapter. Check the byte order your programmer expects.",
+          "warnings": [
+            "The tester's sha.txt lookup only matches if the BackBit saves the bytes in the same order as this database image. If a known-good chip does not show its label, open the dump in Tab 2: if it reports a byte-swapped match, add that dump in Tab 4 so the tester gets the hash in its own byte order.",
+            "16-bit byte order: depending on the reader, a dump may hold the two bytes of every 16-bit word in the opposite order to this database image. Tab 2 (Inspector) and Tab 3 (Compare) detect a byte-swapped image automatically and report it as a match."
+          ],
+          "notes": []
+        },
+        {
+          "id": "a500p_logica",
+          "name": "Logica Diagnostic 2.0",
+          "label": "Logica2 Diag",
+          "description": "Diagnostic ROM.",
+          "part_numbers": [
+            "Logica Diagnostic 2.0"
+          ],
+          "socket": "U6",
+          "size": 524288,
+          "pins": 40,
+          "chip_type": "512KB (4Mbit) 16-bit mask ROM",
+          "backbit": [
+            {
+              "setting": "27400",
+              "pins": 40,
+              "chip": "Original 40-pin 16-bit 512KB mask ROM, or 27C400 EPROM replacement"
+            }
+          ],
+          "sha1": "ba10d16166b2e2d6177c979c99edf8462b21651e",
+          "crc32": "8484f426",
+          "source": "MAME amiga/amiga.cpp - logica2.u6",
+          "replacement": "27C400 (40-pin, 16-bit, 512KB) EPROM programmed with the image. Use a 27C400-pinout part: a 27C4096 / 27C1024 has a different 40-pin layout and needs an adapter. Check the byte order your programmer expects.",
+          "warnings": [
+            "The tester's sha.txt lookup only matches if the BackBit saves the bytes in the same order as this database image. If a known-good chip does not show its label, open the dump in Tab 2: if it reports a byte-swapped match, add that dump in Tab 4 so the tester gets the hash in its own byte order.",
+            "16-bit byte order: depending on the reader, a dump may hold the two bytes of every 16-bit word in the opposite order to this database image. Tab 2 (Inspector) and Tab 3 (Compare) detect a byte-swapped image automatically and report it as a match."
+          ],
+          "notes": [
+            "Logica Diagnostic 2.0 is a diagnostic ROM fitted in place of Kickstart to test RAM, custom chips and ports - useful on the bench, not a factory ROM."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "amiga600",
+      "name": "Commodore Amiga 600",
+      "manufacturer": "Commodore",
+      "year": 1992,
+      "short": "A600",
+      "roms": [
+        {
+          "id": "a600_ks204",
+          "name": "Kickstart 2.04 (37.175)",
+          "label": "KS2.04 37.175",
+          "description": "Kickstart 2.04, fitted to the earliest A600s.",
+          "part_numbers": [
+            "390979-01"
+          ],
+          "socket": "U6",
+          "size": 524288,
+          "pins": 40,
+          "chip_type": "512KB (4Mbit) 16-bit mask ROM",
+          "backbit": [
+            {
+              "setting": "27400",
+              "pins": 40,
+              "chip": "Original 40-pin 16-bit 512KB mask ROM, or 27C400 EPROM replacement"
+            }
+          ],
+          "sha1": "c5839f5cb98a7a8947065c3ed2f14f5f42e334a1",
+          "crc32": "c3bdb240",
+          "source": "MAME amiga/amiga.cpp - 390979-01.u6",
+          "replacement": "27C400 (40-pin, 16-bit, 512KB) EPROM programmed with the image. Use a 27C400-pinout part: a 27C4096 / 27C1024 has a different 40-pin layout and needs an adapter. Check the byte order your programmer expects.",
+          "warnings": [
+            "The tester's sha.txt lookup only matches if the BackBit saves the bytes in the same order as this database image. If a known-good chip does not show its label, open the dump in Tab 2: if it reports a byte-swapped match, add that dump in Tab 4 so the tester gets the hash in its own byte order.",
+            "16-bit byte order: depending on the reader, a dump may hold the two bytes of every 16-bit word in the opposite order to this database image. Tab 2 (Inspector) and Tab 3 (Compare) detect a byte-swapped image automatically and report it as a match."
+          ],
+          "notes": []
+        },
+        {
+          "id": "a600_ks205_299",
+          "name": "Kickstart 2.05 (37.299)",
+          "label": "KS2.05 37.299",
+          "description": "Kickstart 2.05 revision 37.299.",
+          "part_numbers": [
+            "391388-01"
+          ],
+          "socket": "U6",
+          "size": 524288,
+          "pins": 40,
+          "chip_type": "512KB (4Mbit) 16-bit mask ROM",
+          "backbit": [
+            {
+              "setting": "27400",
+              "pins": 40,
+              "chip": "Original 40-pin 16-bit 512KB mask ROM, or 27C400 EPROM replacement"
+            }
+          ],
+          "sha1": "87508de834dc7eb47359cede72d2e3c8a2e5d8db",
+          "crc32": "83028fb5",
+          "source": "MAME amiga/amiga.cpp - 391388-01.u6",
+          "replacement": "27C400 (40-pin, 16-bit, 512KB) EPROM programmed with the image. Use a 27C400-pinout part: a 27C4096 / 27C1024 has a different 40-pin layout and needs an adapter. Check the byte order your programmer expects.",
+          "warnings": [
+            "The tester's sha.txt lookup only matches if the BackBit saves the bytes in the same order as this database image. If a known-good chip does not show its label, open the dump in Tab 2: if it reports a byte-swapped match, add that dump in Tab 4 so the tester gets the hash in its own byte order.",
+            "16-bit byte order: depending on the reader, a dump may hold the two bytes of every 16-bit word in the opposite order to this database image. Tab 2 (Inspector) and Tab 3 (Compare) detect a byte-swapped image automatically and report it as a match."
+          ],
+          "notes": []
+        },
+        {
+          "id": "a600_ks205_300",
+          "name": "Kickstart 2.05 (37.300)",
+          "label": "KS2.05 37.300",
+          "description": "Kickstart 2.05 revision 37.300.",
+          "part_numbers": [
+            "391304-01"
+          ],
+          "socket": "U6",
+          "size": 524288,
+          "pins": 40,
+          "chip_type": "512KB (4Mbit) 16-bit mask ROM",
+          "backbit": [
+            {
+              "setting": "27400",
+              "pins": 40,
+              "chip": "Original 40-pin 16-bit 512KB mask ROM, or 27C400 EPROM replacement"
+            }
+          ],
+          "sha1": "f72d89148dac39c696e30b10859ebc859226637b",
+          "crc32": "64466c2a",
+          "source": "MAME amiga/amiga.cpp - 391304-01.u6",
+          "replacement": "27C400 (40-pin, 16-bit, 512KB) EPROM programmed with the image. Use a 27C400-pinout part: a 27C4096 / 27C1024 has a different 40-pin layout and needs an adapter. Check the byte order your programmer expects.",
+          "warnings": [
+            "The tester's sha.txt lookup only matches if the BackBit saves the bytes in the same order as this database image. If a known-good chip does not show its label, open the dump in Tab 2: if it reports a byte-swapped match, add that dump in Tab 4 so the tester gets the hash in its own byte order.",
+            "16-bit byte order: depending on the reader, a dump may hold the two bytes of every 16-bit word in the opposite order to this database image. Tab 2 (Inspector) and Tab 3 (Compare) detect a byte-swapped image automatically and report it as a match."
+          ],
+          "notes": []
+        },
+        {
+          "id": "a600_ks205_350",
+          "name": "Kickstart 2.05 (37.350)",
+          "label": "KS2.05 37.350",
+          "description": "Kickstart 2.05 revision 37.350, the last A600 factory ROM.",
+          "part_numbers": [
+            "391304-02"
+          ],
+          "socket": "U6",
+          "size": 524288,
+          "pins": 40,
+          "chip_type": "512KB (4Mbit) 16-bit mask ROM",
+          "backbit": [
+            {
+              "setting": "27400",
+              "pins": 40,
+              "chip": "Original 40-pin 16-bit 512KB mask ROM, or 27C400 EPROM replacement"
+            }
+          ],
+          "sha1": "02843c4253bbd29aba535b0aa3bd9a85034ecde4",
+          "crc32": "43b0df7b",
+          "source": "MAME amiga/amiga.cpp - 391304-02.u6",
+          "replacement": "27C400 (40-pin, 16-bit, 512KB) EPROM programmed with the image. Use a 27C400-pinout part: a 27C4096 / 27C1024 has a different 40-pin layout and needs an adapter. Check the byte order your programmer expects.",
+          "warnings": [
+            "The tester's sha.txt lookup only matches if the BackBit saves the bytes in the same order as this database image. If a known-good chip does not show its label, open the dump in Tab 2: if it reports a byte-swapped match, add that dump in Tab 4 so the tester gets the hash in its own byte order.",
+            "16-bit byte order: depending on the reader, a dump may hold the two bytes of every 16-bit word in the opposite order to this database image. Tab 2 (Inspector) and Tab 3 (Compare) detect a byte-swapped image automatically and report it as a match."
+          ],
+          "notes": []
+        },
+        {
+          "id": "a600_ks31",
+          "name": "Kickstart 3.1 (40.63)",
+          "label": "KS3.1 40.63",
+          "description": "Kickstart 3.1 upgrade ROM.",
+          "part_numbers": [
+            "Kickstart 3.1 40.063"
+          ],
+          "socket": "U6",
+          "size": 524288,
+          "pins": 40,
+          "chip_type": "512KB (4Mbit) 16-bit mask ROM",
+          "backbit": [
+            {
+              "setting": "27400",
+              "pins": 40,
+              "chip": "Original 40-pin 16-bit 512KB mask ROM, or 27C400 EPROM replacement"
+            }
+          ],
+          "sha1": "3b7f1493b27e212830f989f26ca76c02049f09ca",
+          "crc32": "fc24ae0d",
+          "source": "MAME amiga/amiga.cpp - kick40063.u6",
+          "replacement": "27C400 (40-pin, 16-bit, 512KB) EPROM programmed with the image. Use a 27C400-pinout part: a 27C4096 / 27C1024 has a different 40-pin layout and needs an adapter. Check the byte order your programmer expects.",
+          "warnings": [
+            "The tester's sha.txt lookup only matches if the BackBit saves the bytes in the same order as this database image. If a known-good chip does not show its label, open the dump in Tab 2: if it reports a byte-swapped match, add that dump in Tab 4 so the tester gets the hash in its own byte order.",
+            "16-bit byte order: depending on the reader, a dump may hold the two bytes of every 16-bit word in the opposite order to this database image. Tab 2 (Inspector) and Tab 3 (Compare) detect a byte-swapped image automatically and report it as a match."
+          ],
+          "notes": []
+        },
+        {
+          "id": "a600_logica",
+          "name": "Logica Diagnostic 2.0",
+          "label": "Logica2 Diag",
+          "description": "Diagnostic ROM.",
+          "part_numbers": [
+            "Logica Diagnostic 2.0"
+          ],
+          "socket": "U6",
+          "size": 524288,
+          "pins": 40,
+          "chip_type": "512KB (4Mbit) 16-bit mask ROM",
+          "backbit": [
+            {
+              "setting": "27400",
+              "pins": 40,
+              "chip": "Original 40-pin 16-bit 512KB mask ROM, or 27C400 EPROM replacement"
+            }
+          ],
+          "sha1": "ba10d16166b2e2d6177c979c99edf8462b21651e",
+          "crc32": "8484f426",
+          "source": "MAME amiga/amiga.cpp - logica2.u6",
+          "replacement": "27C400 (40-pin, 16-bit, 512KB) EPROM programmed with the image. Use a 27C400-pinout part: a 27C4096 / 27C1024 has a different 40-pin layout and needs an adapter. Check the byte order your programmer expects.",
+          "warnings": [
+            "The tester's sha.txt lookup only matches if the BackBit saves the bytes in the same order as this database image. If a known-good chip does not show its label, open the dump in Tab 2: if it reports a byte-swapped match, add that dump in Tab 4 so the tester gets the hash in its own byte order.",
+            "16-bit byte order: depending on the reader, a dump may hold the two bytes of every 16-bit word in the opposite order to this database image. Tab 2 (Inspector) and Tab 3 (Compare) detect a byte-swapped image automatically and report it as a match."
+          ],
+          "notes": [
+            "Logica Diagnostic 2.0 is a diagnostic ROM fitted in place of Kickstart to test RAM, custom chips and ports - useful on the bench, not a factory ROM."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "amiga3000",
+      "name": "Commodore Amiga 3000",
+      "manufacturer": "Commodore",
+      "year": 1990,
+      "short": "A3000",
+      "roms": [
+        {
+          "id": "a3000_ks20_hi",
+          "name": "Kickstart 2.0 (36.16) - HI (bits 31-16)",
+          "label": "A3000 2.0 HI",
+          "description": "Kickstart 2.0 (36.16), high-word chip. Amiga 3000.",
+          "part_numbers": [
+            "390629-02"
+          ],
+          "socket": "U182",
+          "size": 262144,
+          "pins": 40,
+          "chip_type": "256KB (2Mbit) 16-bit mask ROM",
+          "backbit": [
+            {
+              "setting": "27400",
+              "pins": 40,
+              "chip": "Original 40-pin 16-bit 256KB (2Mbit) mask ROM - reads as 512KB with the image twice"
+            }
+          ],
+          "sha1": "d1713d7f31474a5948e6d488e33686061cf3d1e2",
+          "crc32": "58327536",
+          "source": "MAME amiga/amiga.cpp - 390629-02.u182",
+          "replacement": "27C400 (40-pin, 16-bit) EPROM with the 256KB image burned twice (into both halves), or a 2Mbit 27C400-pinout part. Check the byte order your programmer expects.",
+          "warnings": [
+            "One of a 32-bit pair: the HI chip (data bits 31-16) and LO chip (bits 15-0) must both be fitted, from the same Kickstart version. Mixing versions, or swapping HI and LO, stops the machine booting.",
+            "256KB (2Mbit) chip: the BackBit 27400 setting reads 512KB, so the dump should hold this 256KB image twice (the chip has no top address line). Tab 2 recognises the doubled image. The tester's own sha.txt lookup sees the 512KB read, so it will not match this 256KB hash: read a known-good chip once and add that dump in Tab 4 to give the tester the exact hash.",
+            "16-bit byte order: depending on the reader, a dump may hold the two bytes of every 16-bit word in the opposite order to this database image. Tab 2 (Inspector) and Tab 3 (Compare) detect a byte-swapped image automatically and report it as a match."
+          ],
+          "notes": []
+        },
+        {
+          "id": "a3000_ks20_lo",
+          "name": "Kickstart 2.0 (36.16) - LO (bits 15-0)",
+          "label": "A3000 2.0 LO",
+          "description": "Kickstart 2.0 (36.16), low-word chip. Amiga 3000.",
+          "part_numbers": [
+            "390630-02"
+          ],
+          "socket": "U183",
+          "size": 262144,
+          "pins": 40,
+          "chip_type": "256KB (2Mbit) 16-bit mask ROM",
+          "backbit": [
+            {
+              "setting": "27400",
+              "pins": 40,
+              "chip": "Original 40-pin 16-bit 256KB (2Mbit) mask ROM - reads as 512KB with the image twice"
+            }
+          ],
+          "sha1": "c05c9c52d014c66f9019152b3f2a2adc2c678794",
+          "crc32": "fe2f7fb9",
+          "source": "MAME amiga/amiga.cpp - 390630-02.u183",
+          "replacement": "27C400 (40-pin, 16-bit) EPROM with the 256KB image burned twice (into both halves), or a 2Mbit 27C400-pinout part. Check the byte order your programmer expects.",
+          "warnings": [
+            "One of a 32-bit pair: the HI chip (data bits 31-16) and LO chip (bits 15-0) must both be fitted, from the same Kickstart version. Mixing versions, or swapping HI and LO, stops the machine booting.",
+            "256KB (2Mbit) chip: the BackBit 27400 setting reads 512KB, so the dump should hold this 256KB image twice (the chip has no top address line). Tab 2 recognises the doubled image. The tester's own sha.txt lookup sees the 512KB read, so it will not match this 256KB hash: read a known-good chip once and add that dump in Tab 4 to give the tester the exact hash.",
+            "16-bit byte order: depending on the reader, a dump may hold the two bytes of every 16-bit word in the opposite order to this database image. Tab 2 (Inspector) and Tab 3 (Compare) detect a byte-swapped image automatically and report it as a match."
+          ],
+          "notes": []
+        },
+        {
+          "id": "a3000_ks204_hi",
+          "name": "Kickstart 2.04 (37.175) - HI (bits 31-16)",
+          "label": "A3000 2.04 HI",
+          "description": "Kickstart 2.04 (37.175), high-word chip. Amiga 3000.",
+          "part_numbers": [
+            "390629-03"
+          ],
+          "socket": "U182",
+          "size": 262144,
+          "pins": 40,
+          "chip_type": "256KB (2Mbit) 16-bit mask ROM",
+          "backbit": [
+            {
+              "setting": "27400",
+              "pins": 40,
+              "chip": "Original 40-pin 16-bit 256KB (2Mbit) mask ROM - reads as 512KB with the image twice"
+            }
+          ],
+          "sha1": "83bab8e95d378b55b0c6ae6561385a96f638598f",
+          "crc32": "a245dbdf",
+          "source": "MAME amiga/amiga.cpp - 390629-03.u182",
+          "replacement": "27C400 (40-pin, 16-bit) EPROM with the 256KB image burned twice (into both halves), or a 2Mbit 27C400-pinout part. Check the byte order your programmer expects.",
+          "warnings": [
+            "One of a 32-bit pair: the HI chip (data bits 31-16) and LO chip (bits 15-0) must both be fitted, from the same Kickstart version. Mixing versions, or swapping HI and LO, stops the machine booting.",
+            "256KB (2Mbit) chip: the BackBit 27400 setting reads 512KB, so the dump should hold this 256KB image twice (the chip has no top address line). Tab 2 recognises the doubled image. The tester's own sha.txt lookup sees the 512KB read, so it will not match this 256KB hash: read a known-good chip once and add that dump in Tab 4 to give the tester the exact hash.",
+            "16-bit byte order: depending on the reader, a dump may hold the two bytes of every 16-bit word in the opposite order to this database image. Tab 2 (Inspector) and Tab 3 (Compare) detect a byte-swapped image automatically and report it as a match."
+          ],
+          "notes": []
+        },
+        {
+          "id": "a3000_ks204_lo",
+          "name": "Kickstart 2.04 (37.175) - LO (bits 15-0)",
+          "label": "A3000 2.04 LO",
+          "description": "Kickstart 2.04 (37.175), low-word chip. Amiga 3000.",
+          "part_numbers": [
+            "390630-03"
+          ],
+          "socket": "U183",
+          "size": 262144,
+          "pins": 40,
+          "chip_type": "256KB (2Mbit) 16-bit mask ROM",
+          "backbit": [
+            {
+              "setting": "27400",
+              "pins": 40,
+              "chip": "Original 40-pin 16-bit 256KB (2Mbit) mask ROM - reads as 512KB with the image twice"
+            }
+          ],
+          "sha1": "48f14b31279da6757848df6feb5318818f8f576c",
+          "crc32": "7db1332b",
+          "source": "MAME amiga/amiga.cpp - 390630-03.u183",
+          "replacement": "27C400 (40-pin, 16-bit) EPROM with the 256KB image burned twice (into both halves), or a 2Mbit 27C400-pinout part. Check the byte order your programmer expects.",
+          "warnings": [
+            "One of a 32-bit pair: the HI chip (data bits 31-16) and LO chip (bits 15-0) must both be fitted, from the same Kickstart version. Mixing versions, or swapping HI and LO, stops the machine booting.",
+            "256KB (2Mbit) chip: the BackBit 27400 setting reads 512KB, so the dump should hold this 256KB image twice (the chip has no top address line). Tab 2 recognises the doubled image. The tester's own sha.txt lookup sees the 512KB read, so it will not match this 256KB hash: read a known-good chip once and add that dump in Tab 4 to give the tester the exact hash.",
+            "16-bit byte order: depending on the reader, a dump may hold the two bytes of every 16-bit word in the opposite order to this database image. Tab 2 (Inspector) and Tab 3 (Compare) detect a byte-swapped image automatically and report it as a match."
+          ],
+          "notes": []
+        },
+        {
+          "id": "a3000_ks31_hi",
+          "name": "Kickstart 3.1 (40.68) - HI (bits 31-16)",
+          "label": "A3000 3.1 HI",
+          "description": "Kickstart 3.1 (40.68), high-word chip. Amiga 3000.",
+          "part_numbers": [],
+          "socket": "U182",
+          "size": 262144,
+          "pins": 40,
+          "chip_type": "256KB (2Mbit) 16-bit mask ROM",
+          "backbit": [
+            {
+              "setting": "27400",
+              "pins": 40,
+              "chip": "Original 40-pin 16-bit 256KB (2Mbit) mask ROM - reads as 512KB with the image twice"
+            }
+          ],
+          "sha1": "6763a2258ec493f7408cf663110dae9a17803ad1",
+          "crc32": "286b9a0d",
+          "source": "MAME amiga/amiga.cpp - kick31.u182",
+          "replacement": "27C400 (40-pin, 16-bit) EPROM with the 256KB image burned twice (into both halves), or a 2Mbit 27C400-pinout part. Check the byte order your programmer expects.",
+          "warnings": [
+            "One of a 32-bit pair: the HI chip (data bits 31-16) and LO chip (bits 15-0) must both be fitted, from the same Kickstart version. Mixing versions, or swapping HI and LO, stops the machine booting.",
+            "256KB (2Mbit) chip: the BackBit 27400 setting reads 512KB, so the dump should hold this 256KB image twice (the chip has no top address line). Tab 2 recognises the doubled image. The tester's own sha.txt lookup sees the 512KB read, so it will not match this 256KB hash: read a known-good chip once and add that dump in Tab 4 to give the tester the exact hash.",
+            "16-bit byte order: depending on the reader, a dump may hold the two bytes of every 16-bit word in the opposite order to this database image. Tab 2 (Inspector) and Tab 3 (Compare) detect a byte-swapped image automatically and report it as a match."
+          ],
+          "notes": []
+        },
+        {
+          "id": "a3000_ks31_lo",
+          "name": "Kickstart 3.1 (40.68) - LO (bits 15-0)",
+          "label": "A3000 3.1 LO",
+          "description": "Kickstart 3.1 (40.68), low-word chip. Amiga 3000.",
+          "part_numbers": [],
+          "socket": "U183",
+          "size": 262144,
+          "pins": 40,
+          "chip_type": "256KB (2Mbit) 16-bit mask ROM",
+          "backbit": [
+            {
+              "setting": "27400",
+              "pins": 40,
+              "chip": "Original 40-pin 16-bit 256KB (2Mbit) mask ROM - reads as 512KB with the image twice"
+            }
+          ],
+          "sha1": "5f02e97b48ebbba87d516a56b0400c6fc3434d8d",
+          "crc32": "0b8cde6a",
+          "source": "MAME amiga/amiga.cpp - kick31.u183",
+          "replacement": "27C400 (40-pin, 16-bit) EPROM with the 256KB image burned twice (into both halves), or a 2Mbit 27C400-pinout part. Check the byte order your programmer expects.",
+          "warnings": [
+            "One of a 32-bit pair: the HI chip (data bits 31-16) and LO chip (bits 15-0) must both be fitted, from the same Kickstart version. Mixing versions, or swapping HI and LO, stops the machine booting.",
+            "256KB (2Mbit) chip: the BackBit 27400 setting reads 512KB, so the dump should hold this 256KB image twice (the chip has no top address line). Tab 2 recognises the doubled image. The tester's own sha.txt lookup sees the 512KB read, so it will not match this 256KB hash: read a known-good chip once and add that dump in Tab 4 to give the tester the exact hash.",
+            "16-bit byte order: depending on the reader, a dump may hold the two bytes of every 16-bit word in the opposite order to this database image. Tab 2 (Inspector) and Tab 3 (Compare) detect a byte-swapped image automatically and report it as a match."
+          ],
+          "notes": []
+        },
+        {
+          "id": "a3000_logica_hi",
+          "name": "Logica Diagnostic 2.0 - HI (bits 31-16)",
+          "label": "Logica2 HI",
+          "description": "Logica Diagnostic 2.0, high-word chip. 32-bit diagnostic ROM pair (A1200 / A3000 / A4000).",
+          "part_numbers": [],
+          "socket": "U182",
+          "size": 262144,
+          "pins": 40,
+          "chip_type": "256KB (2Mbit) 16-bit mask ROM",
+          "backbit": [
+            {
+              "setting": "27400",
+              "pins": 40,
+              "chip": "Original 40-pin 16-bit 256KB (2Mbit) mask ROM - reads as 512KB with the image twice"
+            }
+          ],
+          "sha1": "891d3b7892843517d800d24593168b1d8f1646ca",
+          "crc32": "566bc3f9",
+          "source": "MAME amiga/amiga.cpp - logica2.u182",
+          "replacement": "27C400 (40-pin, 16-bit) EPROM with the 256KB image burned twice (into both halves), or a 2Mbit 27C400-pinout part. Check the byte order your programmer expects.",
+          "warnings": [
+            "One of a 32-bit pair: the HI chip (data bits 31-16) and LO chip (bits 15-0) must both be fitted, from the same Kickstart version. Mixing versions, or swapping HI and LO, stops the machine booting.",
+            "256KB (2Mbit) chip: the BackBit 27400 setting reads 512KB, so the dump should hold this 256KB image twice (the chip has no top address line). Tab 2 recognises the doubled image. The tester's own sha.txt lookup sees the 512KB read, so it will not match this 256KB hash: read a known-good chip once and add that dump in Tab 4 to give the tester the exact hash.",
+            "16-bit byte order: depending on the reader, a dump may hold the two bytes of every 16-bit word in the opposite order to this database image. Tab 2 (Inspector) and Tab 3 (Compare) detect a byte-swapped image automatically and report it as a match."
+          ],
+          "notes": [
+            "Logica Diagnostic 2.0 is a diagnostic ROM fitted in place of Kickstart to test RAM, custom chips and ports - useful on the bench, not a factory ROM."
+          ]
+        },
+        {
+          "id": "a3000_logica_lo",
+          "name": "Logica Diagnostic 2.0 - LO (bits 15-0)",
+          "label": "Logica2 LO",
+          "description": "Logica Diagnostic 2.0, low-word chip. 32-bit diagnostic ROM pair (A1200 / A3000 / A4000).",
+          "part_numbers": [],
+          "socket": "U183",
+          "size": 262144,
+          "pins": 40,
+          "chip_type": "256KB (2Mbit) 16-bit mask ROM",
+          "backbit": [
+            {
+              "setting": "27400",
+              "pins": 40,
+              "chip": "Original 40-pin 16-bit 256KB (2Mbit) mask ROM - reads as 512KB with the image twice"
+            }
+          ],
+          "sha1": "da8a4f9ae1aa84f5e2a5dcc5c9d7e4378a9698b7",
+          "crc32": "aac94759",
+          "source": "MAME amiga/amiga.cpp - logica2.u183",
+          "replacement": "27C400 (40-pin, 16-bit) EPROM with the 256KB image burned twice (into both halves), or a 2Mbit 27C400-pinout part. Check the byte order your programmer expects.",
+          "warnings": [
+            "One of a 32-bit pair: the HI chip (data bits 31-16) and LO chip (bits 15-0) must both be fitted, from the same Kickstart version. Mixing versions, or swapping HI and LO, stops the machine booting.",
+            "256KB (2Mbit) chip: the BackBit 27400 setting reads 512KB, so the dump should hold this 256KB image twice (the chip has no top address line). Tab 2 recognises the doubled image. The tester's own sha.txt lookup sees the 512KB read, so it will not match this 256KB hash: read a known-good chip once and add that dump in Tab 4 to give the tester the exact hash.",
+            "16-bit byte order: depending on the reader, a dump may hold the two bytes of every 16-bit word in the opposite order to this database image. Tab 2 (Inspector) and Tab 3 (Compare) detect a byte-swapped image automatically and report it as a match."
+          ],
+          "notes": [
+            "Logica Diagnostic 2.0 is a diagnostic ROM fitted in place of Kickstart to test RAM, custom chips and ports - useful on the bench, not a factory ROM."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "amiga1200",
+      "name": "Commodore Amiga 1200",
+      "manufacturer": "Commodore",
+      "year": 1992,
+      "short": "A1200",
+      "roms": [
+        {
+          "id": "a1200_ks30_hi",
+          "name": "Kickstart 3.0 (39.106) - HI (bits 31-16)",
+          "label": "A1200 3.0 HI",
+          "description": "Kickstart 3.0 (39.106), high-word chip. Amiga 1200.",
+          "part_numbers": [
+            "391523-01"
+          ],
+          "socket": "U6A",
+          "size": 262144,
+          "pins": 40,
+          "chip_type": "256KB (2Mbit) 16-bit mask ROM",
+          "backbit": [
+            {
+              "setting": "27400",
+              "pins": 40,
+              "chip": "Original 40-pin 16-bit 256KB (2Mbit) mask ROM - reads as 512KB with the image twice"
+            }
+          ],
+          "sha1": "999eb81c65dfd07a71ee19315d99c7eb858ab186",
+          "crc32": "c742a412",
+          "source": "MAME amiga/amiga.cpp - 391523-01.u6a",
+          "replacement": "27C400 (40-pin, 16-bit) EPROM with the 256KB image burned twice (into both halves), or a 2Mbit 27C400-pinout part. Check the byte order your programmer expects.",
+          "warnings": [
+            "One of a 32-bit pair: the HI chip (data bits 31-16) and LO chip (bits 15-0) must both be fitted, from the same Kickstart version. Mixing versions, or swapping HI and LO, stops the machine booting.",
+            "256KB (2Mbit) chip: the BackBit 27400 setting reads 512KB, so the dump should hold this 256KB image twice (the chip has no top address line). Tab 2 recognises the doubled image. The tester's own sha.txt lookup sees the 512KB read, so it will not match this 256KB hash: read a known-good chip once and add that dump in Tab 4 to give the tester the exact hash.",
+            "16-bit byte order: depending on the reader, a dump may hold the two bytes of every 16-bit word in the opposite order to this database image. Tab 2 (Inspector) and Tab 3 (Compare) detect a byte-swapped image automatically and report it as a match."
+          ],
+          "notes": []
+        },
+        {
+          "id": "a1200_ks30_lo",
+          "name": "Kickstart 3.0 (39.106) - LO (bits 15-0)",
+          "label": "A1200 3.0 LO",
+          "description": "Kickstart 3.0 (39.106), low-word chip. Amiga 1200.",
+          "part_numbers": [
+            "391524-01"
+          ],
+          "socket": "U6B",
+          "size": 262144,
+          "pins": 40,
+          "chip_type": "256KB (2Mbit) 16-bit mask ROM",
+          "backbit": [
+            {
+              "setting": "27400",
+              "pins": 40,
+              "chip": "Original 40-pin 16-bit 256KB (2Mbit) mask ROM - reads as 512KB with the image twice"
+            }
+          ],
+          "sha1": "3341108d3a402882b5ef9d3b242cbf3c8ab1a3e9",
+          "crc32": "d55c6ec6",
+          "source": "MAME amiga/amiga.cpp - 391524-01.u6b",
+          "replacement": "27C400 (40-pin, 16-bit) EPROM with the 256KB image burned twice (into both halves), or a 2Mbit 27C400-pinout part. Check the byte order your programmer expects.",
+          "warnings": [
+            "One of a 32-bit pair: the HI chip (data bits 31-16) and LO chip (bits 15-0) must both be fitted, from the same Kickstart version. Mixing versions, or swapping HI and LO, stops the machine booting.",
+            "256KB (2Mbit) chip: the BackBit 27400 setting reads 512KB, so the dump should hold this 256KB image twice (the chip has no top address line). Tab 2 recognises the doubled image. The tester's own sha.txt lookup sees the 512KB read, so it will not match this 256KB hash: read a known-good chip once and add that dump in Tab 4 to give the tester the exact hash.",
+            "16-bit byte order: depending on the reader, a dump may hold the two bytes of every 16-bit word in the opposite order to this database image. Tab 2 (Inspector) and Tab 3 (Compare) detect a byte-swapped image automatically and report it as a match."
+          ],
+          "notes": []
+        },
+        {
+          "id": "a1200_ks31_hi",
+          "name": "Kickstart 3.1 (40.68) - HI (bits 31-16)",
+          "label": "A1200 3.1 HI",
+          "description": "Kickstart 3.1 (40.68), high-word chip. Amiga 1200.",
+          "part_numbers": [
+            "391773-01"
+          ],
+          "socket": "U6A",
+          "size": 262144,
+          "pins": 40,
+          "chip_type": "256KB (2Mbit) 16-bit mask ROM",
+          "backbit": [
+            {
+              "setting": "27400",
+              "pins": 40,
+              "chip": "Original 40-pin 16-bit 256KB (2Mbit) mask ROM - reads as 512KB with the image twice"
+            }
+          ],
+          "sha1": "b8800f5f909298109ea69690b1b8523fa22ddb37",
+          "crc32": "08dbf275",
+          "source": "MAME amiga/amiga.cpp - 391773-01.u6a",
+          "replacement": "27C400 (40-pin, 16-bit) EPROM with the 256KB image burned twice (into both halves), or a 2Mbit 27C400-pinout part. Check the byte order your programmer expects.",
+          "warnings": [
+            "One of a 32-bit pair: the HI chip (data bits 31-16) and LO chip (bits 15-0) must both be fitted, from the same Kickstart version. Mixing versions, or swapping HI and LO, stops the machine booting.",
+            "256KB (2Mbit) chip: the BackBit 27400 setting reads 512KB, so the dump should hold this 256KB image twice (the chip has no top address line). Tab 2 recognises the doubled image. The tester's own sha.txt lookup sees the 512KB read, so it will not match this 256KB hash: read a known-good chip once and add that dump in Tab 4 to give the tester the exact hash.",
+            "16-bit byte order: depending on the reader, a dump may hold the two bytes of every 16-bit word in the opposite order to this database image. Tab 2 (Inspector) and Tab 3 (Compare) detect a byte-swapped image automatically and report it as a match."
+          ],
+          "notes": []
+        },
+        {
+          "id": "a1200_ks31_lo",
+          "name": "Kickstart 3.1 (40.68) - LO (bits 15-0)",
+          "label": "A1200 3.1 LO",
+          "description": "Kickstart 3.1 (40.68), low-word chip. Amiga 1200.",
+          "part_numbers": [
+            "391774-01"
+          ],
+          "socket": "U6B",
+          "size": 262144,
+          "pins": 40,
+          "chip_type": "256KB (2Mbit) 16-bit mask ROM",
+          "backbit": [
+            {
+              "setting": "27400",
+              "pins": 40,
+              "chip": "Original 40-pin 16-bit 256KB (2Mbit) mask ROM - reads as 512KB with the image twice"
+            }
+          ],
+          "sha1": "90e331be1970b0e53f53a9b0390b51b59b3869c2",
+          "crc32": "16c07bf8",
+          "source": "MAME amiga/amiga.cpp - 391774-01.u6b",
+          "replacement": "27C400 (40-pin, 16-bit) EPROM with the 256KB image burned twice (into both halves), or a 2Mbit 27C400-pinout part. Check the byte order your programmer expects.",
+          "warnings": [
+            "One of a 32-bit pair: the HI chip (data bits 31-16) and LO chip (bits 15-0) must both be fitted, from the same Kickstart version. Mixing versions, or swapping HI and LO, stops the machine booting.",
+            "256KB (2Mbit) chip: the BackBit 27400 setting reads 512KB, so the dump should hold this 256KB image twice (the chip has no top address line). Tab 2 recognises the doubled image. The tester's own sha.txt lookup sees the 512KB read, so it will not match this 256KB hash: read a known-good chip once and add that dump in Tab 4 to give the tester the exact hash.",
+            "16-bit byte order: depending on the reader, a dump may hold the two bytes of every 16-bit word in the opposite order to this database image. Tab 2 (Inspector) and Tab 3 (Compare) detect a byte-swapped image automatically and report it as a match."
+          ],
+          "notes": []
+        },
+        {
+          "id": "a1200_logica_hi",
+          "name": "Logica Diagnostic 2.0 - HI (bits 31-16)",
+          "label": "Logica2 HI",
+          "description": "Logica Diagnostic 2.0, high-word chip. 32-bit diagnostic ROM pair (A1200 / A3000 / A4000).",
+          "part_numbers": [],
+          "socket": "U6A",
+          "size": 262144,
+          "pins": 40,
+          "chip_type": "256KB (2Mbit) 16-bit mask ROM",
+          "backbit": [
+            {
+              "setting": "27400",
+              "pins": 40,
+              "chip": "Original 40-pin 16-bit 256KB (2Mbit) mask ROM - reads as 512KB with the image twice"
+            }
+          ],
+          "sha1": "891d3b7892843517d800d24593168b1d8f1646ca",
+          "crc32": "566bc3f9",
+          "source": "MAME amiga/amiga.cpp - logica2.u6a",
+          "replacement": "27C400 (40-pin, 16-bit) EPROM with the 256KB image burned twice (into both halves), or a 2Mbit 27C400-pinout part. Check the byte order your programmer expects.",
+          "warnings": [
+            "One of a 32-bit pair: the HI chip (data bits 31-16) and LO chip (bits 15-0) must both be fitted, from the same Kickstart version. Mixing versions, or swapping HI and LO, stops the machine booting.",
+            "256KB (2Mbit) chip: the BackBit 27400 setting reads 512KB, so the dump should hold this 256KB image twice (the chip has no top address line). Tab 2 recognises the doubled image. The tester's own sha.txt lookup sees the 512KB read, so it will not match this 256KB hash: read a known-good chip once and add that dump in Tab 4 to give the tester the exact hash.",
+            "16-bit byte order: depending on the reader, a dump may hold the two bytes of every 16-bit word in the opposite order to this database image. Tab 2 (Inspector) and Tab 3 (Compare) detect a byte-swapped image automatically and report it as a match."
+          ],
+          "notes": [
+            "Logica Diagnostic 2.0 is a diagnostic ROM fitted in place of Kickstart to test RAM, custom chips and ports - useful on the bench, not a factory ROM."
+          ]
+        },
+        {
+          "id": "a1200_logica_lo",
+          "name": "Logica Diagnostic 2.0 - LO (bits 15-0)",
+          "label": "Logica2 LO",
+          "description": "Logica Diagnostic 2.0, low-word chip. 32-bit diagnostic ROM pair (A1200 / A3000 / A4000).",
+          "part_numbers": [],
+          "socket": "U6B",
+          "size": 262144,
+          "pins": 40,
+          "chip_type": "256KB (2Mbit) 16-bit mask ROM",
+          "backbit": [
+            {
+              "setting": "27400",
+              "pins": 40,
+              "chip": "Original 40-pin 16-bit 256KB (2Mbit) mask ROM - reads as 512KB with the image twice"
+            }
+          ],
+          "sha1": "da8a4f9ae1aa84f5e2a5dcc5c9d7e4378a9698b7",
+          "crc32": "aac94759",
+          "source": "MAME amiga/amiga.cpp - logica2.u6b",
+          "replacement": "27C400 (40-pin, 16-bit) EPROM with the 256KB image burned twice (into both halves), or a 2Mbit 27C400-pinout part. Check the byte order your programmer expects.",
+          "warnings": [
+            "One of a 32-bit pair: the HI chip (data bits 31-16) and LO chip (bits 15-0) must both be fitted, from the same Kickstart version. Mixing versions, or swapping HI and LO, stops the machine booting.",
+            "256KB (2Mbit) chip: the BackBit 27400 setting reads 512KB, so the dump should hold this 256KB image twice (the chip has no top address line). Tab 2 recognises the doubled image. The tester's own sha.txt lookup sees the 512KB read, so it will not match this 256KB hash: read a known-good chip once and add that dump in Tab 4 to give the tester the exact hash.",
+            "16-bit byte order: depending on the reader, a dump may hold the two bytes of every 16-bit word in the opposite order to this database image. Tab 2 (Inspector) and Tab 3 (Compare) detect a byte-swapped image automatically and report it as a match."
+          ],
+          "notes": [
+            "Logica Diagnostic 2.0 is a diagnostic ROM fitted in place of Kickstart to test RAM, custom chips and ports - useful on the bench, not a factory ROM."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "amiga4000",
+      "name": "Commodore Amiga 4000",
+      "manufacturer": "Commodore",
+      "year": 1992,
+      "short": "A4000",
+      "roms": [
+        {
+          "id": "a4000_ks30_hi",
+          "name": "Kickstart 3.0 (39.106) - HI (bits 31-16)",
+          "label": "A4000 3.0 HI",
+          "description": "Kickstart 3.0 (39.106), high-word chip. Amiga 4000.",
+          "part_numbers": [
+            "391513-02"
+          ],
+          "socket": "U175",
+          "size": 262144,
+          "pins": 40,
+          "chip_type": "256KB (2Mbit) 16-bit mask ROM",
+          "backbit": [
+            {
+              "setting": "27400",
+              "pins": 40,
+              "chip": "Original 40-pin 16-bit 256KB (2Mbit) mask ROM - reads as 512KB with the image twice"
+            }
+          ],
+          "sha1": "196e9f3f9cad934e181c07da33083b1f0a3c702f",
+          "crc32": "36f64dd0",
+          "source": "MAME amiga/amiga.cpp - 391513-02.u175",
+          "replacement": "27C400 (40-pin, 16-bit) EPROM with the 256KB image burned twice (into both halves), or a 2Mbit 27C400-pinout part. Check the byte order your programmer expects.",
+          "warnings": [
+            "One of a 32-bit pair: the HI chip (data bits 31-16) and LO chip (bits 15-0) must both be fitted, from the same Kickstart version. Mixing versions, or swapping HI and LO, stops the machine booting.",
+            "256KB (2Mbit) chip: the BackBit 27400 setting reads 512KB, so the dump should hold this 256KB image twice (the chip has no top address line). Tab 2 recognises the doubled image. The tester's own sha.txt lookup sees the 512KB read, so it will not match this 256KB hash: read a known-good chip once and add that dump in Tab 4 to give the tester the exact hash.",
+            "16-bit byte order: depending on the reader, a dump may hold the two bytes of every 16-bit word in the opposite order to this database image. Tab 2 (Inspector) and Tab 3 (Compare) detect a byte-swapped image automatically and report it as a match."
+          ],
+          "notes": []
+        },
+        {
+          "id": "a4000_ks30_lo",
+          "name": "Kickstart 3.0 (39.106) - LO (bits 15-0)",
+          "label": "A4000 3.0 LO",
+          "description": "Kickstart 3.0 (39.106), low-word chip. Amiga 4000.",
+          "part_numbers": [
+            "391514-02"
+          ],
+          "socket": "U176",
+          "size": 262144,
+          "pins": 40,
+          "chip_type": "256KB (2Mbit) 16-bit mask ROM",
+          "backbit": [
+            {
+              "setting": "27400",
+              "pins": 40,
+              "chip": "Original 40-pin 16-bit 256KB (2Mbit) mask ROM - reads as 512KB with the image twice"
+            }
+          ],
+          "sha1": "42fbed3453d1f11ccbde89a9826f2d1175cca5cc",
+          "crc32": "17266a55",
+          "source": "MAME amiga/amiga.cpp - 391514-02.u176",
+          "replacement": "27C400 (40-pin, 16-bit) EPROM with the 256KB image burned twice (into both halves), or a 2Mbit 27C400-pinout part. Check the byte order your programmer expects.",
+          "warnings": [
+            "One of a 32-bit pair: the HI chip (data bits 31-16) and LO chip (bits 15-0) must both be fitted, from the same Kickstart version. Mixing versions, or swapping HI and LO, stops the machine booting.",
+            "256KB (2Mbit) chip: the BackBit 27400 setting reads 512KB, so the dump should hold this 256KB image twice (the chip has no top address line). Tab 2 recognises the doubled image. The tester's own sha.txt lookup sees the 512KB read, so it will not match this 256KB hash: read a known-good chip once and add that dump in Tab 4 to give the tester the exact hash.",
+            "16-bit byte order: depending on the reader, a dump may hold the two bytes of every 16-bit word in the opposite order to this database image. Tab 2 (Inspector) and Tab 3 (Compare) detect a byte-swapped image automatically and report it as a match."
+          ],
+          "notes": []
+        },
+        {
+          "id": "a4000_ks31_68_hi",
+          "name": "Kickstart 3.1 (40.68) - HI (bits 31-16)",
+          "label": "A4000 3.1-68 HI",
+          "description": "Kickstart 3.1 (40.68), high-word chip. Amiga 4000.",
+          "part_numbers": [],
+          "socket": "U175",
+          "size": 262144,
+          "pins": 40,
+          "chip_type": "256KB (2Mbit) 16-bit mask ROM",
+          "backbit": [
+            {
+              "setting": "27400",
+              "pins": 40,
+              "chip": "Original 40-pin 16-bit 256KB (2Mbit) mask ROM - reads as 512KB with the image twice"
+            }
+          ],
+          "sha1": "24e52b5efc02049517387ab7b1a1475fc540350e",
+          "crc32": "b2af34f8",
+          "source": "MAME amiga/amiga.cpp - kick40068.u175",
+          "replacement": "27C400 (40-pin, 16-bit) EPROM with the 256KB image burned twice (into both halves), or a 2Mbit 27C400-pinout part. Check the byte order your programmer expects.",
+          "warnings": [
+            "One of a 32-bit pair: the HI chip (data bits 31-16) and LO chip (bits 15-0) must both be fitted, from the same Kickstart version. Mixing versions, or swapping HI and LO, stops the machine booting.",
+            "256KB (2Mbit) chip: the BackBit 27400 setting reads 512KB, so the dump should hold this 256KB image twice (the chip has no top address line). Tab 2 recognises the doubled image. The tester's own sha.txt lookup sees the 512KB read, so it will not match this 256KB hash: read a known-good chip once and add that dump in Tab 4 to give the tester the exact hash.",
+            "16-bit byte order: depending on the reader, a dump may hold the two bytes of every 16-bit word in the opposite order to this database image. Tab 2 (Inspector) and Tab 3 (Compare) detect a byte-swapped image automatically and report it as a match."
+          ],
+          "notes": []
+        },
+        {
+          "id": "a4000_ks31_68_lo",
+          "name": "Kickstart 3.1 (40.68) - LO (bits 15-0)",
+          "label": "A4000 3.1-68 LO",
+          "description": "Kickstart 3.1 (40.68), low-word chip. Amiga 4000.",
+          "part_numbers": [],
+          "socket": "U176",
+          "size": 262144,
+          "pins": 40,
+          "chip_type": "256KB (2Mbit) 16-bit mask ROM",
+          "backbit": [
+            {
+              "setting": "27400",
+              "pins": 40,
+              "chip": "Original 40-pin 16-bit 256KB (2Mbit) mask ROM - reads as 512KB with the image twice"
+            }
+          ],
+          "sha1": "313c7cbda5779e56f19a41d34e760f517626d882",
+          "crc32": "e65636a3",
+          "source": "MAME amiga/amiga.cpp - kick40068.u176",
+          "replacement": "27C400 (40-pin, 16-bit) EPROM with the 256KB image burned twice (into both halves), or a 2Mbit 27C400-pinout part. Check the byte order your programmer expects.",
+          "warnings": [
+            "One of a 32-bit pair: the HI chip (data bits 31-16) and LO chip (bits 15-0) must both be fitted, from the same Kickstart version. Mixing versions, or swapping HI and LO, stops the machine booting.",
+            "256KB (2Mbit) chip: the BackBit 27400 setting reads 512KB, so the dump should hold this 256KB image twice (the chip has no top address line). Tab 2 recognises the doubled image. The tester's own sha.txt lookup sees the 512KB read, so it will not match this 256KB hash: read a known-good chip once and add that dump in Tab 4 to give the tester the exact hash.",
+            "16-bit byte order: depending on the reader, a dump may hold the two bytes of every 16-bit word in the opposite order to this database image. Tab 2 (Inspector) and Tab 3 (Compare) detect a byte-swapped image automatically and report it as a match."
+          ],
+          "notes": []
+        },
+        {
+          "id": "a4000_ks31_70_hi",
+          "name": "Kickstart 3.1 (40.70) - HI (bits 31-16)",
+          "label": "A4000 3.1-70 HI",
+          "description": "Kickstart 3.1 (40.70), high-word chip. Amiga 4000.",
+          "part_numbers": [],
+          "socket": "U175",
+          "size": 262144,
+          "pins": 40,
+          "chip_type": "256KB (2Mbit) 16-bit mask ROM",
+          "backbit": [
+            {
+              "setting": "27400",
+              "pins": 40,
+              "chip": "Original 40-pin 16-bit 256KB (2Mbit) mask ROM - reads as 512KB with the image twice"
+            }
+          ],
+          "sha1": "138d8cb43b8312fe16d69070de607469b3d4078e",
+          "crc32": "f9cbecc9",
+          "source": "MAME amiga/amiga.cpp - kick40070.u175",
+          "replacement": "27C400 (40-pin, 16-bit) EPROM with the 256KB image burned twice (into both halves), or a 2Mbit 27C400-pinout part. Check the byte order your programmer expects.",
+          "warnings": [
+            "One of a 32-bit pair: the HI chip (data bits 31-16) and LO chip (bits 15-0) must both be fitted, from the same Kickstart version. Mixing versions, or swapping HI and LO, stops the machine booting.",
+            "256KB (2Mbit) chip: the BackBit 27400 setting reads 512KB, so the dump should hold this 256KB image twice (the chip has no top address line). Tab 2 recognises the doubled image. The tester's own sha.txt lookup sees the 512KB read, so it will not match this 256KB hash: read a known-good chip once and add that dump in Tab 4 to give the tester the exact hash.",
+            "16-bit byte order: depending on the reader, a dump may hold the two bytes of every 16-bit word in the opposite order to this database image. Tab 2 (Inspector) and Tab 3 (Compare) detect a byte-swapped image automatically and report it as a match."
+          ],
+          "notes": []
+        },
+        {
+          "id": "a4000_ks31_70_lo",
+          "name": "Kickstart 3.1 (40.70) - LO (bits 15-0)",
+          "label": "A4000 3.1-70 LO",
+          "description": "Kickstart 3.1 (40.70), low-word chip. Amiga 4000.",
+          "part_numbers": [],
+          "socket": "U176",
+          "size": 262144,
+          "pins": 40,
+          "chip_type": "256KB (2Mbit) 16-bit mask ROM",
+          "backbit": [
+            {
+              "setting": "27400",
+              "pins": 40,
+              "chip": "Original 40-pin 16-bit 256KB (2Mbit) mask ROM - reads as 512KB with the image twice"
+            }
+          ],
+          "sha1": "c23795479fae3910c185512ca268b82f1ae4fe05",
+          "crc32": "f8248355",
+          "source": "MAME amiga/amiga.cpp - kick40070.u176",
+          "replacement": "27C400 (40-pin, 16-bit) EPROM with the 256KB image burned twice (into both halves), or a 2Mbit 27C400-pinout part. Check the byte order your programmer expects.",
+          "warnings": [
+            "One of a 32-bit pair: the HI chip (data bits 31-16) and LO chip (bits 15-0) must both be fitted, from the same Kickstart version. Mixing versions, or swapping HI and LO, stops the machine booting.",
+            "256KB (2Mbit) chip: the BackBit 27400 setting reads 512KB, so the dump should hold this 256KB image twice (the chip has no top address line). Tab 2 recognises the doubled image. The tester's own sha.txt lookup sees the 512KB read, so it will not match this 256KB hash: read a known-good chip once and add that dump in Tab 4 to give the tester the exact hash.",
+            "16-bit byte order: depending on the reader, a dump may hold the two bytes of every 16-bit word in the opposite order to this database image. Tab 2 (Inspector) and Tab 3 (Compare) detect a byte-swapped image automatically and report it as a match."
+          ],
+          "notes": []
+        },
+        {
+          "id": "a4000_ks32_hi",
+          "name": "Kickstart 3.2 (47.96) - HI (bits 31-16)",
+          "label": "A4000 3.2 HI",
+          "description": "Kickstart 3.2 (47.96), high-word chip. Amiga 4000.",
+          "part_numbers": [
+            "Hyperion Kickstart 3.2"
+          ],
+          "socket": "U175",
+          "size": 262144,
+          "pins": 40,
+          "chip_type": "256KB (2Mbit) 16-bit mask ROM",
+          "backbit": [
+            {
+              "setting": "27400",
+              "pins": 40,
+              "chip": "Original 40-pin 16-bit 256KB (2Mbit) mask ROM - reads as 512KB with the image twice"
+            }
+          ],
+          "sha1": "5fe056ae79adc23e7e65de7f3e5aad71df72be59",
+          "crc32": "6cd65b71",
+          "source": "MAME amiga/amiga.cpp - kick47096-hi.u175",
+          "replacement": "27C400 (40-pin, 16-bit) EPROM with the 256KB image burned twice (into both halves), or a 2Mbit 27C400-pinout part. Check the byte order your programmer expects.",
+          "warnings": [
+            "One of a 32-bit pair: the HI chip (data bits 31-16) and LO chip (bits 15-0) must both be fitted, from the same Kickstart version. Mixing versions, or swapping HI and LO, stops the machine booting.",
+            "256KB (2Mbit) chip: the BackBit 27400 setting reads 512KB, so the dump should hold this 256KB image twice (the chip has no top address line). Tab 2 recognises the doubled image. The tester's own sha.txt lookup sees the 512KB read, so it will not match this 256KB hash: read a known-good chip once and add that dump in Tab 4 to give the tester the exact hash.",
+            "16-bit byte order: depending on the reader, a dump may hold the two bytes of every 16-bit word in the opposite order to this database image. Tab 2 (Inspector) and Tab 3 (Compare) detect a byte-swapped image automatically and report it as a match."
+          ],
+          "notes": [
+            "Kickstart 3.2.x is a 2021+ release by Hyperion Entertainment, sold as replacement ROM chips."
+          ]
+        },
+        {
+          "id": "a4000_ks32_lo",
+          "name": "Kickstart 3.2 (47.96) - LO (bits 15-0)",
+          "label": "A4000 3.2 LO",
+          "description": "Kickstart 3.2 (47.96), low-word chip. Amiga 4000.",
+          "part_numbers": [
+            "Hyperion Kickstart 3.2"
+          ],
+          "socket": "U176",
+          "size": 262144,
+          "pins": 40,
+          "chip_type": "256KB (2Mbit) 16-bit mask ROM",
+          "backbit": [
+            {
+              "setting": "27400",
+              "pins": 40,
+              "chip": "Original 40-pin 16-bit 256KB (2Mbit) mask ROM - reads as 512KB with the image twice"
+            }
+          ],
+          "sha1": "8c27ae8bdc9db1dbe49e300e11fea0df0082eac6",
+          "crc32": "ee66f9d8",
+          "source": "MAME amiga/amiga.cpp - kick47096-lo.u176",
+          "replacement": "27C400 (40-pin, 16-bit) EPROM with the 256KB image burned twice (into both halves), or a 2Mbit 27C400-pinout part. Check the byte order your programmer expects.",
+          "warnings": [
+            "One of a 32-bit pair: the HI chip (data bits 31-16) and LO chip (bits 15-0) must both be fitted, from the same Kickstart version. Mixing versions, or swapping HI and LO, stops the machine booting.",
+            "256KB (2Mbit) chip: the BackBit 27400 setting reads 512KB, so the dump should hold this 256KB image twice (the chip has no top address line). Tab 2 recognises the doubled image. The tester's own sha.txt lookup sees the 512KB read, so it will not match this 256KB hash: read a known-good chip once and add that dump in Tab 4 to give the tester the exact hash.",
+            "16-bit byte order: depending on the reader, a dump may hold the two bytes of every 16-bit word in the opposite order to this database image. Tab 2 (Inspector) and Tab 3 (Compare) detect a byte-swapped image automatically and report it as a match."
+          ],
+          "notes": [
+            "Kickstart 3.2.x is a 2021+ release by Hyperion Entertainment, sold as replacement ROM chips."
+          ]
+        },
+        {
+          "id": "a4000_ks321_hi",
+          "name": "Kickstart 3.2.1 (47.102) - HI (bits 31-16)",
+          "label": "A4000 3.2.1 HI",
+          "description": "Kickstart 3.2.1 (47.102), high-word chip. Amiga 4000.",
+          "part_numbers": [
+            "Hyperion Kickstart 3.2.1"
+          ],
+          "socket": "U175",
+          "size": 262144,
+          "pins": 40,
+          "chip_type": "256KB (2Mbit) 16-bit mask ROM",
+          "backbit": [
+            {
+              "setting": "27400",
+              "pins": 40,
+              "chip": "Original 40-pin 16-bit 256KB (2Mbit) mask ROM - reads as 512KB with the image twice"
+            }
+          ],
+          "sha1": "48b97a8c9854d8a0254e4bcd4a96cc35def4e3a7",
+          "crc32": "4ab11d9e",
+          "source": "MAME amiga/amiga.cpp - kick47102-hi.u175",
+          "replacement": "27C400 (40-pin, 16-bit) EPROM with the 256KB image burned twice (into both halves), or a 2Mbit 27C400-pinout part. Check the byte order your programmer expects.",
+          "warnings": [
+            "One of a 32-bit pair: the HI chip (data bits 31-16) and LO chip (bits 15-0) must both be fitted, from the same Kickstart version. Mixing versions, or swapping HI and LO, stops the machine booting.",
+            "256KB (2Mbit) chip: the BackBit 27400 setting reads 512KB, so the dump should hold this 256KB image twice (the chip has no top address line). Tab 2 recognises the doubled image. The tester's own sha.txt lookup sees the 512KB read, so it will not match this 256KB hash: read a known-good chip once and add that dump in Tab 4 to give the tester the exact hash.",
+            "16-bit byte order: depending on the reader, a dump may hold the two bytes of every 16-bit word in the opposite order to this database image. Tab 2 (Inspector) and Tab 3 (Compare) detect a byte-swapped image automatically and report it as a match."
+          ],
+          "notes": [
+            "Kickstart 3.2.x is a 2021+ release by Hyperion Entertainment, sold as replacement ROM chips."
+          ]
+        },
+        {
+          "id": "a4000_ks321_lo",
+          "name": "Kickstart 3.2.1 (47.102) - LO (bits 15-0)",
+          "label": "A4000 3.2.1 LO",
+          "description": "Kickstart 3.2.1 (47.102), low-word chip. Amiga 4000.",
+          "part_numbers": [
+            "Hyperion Kickstart 3.2.1"
+          ],
+          "socket": "U176",
+          "size": 262144,
+          "pins": 40,
+          "chip_type": "256KB (2Mbit) 16-bit mask ROM",
+          "backbit": [
+            {
+              "setting": "27400",
+              "pins": 40,
+              "chip": "Original 40-pin 16-bit 256KB (2Mbit) mask ROM - reads as 512KB with the image twice"
+            }
+          ],
+          "sha1": "8546b9baadbdc391e2fb52d9b0f2cbb85f780a4c",
+          "crc32": "2c2239af",
+          "source": "MAME amiga/amiga.cpp - kick47102-lo.u176",
+          "replacement": "27C400 (40-pin, 16-bit) EPROM with the 256KB image burned twice (into both halves), or a 2Mbit 27C400-pinout part. Check the byte order your programmer expects.",
+          "warnings": [
+            "One of a 32-bit pair: the HI chip (data bits 31-16) and LO chip (bits 15-0) must both be fitted, from the same Kickstart version. Mixing versions, or swapping HI and LO, stops the machine booting.",
+            "256KB (2Mbit) chip: the BackBit 27400 setting reads 512KB, so the dump should hold this 256KB image twice (the chip has no top address line). Tab 2 recognises the doubled image. The tester's own sha.txt lookup sees the 512KB read, so it will not match this 256KB hash: read a known-good chip once and add that dump in Tab 4 to give the tester the exact hash.",
+            "16-bit byte order: depending on the reader, a dump may hold the two bytes of every 16-bit word in the opposite order to this database image. Tab 2 (Inspector) and Tab 3 (Compare) detect a byte-swapped image automatically and report it as a match."
+          ],
+          "notes": [
+            "Kickstart 3.2.x is a 2021+ release by Hyperion Entertainment, sold as replacement ROM chips."
+          ]
+        },
+        {
+          "id": "a4000_ks322_hi",
+          "name": "Kickstart 3.2.2 (47.111) - HI (bits 31-16)",
+          "label": "A4000 3.2.2 HI",
+          "description": "Kickstart 3.2.2 (47.111), high-word chip. Amiga 4000.",
+          "part_numbers": [
+            "Hyperion Kickstart 3.2.2"
+          ],
+          "socket": "U175",
+          "size": 262144,
+          "pins": 40,
+          "chip_type": "256KB (2Mbit) 16-bit mask ROM",
+          "backbit": [
+            {
+              "setting": "27400",
+              "pins": 40,
+              "chip": "Original 40-pin 16-bit 256KB (2Mbit) mask ROM - reads as 512KB with the image twice"
+            }
+          ],
+          "sha1": "d9e1badba7b50ae0a8d21383da96dbba6892cfe1",
+          "crc32": "4d435230",
+          "source": "MAME amiga/amiga.cpp - kick47111-hi.u175",
+          "replacement": "27C400 (40-pin, 16-bit) EPROM with the 256KB image burned twice (into both halves), or a 2Mbit 27C400-pinout part. Check the byte order your programmer expects.",
+          "warnings": [
+            "One of a 32-bit pair: the HI chip (data bits 31-16) and LO chip (bits 15-0) must both be fitted, from the same Kickstart version. Mixing versions, or swapping HI and LO, stops the machine booting.",
+            "256KB (2Mbit) chip: the BackBit 27400 setting reads 512KB, so the dump should hold this 256KB image twice (the chip has no top address line). Tab 2 recognises the doubled image. The tester's own sha.txt lookup sees the 512KB read, so it will not match this 256KB hash: read a known-good chip once and add that dump in Tab 4 to give the tester the exact hash.",
+            "16-bit byte order: depending on the reader, a dump may hold the two bytes of every 16-bit word in the opposite order to this database image. Tab 2 (Inspector) and Tab 3 (Compare) detect a byte-swapped image automatically and report it as a match."
+          ],
+          "notes": [
+            "Kickstart 3.2.x is a 2021+ release by Hyperion Entertainment, sold as replacement ROM chips."
+          ]
+        },
+        {
+          "id": "a4000_ks322_lo",
+          "name": "Kickstart 3.2.2 (47.111) - LO (bits 15-0)",
+          "label": "A4000 3.2.2 LO",
+          "description": "Kickstart 3.2.2 (47.111), low-word chip. Amiga 4000.",
+          "part_numbers": [
+            "Hyperion Kickstart 3.2.2"
+          ],
+          "socket": "U176",
+          "size": 262144,
+          "pins": 40,
+          "chip_type": "256KB (2Mbit) 16-bit mask ROM",
+          "backbit": [
+            {
+              "setting": "27400",
+              "pins": 40,
+              "chip": "Original 40-pin 16-bit 256KB (2Mbit) mask ROM - reads as 512KB with the image twice"
+            }
+          ],
+          "sha1": "92107dd42ba3b90a41b28a0e58c51d9d2fb04a61",
+          "crc32": "f9597112",
+          "source": "MAME amiga/amiga.cpp - kick47111-lo.u176",
+          "replacement": "27C400 (40-pin, 16-bit) EPROM with the 256KB image burned twice (into both halves), or a 2Mbit 27C400-pinout part. Check the byte order your programmer expects.",
+          "warnings": [
+            "One of a 32-bit pair: the HI chip (data bits 31-16) and LO chip (bits 15-0) must both be fitted, from the same Kickstart version. Mixing versions, or swapping HI and LO, stops the machine booting.",
+            "256KB (2Mbit) chip: the BackBit 27400 setting reads 512KB, so the dump should hold this 256KB image twice (the chip has no top address line). Tab 2 recognises the doubled image. The tester's own sha.txt lookup sees the 512KB read, so it will not match this 256KB hash: read a known-good chip once and add that dump in Tab 4 to give the tester the exact hash.",
+            "16-bit byte order: depending on the reader, a dump may hold the two bytes of every 16-bit word in the opposite order to this database image. Tab 2 (Inspector) and Tab 3 (Compare) detect a byte-swapped image automatically and report it as a match."
+          ],
+          "notes": [
+            "Kickstart 3.2.x is a 2021+ release by Hyperion Entertainment, sold as replacement ROM chips."
+          ]
+        },
+        {
+          "id": "a4000_logica_hi",
+          "name": "Logica Diagnostic 2.0 - HI (bits 31-16)",
+          "label": "Logica2 HI",
+          "description": "Logica Diagnostic 2.0, high-word chip. 32-bit diagnostic ROM pair (A1200 / A3000 / A4000).",
+          "part_numbers": [],
+          "socket": "U175",
+          "size": 262144,
+          "pins": 40,
+          "chip_type": "256KB (2Mbit) 16-bit mask ROM",
+          "backbit": [
+            {
+              "setting": "27400",
+              "pins": 40,
+              "chip": "Original 40-pin 16-bit 256KB (2Mbit) mask ROM - reads as 512KB with the image twice"
+            }
+          ],
+          "sha1": "891d3b7892843517d800d24593168b1d8f1646ca",
+          "crc32": "566bc3f9",
+          "source": "MAME amiga/amiga.cpp - logica2.u6a",
+          "replacement": "27C400 (40-pin, 16-bit) EPROM with the 256KB image burned twice (into both halves), or a 2Mbit 27C400-pinout part. Check the byte order your programmer expects.",
+          "warnings": [
+            "One of a 32-bit pair: the HI chip (data bits 31-16) and LO chip (bits 15-0) must both be fitted, from the same Kickstart version. Mixing versions, or swapping HI and LO, stops the machine booting.",
+            "256KB (2Mbit) chip: the BackBit 27400 setting reads 512KB, so the dump should hold this 256KB image twice (the chip has no top address line). Tab 2 recognises the doubled image. The tester's own sha.txt lookup sees the 512KB read, so it will not match this 256KB hash: read a known-good chip once and add that dump in Tab 4 to give the tester the exact hash.",
+            "16-bit byte order: depending on the reader, a dump may hold the two bytes of every 16-bit word in the opposite order to this database image. Tab 2 (Inspector) and Tab 3 (Compare) detect a byte-swapped image automatically and report it as a match."
+          ],
+          "notes": [
+            "Logica Diagnostic 2.0 is a diagnostic ROM fitted in place of Kickstart to test RAM, custom chips and ports - useful on the bench, not a factory ROM."
+          ]
+        },
+        {
+          "id": "a4000_logica_lo",
+          "name": "Logica Diagnostic 2.0 - LO (bits 15-0)",
+          "label": "Logica2 LO",
+          "description": "Logica Diagnostic 2.0, low-word chip. 32-bit diagnostic ROM pair (A1200 / A3000 / A4000).",
+          "part_numbers": [],
+          "socket": "U176",
+          "size": 262144,
+          "pins": 40,
+          "chip_type": "256KB (2Mbit) 16-bit mask ROM",
+          "backbit": [
+            {
+              "setting": "27400",
+              "pins": 40,
+              "chip": "Original 40-pin 16-bit 256KB (2Mbit) mask ROM - reads as 512KB with the image twice"
+            }
+          ],
+          "sha1": "da8a4f9ae1aa84f5e2a5dcc5c9d7e4378a9698b7",
+          "crc32": "aac94759",
+          "source": "MAME amiga/amiga.cpp - logica2.u6b",
+          "replacement": "27C400 (40-pin, 16-bit) EPROM with the 256KB image burned twice (into both halves), or a 2Mbit 27C400-pinout part. Check the byte order your programmer expects.",
+          "warnings": [
+            "One of a 32-bit pair: the HI chip (data bits 31-16) and LO chip (bits 15-0) must both be fitted, from the same Kickstart version. Mixing versions, or swapping HI and LO, stops the machine booting.",
+            "256KB (2Mbit) chip: the BackBit 27400 setting reads 512KB, so the dump should hold this 256KB image twice (the chip has no top address line). Tab 2 recognises the doubled image. The tester's own sha.txt lookup sees the 512KB read, so it will not match this 256KB hash: read a known-good chip once and add that dump in Tab 4 to give the tester the exact hash.",
+            "16-bit byte order: depending on the reader, a dump may hold the two bytes of every 16-bit word in the opposite order to this database image. Tab 2 (Inspector) and Tab 3 (Compare) detect a byte-swapped image automatically and report it as a match."
+          ],
+          "notes": [
+            "Logica Diagnostic 2.0 is a diagnostic ROM fitted in place of Kickstart to test RAM, custom chips and ports - useful on the bench, not a factory ROM."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "amiga4000t",
+      "name": "Commodore Amiga 4000T",
+      "manufacturer": "Commodore",
+      "year": 1994,
+      "short": "A4000T",
+      "roms": [
+        {
+          "id": "a4000t_ks31_hi",
+          "name": "Kickstart 3.1 (40.70) - HI (bits 31-16)",
+          "label": "A4000T 3.1 HI",
+          "description": "Kickstart 3.1 (40.70), high-word chip. Amiga 4000T.",
+          "part_numbers": [
+            "391657-01"
+          ],
+          "socket": "U175",
+          "size": 262144,
+          "pins": 40,
+          "chip_type": "256KB (2Mbit) 16-bit mask ROM",
+          "backbit": [
+            {
+              "setting": "27400",
+              "pins": 40,
+              "chip": "Original 40-pin 16-bit 256KB (2Mbit) mask ROM - reads as 512KB with the image twice"
+            }
+          ],
+          "sha1": "b3806edacb3362fc16a154ce1eeec5bf5bc24789",
+          "crc32": "0ca94f70",
+          "source": "MAME amiga/amiga.cpp - 391657-01.u175",
+          "replacement": "27C400 (40-pin, 16-bit) EPROM with the 256KB image burned twice (into both halves), or a 2Mbit 27C400-pinout part. Check the byte order your programmer expects.",
+          "warnings": [
+            "One of a 32-bit pair: the HI chip (data bits 31-16) and LO chip (bits 15-0) must both be fitted, from the same Kickstart version. Mixing versions, or swapping HI and LO, stops the machine booting.",
+            "256KB (2Mbit) chip: the BackBit 27400 setting reads 512KB, so the dump should hold this 256KB image twice (the chip has no top address line). Tab 2 recognises the doubled image. The tester's own sha.txt lookup sees the 512KB read, so it will not match this 256KB hash: read a known-good chip once and add that dump in Tab 4 to give the tester the exact hash.",
+            "16-bit byte order: depending on the reader, a dump may hold the two bytes of every 16-bit word in the opposite order to this database image. Tab 2 (Inspector) and Tab 3 (Compare) detect a byte-swapped image automatically and report it as a match."
+          ],
+          "notes": []
+        },
+        {
+          "id": "a4000t_ks31_lo",
+          "name": "Kickstart 3.1 (40.70) - LO (bits 15-0)",
+          "label": "A4000T 3.1 LO",
+          "description": "Kickstart 3.1 (40.70), low-word chip. Amiga 4000T.",
+          "part_numbers": [
+            "391658-01"
+          ],
+          "socket": "U176",
+          "size": 262144,
+          "pins": 40,
+          "chip_type": "256KB (2Mbit) 16-bit mask ROM",
+          "backbit": [
+            {
+              "setting": "27400",
+              "pins": 40,
+              "chip": "Original 40-pin 16-bit 256KB (2Mbit) mask ROM - reads as 512KB with the image twice"
+            }
+          ],
+          "sha1": "cd7a706c431b04d87814d3a2d8b397100cf44c0c",
+          "crc32": "dfe03120",
+          "source": "MAME amiga/amiga.cpp - 391658-01.u176",
+          "replacement": "27C400 (40-pin, 16-bit) EPROM with the 256KB image burned twice (into both halves), or a 2Mbit 27C400-pinout part. Check the byte order your programmer expects.",
+          "warnings": [
+            "One of a 32-bit pair: the HI chip (data bits 31-16) and LO chip (bits 15-0) must both be fitted, from the same Kickstart version. Mixing versions, or swapping HI and LO, stops the machine booting.",
+            "256KB (2Mbit) chip: the BackBit 27400 setting reads 512KB, so the dump should hold this 256KB image twice (the chip has no top address line). Tab 2 recognises the doubled image. The tester's own sha.txt lookup sees the 512KB read, so it will not match this 256KB hash: read a known-good chip once and add that dump in Tab 4 to give the tester the exact hash.",
+            "16-bit byte order: depending on the reader, a dump may hold the two bytes of every 16-bit word in the opposite order to this database image. Tab 2 (Inspector) and Tab 3 (Compare) detect a byte-swapped image automatically and report it as a match."
+          ],
+          "notes": []
+        },
+        {
+          "id": "a4000t_logica_hi",
+          "name": "Logica Diagnostic 2.0 - HI (bits 31-16)",
+          "label": "Logica2 HI",
+          "description": "Logica Diagnostic 2.0, high-word chip. 32-bit diagnostic ROM pair (A1200 / A3000 / A4000).",
+          "part_numbers": [],
+          "socket": "U175",
+          "size": 262144,
+          "pins": 40,
+          "chip_type": "256KB (2Mbit) 16-bit mask ROM",
+          "backbit": [
+            {
+              "setting": "27400",
+              "pins": 40,
+              "chip": "Original 40-pin 16-bit 256KB (2Mbit) mask ROM - reads as 512KB with the image twice"
+            }
+          ],
+          "sha1": "891d3b7892843517d800d24593168b1d8f1646ca",
+          "crc32": "566bc3f9",
+          "source": "MAME amiga/amiga.cpp - logica2.u6a",
+          "replacement": "27C400 (40-pin, 16-bit) EPROM with the 256KB image burned twice (into both halves), or a 2Mbit 27C400-pinout part. Check the byte order your programmer expects.",
+          "warnings": [
+            "One of a 32-bit pair: the HI chip (data bits 31-16) and LO chip (bits 15-0) must both be fitted, from the same Kickstart version. Mixing versions, or swapping HI and LO, stops the machine booting.",
+            "256KB (2Mbit) chip: the BackBit 27400 setting reads 512KB, so the dump should hold this 256KB image twice (the chip has no top address line). Tab 2 recognises the doubled image. The tester's own sha.txt lookup sees the 512KB read, so it will not match this 256KB hash: read a known-good chip once and add that dump in Tab 4 to give the tester the exact hash.",
+            "16-bit byte order: depending on the reader, a dump may hold the two bytes of every 16-bit word in the opposite order to this database image. Tab 2 (Inspector) and Tab 3 (Compare) detect a byte-swapped image automatically and report it as a match."
+          ],
+          "notes": [
+            "Logica Diagnostic 2.0 is a diagnostic ROM fitted in place of Kickstart to test RAM, custom chips and ports - useful on the bench, not a factory ROM."
+          ]
+        },
+        {
+          "id": "a4000t_logica_lo",
+          "name": "Logica Diagnostic 2.0 - LO (bits 15-0)",
+          "label": "Logica2 LO",
+          "description": "Logica Diagnostic 2.0, low-word chip. 32-bit diagnostic ROM pair (A1200 / A3000 / A4000).",
+          "part_numbers": [],
+          "socket": "U176",
+          "size": 262144,
+          "pins": 40,
+          "chip_type": "256KB (2Mbit) 16-bit mask ROM",
+          "backbit": [
+            {
+              "setting": "27400",
+              "pins": 40,
+              "chip": "Original 40-pin 16-bit 256KB (2Mbit) mask ROM - reads as 512KB with the image twice"
+            }
+          ],
+          "sha1": "da8a4f9ae1aa84f5e2a5dcc5c9d7e4378a9698b7",
+          "crc32": "aac94759",
+          "source": "MAME amiga/amiga.cpp - logica2.u6b",
+          "replacement": "27C400 (40-pin, 16-bit) EPROM with the 256KB image burned twice (into both halves), or a 2Mbit 27C400-pinout part. Check the byte order your programmer expects.",
+          "warnings": [
+            "One of a 32-bit pair: the HI chip (data bits 31-16) and LO chip (bits 15-0) must both be fitted, from the same Kickstart version. Mixing versions, or swapping HI and LO, stops the machine booting.",
+            "256KB (2Mbit) chip: the BackBit 27400 setting reads 512KB, so the dump should hold this 256KB image twice (the chip has no top address line). Tab 2 recognises the doubled image. The tester's own sha.txt lookup sees the 512KB read, so it will not match this 256KB hash: read a known-good chip once and add that dump in Tab 4 to give the tester the exact hash.",
+            "16-bit byte order: depending on the reader, a dump may hold the two bytes of every 16-bit word in the opposite order to this database image. Tab 2 (Inspector) and Tab 3 (Compare) detect a byte-swapped image automatically and report it as a match."
+          ],
+          "notes": [
+            "Logica Diagnostic 2.0 is a diagnostic ROM fitted in place of Kickstart to test RAM, custom chips and ports - useful on the bench, not a factory ROM."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cdtv",
+      "name": "Commodore CDTV",
+      "manufacturer": "Commodore",
+      "year": 1991,
+      "short": "CDTV",
+      "roms": [
+        {
+          "id": "cdtv_ks13",
+          "name": "Kickstart 1.3 (34.5)",
+          "label": "KS1.3 34.5",
+          "description": "Kickstart 1.3 - the same ROM as the A500 / A2000.",
+          "part_numbers": [
+            "315093-02"
+          ],
+          "socket": "U13",
+          "size": 262144,
+          "pins": 40,
+          "chip_type": "256KB (2Mbit) 16-bit mask ROM",
+          "backbit": [
+            {
+              "setting": "27400",
+              "pins": 40,
+              "chip": "Original 40-pin 16-bit 256KB (2Mbit) mask ROM - reads as 512KB with the image twice"
+            }
+          ],
+          "sha1": "891e9a547772fe0c6c19b610baf8bc4ea7fcb785",
+          "crc32": "c4f0f55f",
+          "source": "MAME amiga/amiga.cpp - 315093-02.u13",
+          "replacement": "27C400 (40-pin, 16-bit) EPROM with the 256KB image burned twice (into both halves), or a 2Mbit 27C400-pinout part. Check the byte order your programmer expects.",
+          "warnings": [
+            "256KB (2Mbit) chip: the BackBit 27400 setting reads 512KB, so the dump should hold this 256KB image twice (the chip has no top address line). Tab 2 recognises the doubled image. The tester's own sha.txt lookup sees the 512KB read, so it will not match this 256KB hash: read a known-good chip once and add that dump in Tab 4 to give the tester the exact hash.",
+            "16-bit byte order: depending on the reader, a dump may hold the two bytes of every 16-bit word in the opposite order to this database image. Tab 2 (Inspector) and Tab 3 (Compare) detect a byte-swapped image automatically and report it as a match."
+          ],
+          "notes": [
+            "The CDTV extended ROMs (391008-01 at U34, 391009-01 at U35) are not listed yet: their chip package and BackBit setting are unconfirmed."
+          ]
         }
       ]
     }

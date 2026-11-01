@@ -276,7 +276,10 @@ class InspectorTab(QWidget):
 
         section("Whole-file match", r.whole_matches)
         section("CRC32-only match (SHA-1 differs!)", r.crc_only_matches)
-        if r.repeat and r.repeat.matches:
+        if r.swapped and r.swapped.matches:
+            extra = (f" — {r.swapped.unit_size // 1024}KB unit ×{r.swapped.count}" if r.swapped.unit_size else "")
+            section(f"Byte-swapped 16-bit match{extra}", r.swapped.matches)
+        elif r.repeat and r.repeat.matches:
             section(f"Repeated {r.repeat.unit_size // 1024}KB unit ×{r.repeat.count}", r.repeat.matches)
         elif not r.whole_matches:
             seen: set[str] = set()
@@ -303,6 +306,8 @@ class InspectorTab(QWidget):
 
         if r.whole_matches:
             self.bank_note.setText("Whole file matched — bank splitting not needed.")
+        elif r.swapped:
+            self.bank_note.setText("Matched after a 16-bit byte swap — bank splitting not needed.")
         elif r.health.is_blank:
             self.bank_note.setText("Image is blank — nothing to split.")
         elif not r.slices_by_size:

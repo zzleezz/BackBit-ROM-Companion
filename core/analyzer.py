@@ -27,9 +27,17 @@ CHIP_HINTS = {
     32 * KB: "27256 EPROM / 23256 mask ROM (28-pin)",
     64 * KB: "27512 EPROM (28-pin)",
     128 * KB: "27C010 EPROM (32-pin)",
-    256 * KB: "27C020 EPROM (32-pin)",
-    512 * KB: "27C040 EPROM (32-pin)",
+    256 * KB: "27C020 EPROM (32-pin, 8-bit) or a 2Mbit 40-pin 16-bit ROM (Amiga Kickstart 1.x, or one half of "
+              "an A1200 / A3000 / A4000 pair)",
+    512 * KB: "27C040 EPROM (32-pin, 8-bit) or 27C400 (40-pin, 16-bit - Amiga Kickstart 2.x / 3.x)",
 }
+
+
+def swap16(data: bytes) -> bytes:
+    """Swap the two bytes of every 16-bit word (b0 b1 b2 b3 -> b1 b0 b3 b2). Odd lengths keep the last byte."""
+    out = bytearray(data)
+    out[0:len(data) - 1:2], out[1:len(data):2] = data[1:len(data):2], data[0:len(data) - 1:2]
+    return bytes(out)
 
 
 @dataclass(frozen=True)
@@ -206,6 +214,15 @@ class RepeatInfo:
 
 
 @dataclass
+class SwapInfo:
+    """Match found only after swapping the bytes of every 16-bit word."""
+    hashes: HashSet                 # of the byte-swapped image
+    matches: list[Match]            # whole swapped image, or its repeat unit when ``unit_size`` is set
+    unit_size: int | None = None
+    count: int = 1
+
+
+@dataclass
 class AnalysisResult:
     path: str | None
     size: int
@@ -217,11 +234,12 @@ class AnalysisResult:
     slices_by_size: dict[int, list[BankSlice]]
     health: HealthReport
     summary: list[Finding]
+    swapped: SwapInfo | None = None
 
     @property
     def identified(self) -> bool:
         return bool(self.whole_matches or (self.repeat and self.repeat.matches)
-                    or any(s.matches for s in self.layout))
+                    or any(s.matches for s in self.layout) or (self.swapped and self.swapped.matches))
 
 
 def find_repeat_unit(data: bytes, min_unit: int = 1 * KB) -> int | None:
@@ -259,10 +277,26 @@ def analyze_bytes(data: bytes, db: RomDatabase, path: str | None = None) -> Anal
 
     health = check_health(data, repeat.unit_size if repeat else None)
 
+    # 16-bit ROMs (e.g. Amiga Kickstarts) are saved high-byte-first by some readers and low-byte-first by
+    # others, so try the byte-swapped image when the dump does not match as-is.
+    swapped = None
+    if not whole and not (repeat and repeat.matches) and size >= 2 * KB and size % 2 == 0 and not \
+            (data.count(data[0]) == size):
+        sdata = swap16(data)
+        sh = compute_hashes(sdata)
+        sm = db.lookup_sha1(sh.sha1)
+        if sm:
+            swapped = SwapInfo(sh, sm)
+        elif repeat is not None and repeat.unit_size % 2 == 0:
+            uh = compute_hashes(sdata[:repeat.unit_size])
+            um = db.lookup_sha1(uh.sha1)
+            if um:
+                swapped = SwapInfo(uh, um, repeat.unit_size, repeat.count)
+
     # Bank slicing (only when the whole file is not already identified)
     slices_by_size: dict[int, list[BankSlice]] = {}
     layout: list[BankSlice] = []
-    if not whole and not health.is_blank and size >= 8 * KB:
+    if not whole and not swapped and not health.is_blank and size >= 8 * KB:
         for bs in BANK_SIZES:
             if bs < size and size % bs == 0:
                 slices = [_slice(data, off, bs, db) for off in range(0, size, bs)]
@@ -284,7 +318,16 @@ def analyze_bytes(data: bytes, db: RomDatabase, path: str | None = None) -> Anal
             summary.append(Finding("warn", f"CRC32 matches {m.label} but SHA-1 does not - treat as a probable "
                                            "bad dump or a CRC collision; re-read the chip."))
 
-    if repeat and not health.is_blank:
+    if swapped:
+        label = swapped.matches[0].label
+        what = (f"the {swapped.unit_size // KB}KB image repeated {swapped.count}x"
+                if swapped.unit_size else "the whole image")
+        summary.append(Finding("ok", f"BYTE-SWAPPED MATCH: {label}. With the two bytes of every 16-bit word "
+                                     f"swapped, {what} matches the database. This is normal for 16-bit ROMs: "
+                                     "readers and programmers differ in which byte they save first. The chip "
+                                     "is good; only the file's byte order differs."))
+
+    if repeat and not health.is_blank and not (swapped and not repeat.matches):
         label = repeat.matches[0].label if repeat.matches else None
         unit_txt = f"{repeat.unit_size // KB}KB" if repeat.unit_size >= KB else f"{repeat.unit_size} bytes"
         if repeat.count == 2:
@@ -313,7 +356,8 @@ def analyze_bytes(data: bytes, db: RomDatabase, path: str | None = None) -> Anal
                 else:
                     summary.append(Finding("warn", f"  {s.range_text}  ({s.size // KB}KB): unidentified"))
 
-    if not whole and not crc_only and not identified_banks and not (repeat and repeat.matches) and not health.is_blank:
+    if not whole and not crc_only and not identified_banks and not (repeat and repeat.matches) and not swapped \
+            and not health.is_blank:
         hint = CHIP_HINTS.get(size)
         msg = "No database match for the whole image or any 4/8/16/32KB bank."
         if hint:
@@ -329,7 +373,8 @@ def analyze_bytes(data: bytes, db: RomDatabase, path: str | None = None) -> Anal
         summary.append(Finding("warn", f"Odd file size ({size:,} bytes) - not a whole number of KB. "
                                        "The dump may be truncated or include a header."))
 
-    return AnalysisResult(path, size, hashes, whole, crc_only, repeat, layout, slices_by_size, health, summary)
+    return AnalysisResult(path, size, hashes, whole, crc_only, repeat, layout, slices_by_size, health, summary,
+                          swapped)
 
 
 def _build_layout(slices_by_size: dict[int, list[BankSlice]], size: int) -> list[BankSlice]:
@@ -411,8 +456,8 @@ def _size_text(n: int) -> str:
     return f"{n // KB}KB" if n >= KB and n % KB == 0 else f"{n:,} bytes"
 
 
-def compare_images(a: bytes, b: bytes) -> CompareResult:
-    """Compare a dump (A) with a reference (B), normalising doubled / padded images first."""
+def compare_images(a: bytes, b: bytes, _try_swap: bool = True) -> CompareResult:
+    """Compare a dump (A) with a reference (B), normalising doubled / padded / byte-swapped images first."""
     la, lb = len(a), len(b)
     if la == 0 or lb == 0:
         return CompareResult(la, lb, "empty", "Load two non-empty files to compare.", a, b)
@@ -420,6 +465,23 @@ def compare_images(a: bytes, b: bytes) -> CompareResult:
         r = CompareResult(la, lb, "identical", f"100% Bit-for-Bit Identical ({la:,} bytes)", a, b, compared_size=la)
         r.diagnoses.append(Diagnosis("ok", "Identical", "Every byte matches. The dump is a perfect copy of the reference."))
         return r
+
+    # 16-bit ROMs: the same chip saved with the opposite byte order is a content match, not a fault
+    if _try_swap and la % 2 == 0 and la >= 2 and a.count(a[0]) != la:
+        sa = swap16(a)
+        rs = compare_images(sa, b, _try_swap=False)
+        if rs.verdict in ("identical", "content_match"):
+            tail = "" if rs.verdict == "identical" else f" - {rs.banner}"
+            r = CompareResult(la, lb, "content_match",
+                              f"Byte-Swapped Content Match: File A is File B with the bytes of every 16-bit word "
+                              f"swapped{tail}", rs.view_a, rs.view_b, compared_size=rs.compared_size)
+            r.diagnoses.append(Diagnosis(
+                "info", "Byte-swapped 16-bit image",
+                "After swapping the two bytes of every 16-bit word, File A matches File B. Typical of a 16-bit ROM "
+                "(e.g. an Amiga Kickstart) read or saved with the opposite byte order - the chip itself is fine. "
+                "The hex view shows File A byte-swapped."))
+            r.diagnoses.extend(d for d in rs.diagnoses if d.title != "Identical")
+            return r
 
     if la != lb:
         a_big = la > lb

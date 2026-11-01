@@ -87,6 +87,11 @@ class TestGui(unittest.TestCase):
             while scroll is not None and not hasattr(scroll, "viewport"):
                 scroll = scroll.parentWidget()
             self.assertLessEqual(self.win.lookup.badge.width(), scroll.viewport().width(), name)
+        self.win.show_rom_in_lookup("a1200_ks31_hi")                # Amiga: 40-pin 16-bit Kickstart
+        self.assertEqual(self.win.lookup.badge.text(), "Menu: ROM -> 40-Pin -> 27400")
+        self.assertEqual(self.win.lookup.zif.describe()[-1], "Leave EMPTY: ZIF pins 21–28 (bottom 4 rows)")
+        self.assertTrue(self.win.lookup.warn_box.isVisibleTo(self.win.lookup))
+        self.shot("tab1_amiga1200_hi")
         self.win.show_rom_in_lookup("c64_kernal_r3")                # 2364 has a native setting: no alert
         self.assertFalse(self.win.lookup.option_warn.isVisibleTo(self.win.lookup))
         self.win.show_rom_in_lookup("d64_1")
@@ -205,7 +210,7 @@ class TestGui(unittest.TestCase):
         self.assertFalse(self.win.windowIcon().isNull())
         self.assertFalse(appmain.app_icon().isNull())
         dlg = AboutDialog(self.db, appmain.APP_NAME, appmain.APP_VERSION, self.win)
-        self.assertEqual(appmain.APP_VERSION, "1.0.1")
+        self.assertEqual(appmain.APP_VERSION, "1.0.2")
         text = " ".join(lbl.text() for lbl in dlg.value_labels.values())
         self.assertIn(str(len(self.db.machines)), dlg.value_labels["Machines"].text())
         self.assertIn(str(self.db.user_db_path.parent), text)

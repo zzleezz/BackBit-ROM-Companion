@@ -32,13 +32,14 @@ Other features:
 
 ## Supported machines (built-in database)
 
-39 machines, 172 ROM entries. Hashes are transcribed from MAME driver sources. Combined images are verified from
+48 machines, 224 ROM entries. Hashes are transcribed from MAME driver sources. Combined images are verified from
 their MAME bank hashes.
 
 | Manufacturer | Machines |
 |---|---|
 | Sinclair / Amstrad | ZX80, ZX81, ZX Spectrum 48K, 128K (Toastrack), +2 (grey), +2A / +2B / +3, QL |
 | Commodore | C64 / 64C (incl. 251913-01), 1541 (long board), VIC-20, C16 / Plus/4, C128, PET 2001 (BASIC 1), 2001-N / 3000 (BASIC 2), 4016 / 4032 (BASIC 4), 8032 |
+| Commodore Amiga | A1000 (bootstrap), A500 / A2000 (KS 1.2, 1.3, 2.04, 3.1, 3.2 / 3.2.1 / 3.2.2), A500 Plus, A600 (2.04, 2.05 ×3, 3.1), A3000, A1200, A4000, A4000T (HI / LO pairs), CDTV (KS 1.3), Logica Diagnostic 2.0 |
 | Amstrad | CPC 464, CPC 664, CPC 6128, 464 Plus / 6128 Plus |
 | Atari | 400 / 800, 800XL, 65XE / 130XE |
 | Acorn | BBC Micro Model B, BBC Master 128, Electron, Atom, Archimedes A300 / A400 / A3000 |
@@ -48,6 +49,11 @@ their MAME bank hashes.
 
 Entries carry warnings where a dump or a socket is uncertain, for example MAME `BAD_DUMP` flags on the Atari 400/800
 OS and the QL MG ROMs, and MAME's "needs verification" note on the Apple II Integer BASIC 341-0001…0003.
+
+**Amiga Kickstart ROMs** are 40-pin 16-bit chips read with `40-Pin -> 27400` (512K). A 256KB chip (KS 1.x and every
+A1200 / A3000 / A4000 HI or LO chip) reads as 512KB with the image twice. 16-bit dumps can also be saved with the two
+bytes of each word in either order, so Tab 2 and Tab 3 recognise **byte-swapped** images as well as doubled ones.
+Not included yet: CD32 (1MB, not a 40-pin part) and the CDTV extended ROMs (package unconfirmed).
 
 ---
 

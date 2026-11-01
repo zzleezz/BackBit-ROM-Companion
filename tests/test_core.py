@@ -267,6 +267,60 @@ class TestInspector(TempDbMixin, unittest.TestCase):
         self.assertEqual([b.bit for b in r.health.stuck_bits], [4])
 
 
+class TestByteSwap(TempDbMixin, unittest.TestCase):
+    """16-bit ROMs (Amiga Kickstart) dumped with the opposite byte order are still identified / compared."""
+
+    def setUp(self):
+        super().setUp()
+        self.k512 = rnd(512 * 1024, 21)
+        self.k256 = rnd(256 * 1024, 22)
+        for name, d in (("KS 512", self.k512), ("KS 256", self.k256)):
+            self.db.upsert_rom("Synthetic Amiga", "", {"name": name, "size": len(d), "pins": 40,
+                                                       "backbit": [{"setting": "27400", "pins": 40, "chip": ""}],
+                                                       "sha1": sha(d)}, write_master=False)
+
+    def test_swap16(self):
+        from core.analyzer import swap16
+        self.assertEqual(swap16(b"\x01\x02\x03\x04"), b"\x02\x01\x04\x03")
+        self.assertEqual(swap16(swap16(self.k256)), self.k256)
+
+    def test_inspector_identifies_swapped_and_doubled(self):
+        from core.analyzer import swap16
+        r = analyze_bytes(self.k512, self.db)                       # same byte order: plain exact match
+        self.assertTrue(r.whole_matches)
+        self.assertIsNone(r.swapped)
+        r = analyze_bytes(swap16(self.k512), self.db)               # opposite byte order
+        self.assertFalse(r.whole_matches)
+        self.assertTrue(r.identified)
+        self.assertEqual(r.swapped.matches[0].rom.name, "KS 512")
+        self.assertIsNone(r.swapped.unit_size)
+        self.assertTrue(any("BYTE-SWAPPED MATCH" in f.text for f in r.summary))
+        self.assertFalse(any("No database match" in f.text for f in r.summary))
+        r = analyze_bytes(self.k256 * 2, self.db)                   # 256KB chip read with the 512K setting
+        self.assertEqual(r.repeat.matches[0].rom.name, "KS 256")
+        self.assertIsNone(r.swapped)
+        r = analyze_bytes(swap16(self.k256) * 2, self.db)           # ... and with the other byte order
+        self.assertEqual((r.swapped.unit_size, r.swapped.count), (256 * 1024, 2))
+        self.assertEqual(r.swapped.matches[0].rom.name, "KS 256")
+        r = analyze_bytes(rnd(512 * 1024, 99), self.db)             # unrelated data is still unidentified
+        self.assertFalse(r.identified)
+        self.assertIsNone(r.swapped)
+        self.assertIsNone(analyze_bytes(b"\xff" * 4096, self.db).swapped)
+
+    def test_compare_swapped(self):
+        from core.analyzer import swap16
+        r = compare_images(swap16(self.k512), self.k512)
+        self.assertEqual(r.verdict, "content_match")
+        self.assertIn("Byte-Swapped", r.banner)
+        self.assertEqual(r.view_a, r.view_b)
+        r = compare_images(swap16(self.k256) * 2, self.k256)         # swapped AND doubled
+        self.assertEqual(r.verdict, "content_match")
+        self.assertIn("doubled", r.banner)
+        bad = bytearray(swap16(self.k512))
+        bad[100] ^= 0x08
+        self.assertEqual(compare_images(bytes(bad), self.k512).verdict, "different")   # real faults still reported
+
+
 class TestZifPlacement(unittest.TestCase):
     """48-pin ZIF, chips TOP-justified: chip pin 1 = ZIF pin 1, bottom rows empty."""
 
@@ -337,6 +391,38 @@ class TestZifPlacement(unittest.TestCase):
         self.assertEqual(err, "")
         self.assertEqual(out["backbit"][0]["setting"], "27128")
         self.assertIn("warning", out["backbit"][0])
+
+    def test_amiga_roms(self):
+        """Kickstart hashes from MAME amiga/amiga.cpp, read with the BackBit 40-pin 27400 (512K) setting."""
+        with tempfile.TemporaryDirectory() as tmp:
+            db = RomDatabase(DEFAULT_DB_PATH, Path(tmp) / "i.json")
+        expect = {   # id: (sha1, crc32, size)
+            "a500_ks13": ("891e9a547772fe0c6c19b610baf8bc4ea7fcb785", "c4f0f55f", 256 * 1024),
+            "a500_ks204": ("c5839f5cb98a7a8947065c3ed2f14f5f42e334a1", "c3bdb240", 512 * 1024),
+            "a600_ks205_350": ("02843c4253bbd29aba535b0aa3bd9a85034ecde4", "43b0df7b", 512 * 1024),
+            "a1200_ks31_hi": ("b8800f5f909298109ea69690b1b8523fa22ddb37", "08dbf275", 256 * 1024),
+            "a1200_ks31_lo": ("90e331be1970b0e53f53a9b0390b51b59b3869c2", "16c07bf8", 256 * 1024),
+            "a4000_ks31_70_hi": ("138d8cb43b8312fe16d69070de607469b3d4078e", "f9cbecc9", 256 * 1024),
+            "a1000_u5n": ("2155b4887f064c5e01e0a2ebb4a0cc2a3e88d9e8", "76bd46ec", 32 * 1024),
+        }
+        for rid, (sha1, crc, size) in expect.items():
+            r = db.rom_by_id(rid)
+            self.assertEqual((r.sha1, r.crc32, r.size), (sha1, crc, size), rid)
+        amiga = [r for r in db.all_roms() if r.machine_id.startswith("amiga") or r.machine_id == "cdtv"]
+        self.assertGreaterEqual(len(amiga), 50)
+        for r in amiga:
+            if r.pins == 40:
+                self.assertEqual(r.backbit[0].menu_text, "Menu: ROM -> 40-Pin -> 27400", r.id)
+                self.assertTrue(any("byte order" in w for w in r.warnings), r.id)
+                self.assertEqual(any(w.startswith("256KB (2Mbit) chip") for w in r.warnings),
+                                 r.size == 256 * 1024, r.id)
+        self.assertEqual(db.rom_by_id("a1200_ks31_hi").socket, "U6A")
+        self.assertEqual(db.rom_by_id("a4000_ks30_lo").socket, "U176")
+        self.assertEqual(zif.placement(40).describe()[-1], "Leave EMPTY: ZIF pins 21–28 (bottom 4 rows)")
+        # the same ROM in several machines resolves to every machine, under one sha.txt label
+        hits = db.lookup_sha1("c5839f5cb98a7a8947065c3ed2f14f5f42e334a1")
+        self.assertEqual({m.rom.machine_id for m in hits}, {"amiga500", "amiga500p", "amiga600"})
+        self.assertEqual({m.rom.label for m in hits}, {"KS2.04 37.175"})
 
     def test_menu_badge_pin_count_first(self):
         with tempfile.TemporaryDirectory() as tmp:
