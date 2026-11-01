@@ -4,12 +4,13 @@ from __future__ import annotations
 
 import html
 
-from PyQt6.QtCore import QPointF, QRectF, QSize, Qt, QTimer, pyqtSignal
+from PyQt6.QtCore import QEvent, QPointF, QRectF, QSize, Qt, QTimer, pyqtSignal
 from PyQt6.QtGui import QBrush, QColor, QFont, QFontDatabase, QFontMetricsF, QGuiApplication, QPainter, QPen
-from PyQt6.QtWidgets import (QFrame, QHBoxLayout, QLabel, QLineEdit, QPushButton, QSizePolicy, QVBoxLayout,
-                             QWidget)
+from PyQt6.QtWidgets import (QFrame, QHBoxLayout, QLabel, QLineEdit, QPushButton, QSizePolicy, QToolTip,
+                             QVBoxLayout, QWidget)
 
 from core import zif
+from core.pinout import ROLE_NAMES, SuspectPin
 
 # Palette tokens live in ui.theme; these dicts are updated in place when the theme changes.
 from ui import theme  # noqa: E402
@@ -170,17 +171,55 @@ class ZifSocketWidget(QWidget):
     COLUMN_INSET = 1.18
     LEVER_END_ROW = 9          # the real lever is short: its bottom end sits beside ZIF pin 9
 
-    def __init__(self, parent=None):
+    MAX_FOOTER_PINS = 3        # suspect pins listed under the socket; the rest are in the tooltip / list
+
+    def __init__(self, parent=None, compact: bool = False):
         super().__init__(parent)
         self._pins: int | None = None
         self._title = ""
         self._setting = ""
+        self._compact = compact
+        self._suspects: dict[int, SuspectPin] = {}     # ZIF pin -> suspect
+        self._holes: list[tuple[QPointF, float, int]] = []   # centre, radius, ZIF pin (for tooltips)
         self.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Expanding)
-        self.setMinimumSize(400, 600)
+        self.setMinimumSize(*((300, 470) if compact else (400, 600)))
+        self.setMouseTracking(True)
         theme.manager.changed.connect(self._on_theme)
 
     def sizeHint(self) -> QSize:
-        return QSize(470, 760)
+        return QSize(360, 560) if self._compact else QSize(470, 760)
+
+    def set_suspects(self, suspects: list[SuspectPin]) -> None:
+        """Highlight the pins a fault diagnosis points at (empty list clears)."""
+        self._suspects = {sp.zif_pin: sp for sp in suspects}
+        self.update()
+
+    def suspects(self) -> list[SuspectPin]:
+        return sorted(self._suspects.values(), key=lambda sp: sp.chip_pin)
+
+    def event(self, ev):
+        if ev.type() == QEvent.Type.ToolTip:
+            pos = QPointF(ev.pos())
+            for centre, radius, zp in self._holes:
+                if (pos - centre).manhattanLength() <= radius * 2.2:
+                    QToolTip.showText(ev.globalPos(), self._pin_tip(zp), self)
+                    return True
+            QToolTip.hideText()
+            ev.ignore()
+            return True
+        return super().event(ev)
+
+    def _pin_tip(self, zp: int) -> str:
+        side = "left" if zp <= self.ROWS else "right"
+        tip = f"ZIF pin {zp} ({side} side, row {zif.zif_row(zp)})"
+        if self._pins and zif.zif_row(zp) <= self._pins // 2:
+            chip_pin = zp if zp <= self.ROWS else self._pins - (self.ZIF_PINS - zp)
+            if 1 <= chip_pin <= self._pins:
+                tip += f"\nChip pin {chip_pin}"
+        sp = self._suspects.get(zp)
+        if sp:
+            tip += f"\nSUSPECT: {sp.pin_name} - {sp.reason}"
+        return tip
 
     def _on_theme(self, _name: str) -> None:
         self.update()
@@ -194,6 +233,13 @@ class ZifSocketWidget(QWidget):
     def describe(self) -> list[str]:
         if not self._pins:
             return ["No chip selected."]
+        if self._suspects:
+            sus = self.suspects()
+            lines = [f"⚠ {sp.pin_name if sp.signal in ROLE_NAMES else sp.signal}: chip pin {sp.chip_pin} "
+                     f"→ ZIF pin {sp.zif_pin}" for sp in sus[:self.MAX_FOOTER_PINS]]
+            if len(sus) > self.MAX_FOOTER_PINS:
+                lines.append(f"+ {len(sus) - self.MAX_FOOTER_PINS} more (hover a red pin)")
+            return lines
         return zif.placement(self._pins).describe()
 
     def paintEvent(self, event):
@@ -297,7 +343,10 @@ class ZifSocketWidget(QWidget):
         # holes + ZIF pin numbers
         hole_r = pitch * 0.24
         num_font = mono_font(max(6.0, pitch * 0.36))
+        bold_num = QFont(num_font)
+        bold_num.setBold(True)
         p.setFont(num_font)
+        self._holes = []
         for r in range(1, self.ROWS + 1):
             y = row_y(r)
             occupied = bool(chip) and r <= half
@@ -312,10 +361,23 @@ class ZifSocketWidget(QWidget):
                     p.setPen(QPen(QColor(COLORS["hole_edge"]), 1))
                     p.setBrush(QColor(COLORS["hole"]))
                 p.drawEllipse(QPointF(x, y), hole_r, hole_r)
+                self._holes.append((QPointF(x, y), hole_r, zp))
+                sus = self._suspects.get(zp) if occupied else None
+                if sus:
+                    p.setPen(QPen(QColor(LEVEL_COLORS.get(sus.level, COLORS["error"])), max(2.0, pitch * 0.12)))
+                    p.setBrush(Qt.BrushStyle.NoBrush)
+                    p.drawEllipse(QPointF(x, y), hole_r * 1.9, hole_r * 1.9)
                 key_pin = zp in (1, self.ROWS, self.ROWS + 1, self.ZIF_PINS) or \
                     bool(chip and zp in (half, self.ZIF_PINS + 1 - half))
-                p.setPen(QColor(COLORS["accent"] if occupied else (COLORS["text"] if key_pin else COLORS["muted"])))
+                if sus:
+                    p.setPen(QColor(LEVEL_COLORS.get(sus.level, COLORS["error"])))
+                    p.setFont(bold_num)
+                else:
+                    p.setPen(QColor(COLORS["accent"] if occupied else
+                                    (COLORS["text"] if key_pin else COLORS["muted"])))
                 p.drawText(QRectF(lab_x, y - pitch / 2, num_w, pitch), align, str(zp))
+                if sus:
+                    p.setFont(num_font)
 
         # chip body in the top rows
         if chip:
@@ -340,15 +402,27 @@ class ZifSocketWidget(QWidget):
             p.setPen(Qt.PenStyle.NoPen)
             p.setBrush(QColor(COLORS["pin_lit"]))
             p.drawEllipse(QPointF(body.left() + pitch * 0.42, body.top() + pitch * 0.42), pitch * 0.14, pitch * 0.14)
-            p.setFont(mono_font(max(6.0, pitch * 0.34)))
+            body_font = mono_font(max(6.0, pitch * 0.34))
+            sus_font = QFont(body_font)
+            sus_font.setBold(True)
             for i in range(half):
                 y = row_y(1 + i)
-                p.setPen(QColor(COLORS["pin_lit"] if i == 0 else COLORS["chip_text"]))
-                p.drawText(QRectF(body.left() + pitch * 0.62, y - pitch / 2, pitch * 1.2, pitch),
-                           Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter, str(i + 1))
-                p.setPen(QColor(COLORS["chip_text"]))
-                p.drawText(QRectF(body.right() - pitch * 1.82, y - pitch / 2, pitch * 1.2, pitch),
-                           Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter, str(chip - i))
+                for chip_pin, zp, rect, align in (
+                        (i + 1, i + 1, QRectF(body.left() + pitch * 0.62, y - pitch / 2, pitch * 1.6, pitch),
+                         Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter),
+                        (chip - i, self.ZIF_PINS - i, QRectF(body.right() - pitch * 2.22, y - pitch / 2,
+                                                             pitch * 1.6, pitch),
+                         Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)):
+                    sus = self._suspects.get(zp)
+                    if sus:
+                        p.setFont(sus_font)
+                        p.setPen(QColor(LEVEL_COLORS.get(sus.level, COLORS["error"])))
+                        label = sus.pin_name.split()[0] if sus.signal in ROLE_NAMES else sus.signal
+                    else:
+                        p.setFont(body_font)
+                        p.setPen(QColor(COLORS["pin_lit"] if chip_pin == 1 else COLORS["chip_text"]))
+                        label = str(chip_pin)
+                    p.drawText(rect, align, label)
             if half >= 4:
                 p.save()
                 p.translate(body.center())

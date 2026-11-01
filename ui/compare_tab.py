@@ -10,14 +10,16 @@ from pathlib import Path
 
 from PyQt6.QtCore import QAbstractTableModel, QModelIndex, Qt, pyqtSignal
 from PyQt6.QtGui import QColor
-from PyQt6.QtWidgets import (QAbstractItemView, QCheckBox, QFileDialog, QFrame, QGroupBox, QHBoxLayout, QHeaderView,
-                             QLabel, QMessageBox, QPushButton, QSplitter, QTableView, QTextBrowser, QVBoxLayout,
-                             QWidget)
+from PyQt6.QtWidgets import (QAbstractItemView, QCheckBox, QComboBox, QFileDialog, QFrame, QGroupBox, QHBoxLayout,
+                             QHeaderView, QLabel, QMessageBox, QPushButton, QSplitter, QTableView, QTabWidget,
+                             QTextBrowser, QVBoxLayout, QWidget)
 
 from core.analyzer import MAX_FILE_SIZE, CompareResult, check_health, compare_images
 from core.database import RomDatabase, format_size
+from core.pinout import PINOUTS, ROLE_NAMES, Pinout, SuspectPin, map_signals, pinout_for, setting_choices
 from ui import theme
-from ui.widgets import COLORS, MONO_CSS, DropZone, finding_html, mono_font, set_role, set_state
+from ui.widgets import (COLORS, MONO_CSS, DropZone, ZifSocketWidget, finding_html, mono_font, set_role,
+                        set_state)
 
 ROM_FILTER = "ROM images (*.bin *.rom *.BIN *.ROM *.img *.dump);;All files (*)"
 BYTES_PER_ROW = 16
@@ -234,6 +236,15 @@ class FilePanel(QGroupBox):
         self.refresh_info()
         self.loaded.emit()
 
+    def db_setting(self) -> tuple[str, str] | None:
+        """(BackBit setting, ROM label) of this file's database match, if it has one with a known setting."""
+        if self.data is None:
+            return None
+        for m in self.db.lookup_sha1(hashlib.sha1(self.data).hexdigest()):
+            if m.rom is not None and m.rom.backbit:
+                return m.rom.backbit[0].setting, m.label
+        return None
+
     def refresh_info(self) -> None:
         if self.data is None:
             self.info.setText(f"<span style='color:{COLORS['muted']}'>No file loaded.</span>")
@@ -271,11 +282,42 @@ class CompareTab(QWidget):
         self.banner.setMinimumHeight(46)
         set_role(self.banner, "banner", kind="empty")
 
+        # chip type: decides which physical pins a diagnosed fault points at
+        self.chip_combo = QComboBox()
+        self.chip_combo.addItem("Auto (from database match)", "")
+        for setting in setting_choices():
+            po = PINOUTS[setting]
+            self.chip_combo.addItem(f"{setting} ({po.pins}-pin{', 16-bit' if po.data_bits == 16 else ''})", setting)
+        self.chip_combo.setToolTip("The BackBit setting the dump was read with. Used to turn a faulty data or address "
+                                   "line into the chip pin and ZIF pin to check.")
+        self.chip_combo.currentIndexChanged.connect(lambda _i: self.run_compare())
+        self.chip_info = QLabel()
+        set_role(self.chip_info, "muted")
+        self.order_label = QLabel("16-bit dump byte order:")
+        self.order_combo = QComboBox()
+        self.order_combo.addItem("High byte first (D15–D8, then D7–D0)", False)
+        self.order_combo.addItem("Low byte first (D7–D0, then D15–D8)", True)
+        self.order_combo.setToolTip("Which half of each 16-bit word File A stores first. A dump that matches a "
+                                    "MAME reference without byte-swapping is high byte first.")
+        self.order_combo.currentIndexChanged.connect(lambda _i: self.run_compare())
+        chip_row = QHBoxLayout()
+        chip_row.addWidget(QLabel("Chip type:"))
+        chip_row.addWidget(self.chip_combo)
+        chip_row.addWidget(self.chip_info, 1)
+        chip_row.addWidget(self.order_label)
+        chip_row.addWidget(self.order_combo)
+        self.pinout: Pinout | None = None
+        self.suspects: list[SuspectPin] = []
+
         self.diag = QTextBrowser()
         self.diag.setMinimumWidth(320)
+        self.zif = ZifSocketWidget(compact=True)
+        self.left_tabs = QTabWidget()
+        self.left_tabs.addTab(self.diag, "Diagnosis")
+        self.left_tabs.addTab(self.zif, "Suspect pins")
         diag_box = QGroupBox("Automated hardware fault diagnosis")
         dl = QVBoxLayout(diag_box)
-        dl.addWidget(self.diag)
+        dl.addWidget(self.left_tabs)
 
         # hex viewer
         self.model = HexDiffModel(self)
@@ -327,10 +369,11 @@ class CompareTab(QWidget):
         splitter = QSplitter(Qt.Orientation.Horizontal)
         splitter.addWidget(diag_box)
         splitter.addWidget(hex_box)
-        splitter.setSizes([420, 1000])
+        splitter.setSizes([440, 1000])
 
         lay = QVBoxLayout(self)
         lay.addLayout(files)
+        lay.addLayout(chip_row)
         lay.addWidget(self.banner)
         lay.addWidget(splitter, 1)
         self.run_compare()
@@ -371,7 +414,66 @@ class CompareTab(QWidget):
         self.banner.setText(text)
         set_state(self.banner, kind=kind)
 
+    def _resolve_chip(self) -> None:
+        """Pick the pinout: the user's choice, else the BackBit setting of File B's (then File A's) database match."""
+        chosen = self.chip_combo.currentData()
+        if chosen:
+            self.pinout = pinout_for(chosen)
+            self.chip_info.setText("")
+        else:
+            hit = self.panel_b.db_setting() or self.panel_a.db_setting()
+            if hit is None:
+                self.pinout = None
+                self.chip_info.setText("No database match - choose the chip type to see which pins to check.")
+            else:
+                setting, label = hit
+                self.pinout = pinout_for(setting)
+                if self.pinout is None:
+                    self.chip_info.setText(f"{setting} (from {label}) - no pin table for this part.")
+                else:
+                    self.chip_info.setText(f"{self.pinout.setting}, {self.pinout.pins}-pin (from {label})")
+        wide = bool(self.pinout and self.pinout.data_bits == 16)
+        self.order_label.setVisible(wide)
+        self.order_combo.setVisible(wide)
+
+    def _set_suspects(self, entries: list[tuple[str, str, tuple[str, ...]]]) -> list[str]:
+        """Map diagnosed signals to pins, update the ZIF map; returns signals that could not be placed."""
+        self.suspects, missing = map_signals(entries, self.pinout)
+        if self.pinout:
+            self.zif.set_chip(self.pinout.pins, "", self.pinout.setting)
+        else:
+            self.zif.set_chip(None)
+        self.zif.set_suspects(self.suspects)
+        n = len(self.suspects)
+        self.left_tabs.setTabText(1, f"Suspect pins ({n})" if n else "Suspect pins")
+        return missing
+
+    def _pins_html(self, missing: list[str]) -> str:
+        """'Pins to check' summary for the top of the diagnosis."""
+        if not self.suspects and not missing:
+            return ""
+        err = COLORS["error"]
+        if not self.pinout:
+            sig = ", ".join(missing)
+            return (f"<div style='margin:6px 0; padding:6px; background:{COLORS['panel2']}; border-left:4px solid "
+                    f"{err}'><b style='color:{err}'>Pins to check</b><br>The diagnosis points at {html.escape(sig)}. "
+                    f"Choose the chip type above to see which chip and ZIF pins carry "
+                    f"{'it' if len(missing) == 1 else 'them'}.</div>")
+        rows = "".join(f"<li>{html.escape(sp.describe())}</li>" for sp in self.suspects)
+        extra = ""
+        if missing:
+            extra = (f"<br><span style='color:{COLORS['muted']}'>Not on the {self.pinout.setting} pin table: "
+                     f"{html.escape(', '.join(missing))}.</span>")
+        note = f"<br><span style='color:{COLORS['muted']}'>{html.escape(self.pinout.note)}</span>" \
+            if self.pinout.note else ""
+        return (f"<div style='margin:6px 0; padding:6px; background:{COLORS['panel2']}; border-left:4px solid "
+                f"{err}'><b style='color:{err}'>Pins to check ({self.pinout.setting}, {self.pinout.pins}-pin, chip "
+                f"top-justified in the ZIF)</b><ul style='margin:4px 0'>{rows}</ul>"
+                f"Clean these pins and the ZIF contacts, reseat the chip and read it again. If the same pins "
+                f"fail, the fault is in the chip.{extra}{note}</div>")
+
     def run_compare(self) -> None:
+        self._resolve_chip()
         a, b = self.panel_a.data, self.panel_b.data
         if a is None or b is None:
             self.result = None
@@ -379,6 +481,7 @@ class CompareTab(QWidget):
             self._set_banner("empty", "Load File A (dump) and File B (reference) to compare."
                              if a is None and b is None else "Load the second file to compare — "
                              "single-file database check shown below.")
+            self._set_suspects([])
             self.diag.setHtml(self._single_file_html(a if a is not None else b, "A" if a is not None else "B")
                               if (a is not None or b is not None) else
                               f"<p style='color:{COLORS['muted']}'>Drop a ripped dump into File A and a known-good "
@@ -386,7 +489,9 @@ class CompareTab(QWidget):
                               f"shorted data lines, stuck address lines and small patches.</p>")
             self._update_row_info()
             return
-        r = compare_images(a, b)
+        wide = bool(self.pinout and self.pinout.data_bits == 16)
+        r = compare_images(a, b, bus_width=16 if wide else 8,
+                           low_byte_first=bool(wide and self.order_combo.currentData()))
         self.result = r
         kind = r.verdict
         if kind == "different" and (r.diff_count < 16 or r.diff_percent < 1):
@@ -408,22 +513,41 @@ class CompareTab(QWidget):
         else:
             parts.append(finding_html("warn", "SHA-1 is not in the database or imported sha.txt files. Only hashes are "
                                               "stored, so a byte-level comparison needs a reference file in File B."))
-        for f in check_health(data).findings:
+        findings = check_health(data).findings
+        for f in findings:
             parts.append(finding_html(f.level, f.text))
+        if name == "A" and not matches:
+            # a lone dump: its stuck / bridged / mirrored lines still point at pins
+            # (the byte-level health checks don't map onto a 16-bit bus)
+            wide = bool(self.pinout and self.pinout.data_bits == 16)
+            missing = self._set_suspects([] if wide else
+                                         [(f.level, f.text, f.signals) for f in findings if f.signals])
+            parts.insert(1, self._pins_html(missing))
         return "".join(parts)
 
     def _result_html(self, r: CompareResult) -> str:
-        parts = []
+        missing = self._set_suspects([(dg.level, dg.title, dg.signals) for dg in r.diagnoses if dg.signals])
+        by_signal = {sp.signal: sp for sp in self.suspects}
+        parts = [self._pins_html(missing)]
         for dgn in r.diagnoses:
             color = {"ok": COLORS["ok"], "info": COLORS["info"], "warn": COLORS["warn"],
                      "error": COLORS["error"]}[dgn.level]
+            where = [by_signal[s_] for s_ in dgn.signals if s_ in by_signal]
+            pins = ""
+            if where:
+                pins = "<br><b>→ " + html.escape("; ".join(
+                    f"{sp.pin_name if sp.signal in ROLE_NAMES else sp.signal}"
+                    f" = chip pin {sp.chip_pin}, ZIF pin {sp.zif_pin}" for sp in where)) + "</b>"
             parts.append(f"<div style='margin:6px 0; padding:6px; background:{COLORS['panel2']};"
                          f" border-left:4px solid {color}'><b style='color:{color}'>{html.escape(dgn.title)}</b><br>"
-                         f"{html.escape(dgn.text)}</div>")
+                         f"{html.escape(dgn.text)}{pins}</div>")
         if r.verdict == "different" and r.diff_count:
+            if r.bus_width == 16:
+                parts.append(f"<p style='color:{COLORS['muted']}'>Diagnosed as a 16-bit ROM: data lines D0–D15, "
+                             f"address lines count 16-bit words.</p>")
             rows = "".join(f"<tr><td>D{k}</td><td align='right'>{r.bit_mismatch[k]:,}</td>"
-                           f"<td align='right'>{100 * r.bit_mismatch[k] / r.compared_size:.2f}%</td></tr>"
-                           for k in range(7, -1, -1))
+                           f"<td align='right'>{100 * r.bit_mismatch[k] * (2 if r.bus_width == 16 else 1) / r.compared_size:.2f}%</td></tr>"
+                           for k in range(len(r.bit_mismatch) - 1, -1, -1))
             parts.append(f"<h4>Mismatches per data bit</h4><table cellspacing='4'>"
                          f"<tr><th>Bit</th><th>Bytes</th><th>%</th></tr>{rows}</table>"
                          f"<p>Bits 0→1 in dump: {r.flips_0_to_1:,} &nbsp;•&nbsp; "

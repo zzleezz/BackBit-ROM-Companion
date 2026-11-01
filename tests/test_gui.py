@@ -147,10 +147,61 @@ class TestGui(unittest.TestCase):
         self.win.compare._jump(1)
         self.win.tabs.setCurrentWidget(self.win.compare)
         self.shot("tab3_stuck_bit")
+        # suspect pins: unknown reference -> asks for the chip type; choosing 2364 maps D3 to chip pin 13 / ZIF 37
+        cmp = self.win.compare
+        self.assertEqual(cmp.suspects, [])
+        self.assertIn("Choose the chip type", cmp.diag.toPlainText())
+        cmp.chip_combo.setCurrentIndex(cmp.chip_combo.findData("2364"))
+        self.assertEqual([(s.signal, s.chip_pin, s.zif_pin) for s in cmp.suspects], [("D3", 13, 37)])
+        self.assertEqual(cmp.left_tabs.tabText(1), "Suspect pins (1)")
+        self.assertIn("chip pin 13", cmp.diag.toPlainText())
+        self.assertEqual([s.zif_pin for s in cmp.zif.suspects()], [37])
+        self.assertFalse(cmp.order_combo.isVisibleTo(cmp))
+        cmp.left_tabs.setCurrentIndex(1)
+        self.shot("tab3_suspect_pins")
+        cmp.left_tabs.setCurrentIndex(0)
         a.write_bytes(ref * 2)
         self.win.compare.load_files(str(a))
         self.assertEqual(self.win.compare.result.verdict, "content_match")
+        self.assertEqual(cmp.suspects, [])
+        self.assertEqual(cmp.left_tabs.tabText(1), "Suspect pins")
+        cmp.chip_combo.setCurrentIndex(0)
         self.shot("tab3_doubled")
+
+    def test_compare_auto_chip_16bit(self):
+        """A faulty Amiga Kickstart against a reference whose hash is in the database: chip type comes from the
+        database (27400, 16-bit) and a stuck high-byte bit is reported as D8-D15 on the 40-pin chip."""
+        db = self.win.db
+        rom = db.rom_by_id("a1200_ks31_hi")
+        cmp = self.win.compare
+        ref = rnd(rom.size, 5)
+        # Real Kickstart images are not shipped, so a random stand-in reference is made to resolve to the
+        # Kickstart's database entry.
+        from core.database import Match
+        real = db.lookup_sha1
+        sha_ref = hashlib.sha1(ref).hexdigest()
+        db.lookup_sha1 = lambda sha: [Match(sha, rom.title, "builtin", rom)] if sha == sha_ref else real(sha)
+        try:
+            a = bytearray(ref)
+            for i in range(0, len(a), 2):
+                a[i] |= 0x80                     # high byte bit 7 stuck high -> D15
+            pa, pb = self.tmp / "ks_a.bin", self.tmp / "ks_b.bin"
+            pa.write_bytes(bytes(a))
+            pb.write_bytes(ref)
+            cmp.load_files(str(pa), str(pb))
+            self.assertIn("27400", cmp.chip_info.text())
+            self.assertTrue(cmp.order_combo.isVisibleTo(cmp))
+            self.assertEqual(cmp.result.bus_width, 16)
+            self.assertEqual([(s.signal, s.chip_pin, s.zif_pin) for s in cmp.suspects], [("D15", 29, 37)])
+            cmp.order_combo.setCurrentIndex(1)              # low byte first: the same bit is D7 (pin 28)
+            self.assertEqual([(s.signal, s.chip_pin) for s in cmp.suspects], [("D7", 28)])
+            cmp.order_combo.setCurrentIndex(0)
+            self.win.tabs.setCurrentWidget(cmp)
+            cmp.left_tabs.setCurrentIndex(1)
+            self.shot("tab3_suspect_pins_40pin")
+            cmp.left_tabs.setCurrentIndex(0)
+        finally:
+            db.lookup_sha1 = real
 
     def test_shatxt(self):
         tab = self.win.shatxt

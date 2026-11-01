@@ -90,6 +90,7 @@ class BitStat:
 class Finding:
     level: str  # "ok", "info", "warn", "error"
     text: str
+    signals: tuple[str, ...] = ()   # chip signals implicated (D3, A12, CE, VCC ...) for the pin map
 
 
 @dataclass
@@ -125,10 +126,11 @@ def check_health(data: bytes, repeat_unit: int | None = None) -> HealthReport:
         if blank == 0xFF:
             f.append(Finding("error", f"BLANK: all {size:,} bytes are 0xFF. The chip is erased/unprogrammed, "
                                       "or it was never enabled (wrong BackBit type / chip-select polarity, "
-                                      "chip not seated, or dead output drivers floating high)."))
+                                      "chip not seated, or dead output drivers floating high).", ("CE", "OE")))
         elif blank == 0x00:
             f.append(Finding("error", f"BLANK: all {size:,} bytes are 0x00. Typical of a chip that is not powered, "
-                                      "a shorted output bus, or a part inserted backwards."))
+                                      "a shorted output bus, or a part inserted backwards.",
+                                ("VCC", "GND", "CE", "OE")))
         else:
             f.append(Finding("error", f"All {size:,} bytes are 0x{blank:02X}. The data bus is not changing at all "
                                       "- the chip is almost certainly not being read."))
@@ -137,7 +139,8 @@ def check_health(data: bytes, repeat_unit: int | None = None) -> HealthReport:
     for b in report.stuck_bits:
         state = "LOW (0)" if b.stuck == "low" else "HIGH (1)"
         f.append(Finding("error", f"WARNING: Bit D{b.bit} is stuck {state} across all {size:,} bytes! "
-                                  "Check ZIF contact on that data pin or a faulty ROM output driver."))
+                                  "Check ZIF contact on that data pin or a faulty ROM output driver.",
+                           (f"D{b.bit}",)))
 
     # Data lines that always carry the same value -> likely bridged / shorted.
     active = [b.bit for b in bits if not b.stuck]
@@ -146,7 +149,7 @@ def check_health(data: bytes, repeat_unit: int | None = None) -> HealthReport:
         for c in active[i + 1:]:
             if all((v >> a & 1) == (v >> c & 1) for v in values):
                 f.append(Finding("warn", f"Data bits D{a} and D{c} are identical in every byte - possible "
-                                         "short/solder bridge between those data lines."))
+                                         "short/solder bridge between those data lines.", (f"D{a}", f"D{c}")))
 
     # Address lines with no effect (A_k mirror) below the repeat unit -> likely open/stuck address line.
     limit = repeat_unit if repeat_unit else size
@@ -155,7 +158,7 @@ def check_health(data: bytes, repeat_unit: int | None = None) -> HealthReport:
         if size % (1 << (k + 1)) == 0 and _address_line_mirrored(data, k):
             f.append(Finding("warn", f"Address line A{k} appears to have no effect: every pair of bytes "
                                      f"differing only in A{k} is identical. Suspect a stuck/open A{k} pin "
-                                     "(ZIF contact, cracked leg, or internal fault)."))
+                                     "(ZIF contact, cracked leg, or internal fault).", (f"A{k}",)))
         k += 1
 
     ff = hist.get(0xFF, 0) / size
@@ -418,6 +421,7 @@ class Diagnosis:
     level: str   # "ok", "info", "warn", "error"
     title: str
     text: str
+    signals: tuple[str, ...] = ()   # chip signals implicated (D3, A12, CE ...) - see core.pinout
 
 
 @dataclass
@@ -435,6 +439,7 @@ class CompareResult:
     flips_1_to_0: int = 0
     diff_offsets: list[int] = field(default_factory=list)
     diagnoses: list[Diagnosis] = field(default_factory=list)
+    bus_width: int = 8      # 16 when the files were diagnosed as 16-bit words (bit_mismatch then has 16 entries)
 
     @property
     def diff_percent(self) -> float:
@@ -456,8 +461,12 @@ def _size_text(n: int) -> str:
     return f"{n // KB}KB" if n >= KB and n % KB == 0 else f"{n:,} bytes"
 
 
-def compare_images(a: bytes, b: bytes, _try_swap: bool = True) -> CompareResult:
-    """Compare a dump (A) with a reference (B), normalising doubled / padded / byte-swapped images first."""
+def compare_images(a: bytes, b: bytes, _try_swap: bool = True, bus_width: int = 8,
+                   low_byte_first: bool = False) -> CompareResult:
+    """Compare a dump (A) with a reference (B), normalising doubled / padded / byte-swapped images first.
+
+    ``bus_width`` 16 diagnoses faults on a 16-bit (40-pin) ROM as word data lines D0-D15 and word address
+    lines; ``low_byte_first`` tells which byte of each word File A stores first (see :func:`diagnose_pair`)."""
     la, lb = len(a), len(b)
     if la == 0 or lb == 0:
         return CompareResult(la, lb, "empty", "Load two non-empty files to compare.", a, b)
@@ -469,7 +478,7 @@ def compare_images(a: bytes, b: bytes, _try_swap: bool = True) -> CompareResult:
     # 16-bit ROMs: the same chip saved with the opposite byte order is a content match, not a fault
     if _try_swap and la % 2 == 0 and la >= 2 and a.count(a[0]) != la:
         sa = swap16(a)
-        rs = compare_images(sa, b, _try_swap=False)
+        rs = compare_images(sa, b, False, bus_width, not low_byte_first)
         if rs.verdict in ("identical", "content_match"):
             tail = "" if rs.verdict == "identical" else f" - {rs.banner}"
             r = CompareResult(la, lb, "content_match",
@@ -481,6 +490,15 @@ def compare_images(a: bytes, b: bytes, _try_swap: bool = True) -> CompareResult:
                 "(e.g. an Amiga Kickstart) read or saved with the opposite byte order - the chip itself is fine. "
                 "The hex view shows File A byte-swapped."))
             r.diagnoses.extend(d for d in rs.diagnoses if d.title != "Identical")
+            return r
+        # A faulty 16-bit dump saved in the other byte order: diagnose it aligned with the reference
+        if bus_width == 16 and la == lb and _quick_diff_count(sa, b) < _quick_diff_count(a, b):
+            r = diagnose_pair(sa, b, 16, not low_byte_first)
+            r.diagnoses.insert(0, Diagnosis(
+                "info", "Byte order normalised",
+                "File A is closer to File B with the two bytes of every 16-bit word swapped, so it was swapped "
+                "before diagnosis (the hex view shows it swapped). Data-line numbers still refer to the chip's "
+                "own pins."))
             return r
 
     if la != lb:
@@ -521,7 +539,7 @@ def compare_images(a: bytes, b: bytes, _try_swap: bool = True) -> CompareResult:
                 if best_diff is None or dcount < best_diff:
                     best_slot, best_diff = k, dcount
             seg = big[best_slot * ns:(best_slot + 1) * ns]
-            r = diagnose_pair(seg if a_big else a, b if a_big else seg)
+            r = diagnose_pair(seg if a_big else a, b if a_big else seg, bus_width, low_byte_first)
             r.size_a, r.size_b = la, lb
             r.diagnoses.insert(0, Diagnosis(
                 "info", "Size normalised",
@@ -529,7 +547,7 @@ def compare_images(a: bytes, b: bytes, _try_swap: bool = True) -> CompareResult:
                 f"closest-matching {ns:,}-byte block of File {big_name} (offset 0x{best_slot * ns:X})."))
             return r
         m = min(la, lb)
-        r = diagnose_pair(a[:m], b[:m])
+        r = diagnose_pair(a[:m], b[:m], bus_width, low_byte_first)
         r.size_a, r.size_b = la, lb
         r.view_a, r.view_b = a, b
         r.diagnoses.insert(0, Diagnosis("warn", "Size mismatch",
@@ -537,41 +555,116 @@ def compare_images(a: bytes, b: bytes, _try_swap: bool = True) -> CompareResult:
                                         f"first {m:,} bytes were compared. A truncated read or a file header is likely."))
         return r
 
-    return diagnose_pair(a, b)
+    return diagnose_pair(a, b, bus_width, low_byte_first)
 
 
-def diagnose_pair(a: bytes, b: bytes) -> CompareResult:
-    """Bitwise fault analysis of a same-size dump (A) against a reference (B)."""
+def diagnose_pair(a: bytes, b: bytes, bus_width: int = 8, low_byte_first: bool = False) -> CompareResult:
+    """Bitwise fault analysis of a same-size dump (A) against a reference (B).
+
+    ``bus_width`` 16 analyses the files as 16-bit words (40-pin 27C400-type ROMs): data lines are D0-D15 and
+    address lines are word addresses. ``low_byte_first`` says whether File A holds the low byte (D0-D7) of each
+    word at the even offset."""
     n = len(a)
     ia, ib = int.from_bytes(a, "big"), int.from_bytes(b, "big")
     ix = ia ^ ib
     xb = ix.to_bytes(n, "big")
     diff_count = n - xb.count(0)
-    hx = Counter(xb)
-    bit_mismatch = [sum(c for v, c in hx.items() if v >> k & 1) for k in range(8)]
-    diff_or = 0
-    for v in hx:
-        diff_or |= v
     flips_01 = (ix & ia).bit_count()
     flips_10 = (ix & ib).bit_count()
     diff_offsets = [m.start() for m in re.finditer(rb"[^\x00]", xb)]
+    words = bus_width == 16 and n % 2 == 0 and n >= 4
 
     pct = 100.0 * diff_count / n
     banner = f"Different: {diff_count:,} / {n:,} bytes differ ({pct:.2f}%)"
-    r = CompareResult(n, n, "different", banner, a, b, n, diff_count, bit_mismatch, flips_01, flips_10, diff_offsets)
+    r = CompareResult(n, n, "different", banner, a, b, n, diff_count, _bit_mismatch(xb), flips_01, flips_10,
+                      diff_offsets, bus_width=16 if words else 8)
     d = r.diagnoses
-    hardware_fault = False
 
+    ha = Counter(a)
+    if len(ha) == 1:
+        v = next(iter(ha))
+        roles = ("CE", "OE") if v == 0xFF else ("VCC", "GND", "CE", "OE")
+        d.append(Diagnosis("error", "File A is blank",
+                           f"Every byte of File A is 0x{v:02X}. The chip was not read at all: wrong BackBit type, "
+                           f"chip-select polarity, chip not seated / inserted backwards, or a dead chip.", roles))
+        return r
+
+    if words:
+        hi = 1 if low_byte_first else 0          # offset of the high byte (D8-D15) within each word
+        lanes = ((a[hi::2], b[hi::2], 8), (a[1 - hi::2], b[1 - hi::2], 0))
+        r.bit_mismatch = [0] * 16
+        dirty = [la != lb for la, lb, _ in lanes]
+        seen: set[str] = set()
+        for idx, (la, lb, base) in enumerate(lanes):
+            lane_x = (int.from_bytes(la, "big") ^ int.from_bytes(lb, "big")).to_bytes(len(la), "big")
+            for k, c in enumerate(_bit_mismatch(lane_x)):
+                r.bit_mismatch[base + k] = c
+            if not dirty[idx]:
+                continue
+            for dg in _line_faults(la, lb, base, "word", not dirty[1 - idx]):
+                if dg.title not in seen:           # an address-line fault shows in both byte lanes
+                    seen.add(dg.title)
+                    d.append(dg)
+    else:
+        d.extend(_line_faults(a, b, 0, "byte", True))
+    hardware_fault = bool(d)
+
+    # small patch / bit rot / localisation
+    if not hardware_fault:
+        if diff_count < 16:
+            lst = ", ".join(f"0x{o:04X} (B={b[o]:02X} A={a[o]:02X})" for o in diff_offsets)
+            d.append(Diagnosis("warn", "Small patch",
+                               f"Only {diff_count} byte(s) differ and no hardware line fault fits: likely patched ROM, "
+                               f"speedloader mod, or mild EPROM bit-rot (charge leakage). Offsets: {lst}"))
+        if flips_10 == 0 and flips_01 > 0:
+            d.append(Diagnosis("warn", "Bits drifting to 1",
+                               f"Every differing bit is 1 in A where the reference has 0 ({flips_01:,} bits) - the "
+                               f"signature of EPROM charge leakage (cells drifting towards the erased state). "
+                               f"Re-program the EPROM from a verified image."))
+        elif flips_01 == 0 and flips_10 > 0:
+            d.append(Diagnosis("info", "Bits only cleared",
+                               f"Every differing bit is 0 in A where the reference has 1 ({flips_10:,} bits): typical "
+                               f"of a deliberately patched image or a weak/missing pull-up on the data bus."))
+        if diff_offsets and diff_count >= 16:
+            lo, hi_off = diff_offsets[0], diff_offsets[-1]
+            span = hi_off - lo + 1
+            if span <= n // 2:
+                d.append(Diagnosis("info", "Differences are localised",
+                                   f"All differences lie in {hex_range(lo, span)} ({span:,} of {n:,} bytes): a patched "
+                                   f"routine, a different revision of one module, or a partial bank fault."))
+        if pct > 40:
+            d.append(Diagnosis("warn", "Files look unrelated",
+                               f"{pct:.0f}% of bytes differ with no line-fault pattern. These are probably different "
+                               f"ROMs or revisions rather than a hardware fault - check the reference file."))
+    if not d:
+        d.append(Diagnosis("info", "No specific fault pattern",
+                           "The differences do not match a stuck bit, shorted data lines or an address-line fault."))
+    return r
+
+
+def _bit_mismatch(xor_bytes: bytes) -> list[int]:
+    hx = Counter(xor_bytes)
+    return [sum(c for v, c in hx.items() if v >> k & 1) for k in range(8)]
+
+
+def _line_faults(a: bytes, b: bytes, data_base: int, unit: str, other_clean: bool) -> list[Diagnosis]:
+    """Stuck data bits, shorted data lines and stuck address lines of one byte lane.
+
+    ``data_base`` is added to bit numbers (8 for the high byte of a 16-bit word); ``unit`` is "byte" or "word"
+    (what one address step selects); ``other_clean`` is False when another lane also has differences, so this
+    lane's faults cannot explain *all* of them."""
+    n = len(a)
+    d: list[Diagnosis] = []
+    xb = (int.from_bytes(a, "big") ^ int.from_bytes(b, "big")).to_bytes(n, "big")
+    diff_or = 0
+    for v in set(xb):
+        diff_or |= v
     ha, hb = Counter(a), Counter(b)
     a_ones = [sum(c for v, c in ha.items() if v >> k & 1) for k in range(8)]
     b_ones = [sum(c for v, c in hb.items() if v >> k & 1) for k in range(8)]
 
-    if len(ha) == 1:
-        v = next(iter(ha))
-        d.append(Diagnosis("error", "File A is blank",
-                           f"Every byte of File A is 0x{v:02X}. The chip was not read at all: wrong BackBit type, "
-                           f"chip-select polarity, chip not seated / inserted backwards, or a dead chip."))
-        return r
+    def dn(k: int) -> str:
+        return f"D{data_base + k}"
 
     # 1. stuck data bits
     stuck: dict[int, str] = {}
@@ -581,23 +674,21 @@ def diagnose_pair(a: bytes, b: bytes) -> CompareResult:
         elif a_ones[k] == n and b_ones[k] < n:
             stuck[k] = "HIGH"
     stuck_mask = sum(1 << k for k in stuck)
-    if stuck:
-        hardware_fault = True
-        only = (diff_or & ~stuck_mask) == 0
-        for k, state in stuck.items():
-            if only and len(stuck) == 1:
-                txt = (f"DIAGNOSIS: Data bit D{k} in File A is stuck {state} (all mismatches are solely on bit D{k}). "
-                       f"Likely dead output transistor on ROM or poor ZIF pin contact.")
-            else:
-                txt = (f"DIAGNOSIS: Data bit D{k} in File A is stuck {state} ({'0' if state == 'LOW' else '1'}) while "
-                       f"the reference toggles it ({b_ones[k]:,} of {n:,} bytes have D{k}=1 in B). "
-                       f"Check ZIF contact / ROM output driver.")
-            d.append(Diagnosis("error", f"Stuck data bit D{k}", txt))
-        if only and len(stuck) > 1:
-            bits = ", ".join(f"D{k}" for k in stuck)
-            d.append(Diagnosis("error", "Stuck bits explain all differences",
-                               f"All mismatches are on the stuck bits ({bits}). Several dead outputs usually point "
-                               f"to a failed chip rather than contacts."))
+    only = other_clean and (diff_or & ~stuck_mask) == 0
+    for k, state in stuck.items():
+        if only and len(stuck) == 1:
+            txt = (f"DIAGNOSIS: Data bit {dn(k)} in File A is stuck {state} (all mismatches are solely on bit "
+                   f"{dn(k)}). Likely dead output transistor on ROM or poor ZIF pin contact.")
+        else:
+            txt = (f"DIAGNOSIS: Data bit {dn(k)} in File A is stuck {state} ({'0' if state == 'LOW' else '1'}) while "
+                   f"the reference toggles it ({b_ones[k]:,} of {n:,} {unit}s have {dn(k)}=1 in B). "
+                   f"Check ZIF contact / ROM output driver.")
+        d.append(Diagnosis("error", f"Stuck data bit {dn(k)}", txt, (dn(k),)))
+    if only and len(stuck) > 1:
+        bits = ", ".join(dn(k) for k in stuck)
+        d.append(Diagnosis("error", "Stuck bits explain all differences",
+                           f"All mismatches are on the stuck bits ({bits}). Several dead outputs usually point "
+                           f"to a failed chip rather than contacts.", tuple(dn(k) for k in stuck)))
 
     # 2. shorted / bridged data lines
     diff_bits = [k for k in range(8) if diff_or >> k & 1]
@@ -617,59 +708,30 @@ def diagnose_pair(a: bytes, b: bytes) -> CompareResult:
                 kind, how = "OR-short", "both lines are pulled HIGH whenever they should differ"
             else:
                 kind, how = "bridge", "the two lines always read the same value"
-            hardware_fault = True
-            lo_b, hi_b = min(i, j), max(i, j)
-            d.append(Diagnosis("error", f"Shorted data lines D{lo_b}/D{hi_b}",
-                               f"DIAGNOSIS: Data lines D{lo_b} and D{hi_b} appear shorted together ({kind}): {how}. "
-                               f"Look for a solder bridge, debris between ZIF contacts or a damaged chip."))
+            lo_b, hi_b = dn(min(i, j)), dn(max(i, j))
+            d.append(Diagnosis("error", f"Shorted data lines {lo_b}/{hi_b}",
+                               f"DIAGNOSIS: Data lines {lo_b} and {hi_b} appear shorted together ({kind}): {how}. "
+                               f"Look for a solder bridge, debris between ZIF contacts or a damaged chip.",
+                               (lo_b, hi_b)))
             break
 
     # 3. stuck / open address lines
-    if diff_count:
+    if diff_or:
         k = 0
         while (1 << k) < n:
             for high in (False, True):
                 if n % (2 << k) == 0 and _addr_line_fault(a, b, k, high):
-                    hardware_fault = True
                     lvl = "HIGH" if high else "LOW"
+                    block = _size_text(1 << k) if unit == "byte" else \
+                        f"{1 << k:,}-word ({_size_text(2 << k)})"
                     d.append(Diagnosis("error", f"Address line A{k} stuck {lvl}",
                                        f"DIAGNOSIS: Address line A{k} stuck {lvl} - File A equals the reference read "
-                                       f"with A{k} forced {lvl}: every {_size_text(1 << k)} block repeats its "
+                                       f"with A{k} forced {lvl}: every {block} block repeats its "
                                        f"{'upper' if high else 'lower'} neighbour. Check the A{k} pin (ZIF contact, "
-                                       f"cracked leg) or a wrong BackBit chip type that maps that pin to a control line."))
+                                       f"cracked leg) or a wrong BackBit chip type that maps that pin to a control "
+                                       f"line.", (f"A{k}",)))
             k += 1
-
-    # 4. small patch / bit rot / localisation
-    if not hardware_fault:
-        if diff_count < 16:
-            lst = ", ".join(f"0x{o:04X} (B={b[o]:02X} A={a[o]:02X})" for o in diff_offsets)
-            d.append(Diagnosis("warn", "Small patch",
-                               f"Only {diff_count} byte(s) differ and no hardware line fault fits: likely patched ROM, "
-                               f"speedloader mod, or mild EPROM bit-rot (charge leakage). Offsets: {lst}"))
-        if flips_10 == 0 and flips_01 > 0:
-            d.append(Diagnosis("warn", "Bits drifting to 1",
-                               f"Every differing bit is 1 in A where the reference has 0 ({flips_01:,} bits) - the "
-                               f"signature of EPROM charge leakage (cells drifting towards the erased state). "
-                               f"Re-program the EPROM from a verified image."))
-        elif flips_01 == 0 and flips_10 > 0:
-            d.append(Diagnosis("info", "Bits only cleared",
-                               f"Every differing bit is 0 in A where the reference has 1 ({flips_10:,} bits): typical "
-                               f"of a deliberately patched image or a weak/missing pull-up on the data bus."))
-        if diff_offsets and diff_count >= 16:
-            lo, hi = diff_offsets[0], diff_offsets[-1]
-            span = hi - lo + 1
-            if span <= n // 2:
-                d.append(Diagnosis("info", "Differences are localised",
-                                   f"All differences lie in {hex_range(lo, span)} ({span:,} of {n:,} bytes): a patched "
-                                   f"routine, a different revision of one module, or a partial bank fault."))
-        if pct > 40:
-            d.append(Diagnosis("warn", "Files look unrelated",
-                               f"{pct:.0f}% of bytes differ with no line-fault pattern. These are probably different "
-                               f"ROMs or revisions rather than a hardware fault - check the reference file."))
-    if not d:
-        d.append(Diagnosis("info", "No specific fault pattern",
-                           "The differences do not match a stuck bit, shorted data lines or an address-line fault."))
-    return r
+    return d
 
 
 def _addr_line_fault(a: bytes, b: bytes, k: int, high: bool) -> bool:
