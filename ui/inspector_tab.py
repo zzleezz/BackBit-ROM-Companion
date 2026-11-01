@@ -249,8 +249,13 @@ class InspectorTab(QWidget):
                     f"<b>{html.escape(m.description)}</b><br>"
                     f"<span style='color:{COLORS['muted']}'>Source: imported sha.txt (hash + description only)</span></div>")
         rom = m.rom
-        opts = " / ".join(f"<b style='color:{COLORS['accent']}'>{html.escape(o.setting)}</b> ({o.pins}-pin)"
+        opts = " / ".join(f"<b style='color:{COLORS['accent']}'>{html.escape(o.setting)}</b> ({o.pins}-pin"
+                          f"{', ' + html.escape(o.chip) if o.warning else ''})"
                           for o in rom.backbit)
+        # de-duplicated hardware warnings for the settings (e.g. the Pin 27 interposer for 23128 mask ROMs)
+        hw = list(dict.fromkeys(o.warning for o in rom.backbit if o.warning))
+        hw_html = "".join(f"<br><span style='color:{COLORS['error']}'><b>⚠ Hardware / polarity:</b> "
+                          f"{html.escape(w)}</span>" for w in hw)
         bank = (f"<br>Bank: <b>{html.escape(m.bank.name)}</b> "
                 f"(offset 0x{m.bank.offset:04X} in the {rom.size // 1024}KB chip)" if m.bank else "")
         return (f"<div style='margin:6px 0; padding:6px; background:{COLORS['panel2']}'>"
@@ -258,7 +263,7 @@ class InspectorTab(QWidget):
                 f"<b>{html.escape(rom.name)}</b>{bank}<br>"
                 f"Socket: <b>{html.escape(rom.socket)}</b> &nbsp;•&nbsp; "
                 f"Part no.: <b>{html.escape(', '.join(rom.part_numbers))}</b><br>"
-                f"Chip: {rom.pins}-pin {html.escape(rom.chip_type)} &nbsp;•&nbsp; BackBit: {opts}<br>"
+                f"Chip: {rom.pins}-pin {html.escape(rom.chip_type)} &nbsp;•&nbsp; BackBit: {opts}{hw_html}<br>"
                 f"<a href='rom:{rom.id}' style='color:{COLORS['info']}'>Open in Machine Lookup →</a></div>")
 
     def _ident_html(self, r: AnalysisResult) -> str:

@@ -208,6 +208,8 @@ def stylesheet(c: dict[str, str] | None = None) -> str:
         QPushButton[role="primary"]:disabled {{ background: {c['panel2']}; color: {c['disabled']}; }}
         QPushButton[role="link"] {{ color: {c['accent']}; }}
         QPushButton[role="theme-toggle"] {{ padding: 4px 12px; margin: 2px 4px; }}
+        QLabel[role="alert"] {{ background: {c['panel']}; color: {c['text']}; border: 2px solid {c['error']};
+                                border-radius: 8px; padding: 8px 10px; font-size: 10.5pt; }}
         QGroupBox[role="warn-box"] {{ border: 1px solid {c['warn']}; }}
         QGroupBox[role="warn-box"]::title {{ color: {c['warn']}; }}
         DropZone {{ border: 2px dashed {c['border']}; border-radius: 10px; background: {c['panel']}; }}

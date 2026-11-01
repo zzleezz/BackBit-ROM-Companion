@@ -83,7 +83,7 @@ class TestShippedDatabase(TempDbMixin, unittest.TestCase):
         for rid, sock in (("d64_1", "IC17"), ("d64_2", "IC18")):
             r = self.db.rom_by_id(rid)
             self.assertEqual((r.socket, r.pins), (sock, 28))
-            self.assertEqual([o.setting for o in r.backbit], ["23128", "27128"])
+            self.assertEqual([o.setting for o in r.backbit], ["27128", "27128"])   # no native 23128 setting
             self.assertFalse(any("does not record socket" in w for w in r.warnings))
         for rid in ("ace_a", "ace_b"):
             self.assertEqual(self.db.rom_by_id(rid).socket, "C1 / D1 (MAME: z1 / z2)")
@@ -302,11 +302,47 @@ class TestZifPlacement(unittest.TestCase):
         with self.assertRaises(ValueError):
             zif.zif_pin(28, 29)
 
+    def test_no_native_23128_setting(self):
+        """The BackBit has no 23128 menu entry: every 23128 mask ROM is read as 27128 with the Pin 27 warning."""
+        from core.database import (PIN27_WARNING_23128, PIN27_WARNING_SINCLAIR, normalize_backbit_option,
+                                   validate_rom_dict)
+        with tempfile.TemporaryDirectory() as tmp:
+            db = RomDatabase(DEFAULT_DB_PATH, Path(tmp) / "i.json")
+        masks = [r for r in db.all_roms() if "23128" in r.chip_type]
+        self.assertGreaterEqual(len(masks), 30)
+        for r in db.all_roms():
+            self.assertNotIn("23128", [o.setting for o in r.backbit], r.id)
+        for r in masks:
+            first = r.backbit[0]
+            self.assertEqual((first.setting, first.pins), ("27128", 28), r.id)
+            self.assertIn("Pin 27 to Pin 28 (+5V)", first.warning, r.id)
+            self.assertTrue(all(not o.warning for o in r.backbit[1:]), r.id)   # genuine EPROM: no interposer
+        zx = db.rom_by_id("zx48_rom")
+        self.assertEqual(zx.backbit[0].menu_text, "Menu: ROM -> 28-Pin -> 27128")
+        self.assertEqual(zx.backbit[0].warning, PIN27_WARNING_SINCLAIR)
+        self.assertIn("active-high CS2", zx.backbit[0].warning)
+        self.assertIn("blank read", zx.backbit[0].warning)
+        for rid in ("bbcb_os12", "oric1_basic10", "atmos_basic11b", "c64_251913"):
+            self.assertEqual(db.rom_by_id(rid).backbit[0].warning, PIN27_WARNING_23128, rid)
+        self.assertFalse(any("matches the chip physically fitted" in w for w in zx.warnings))
+        # legacy data (user overlays, shared packs) using "23128" is converted on load / import
+        n = normalize_backbit_option({"setting": "23128", "pins": 28, "chip": "Original mask ROM"})
+        self.assertEqual((n["setting"], n["warning"]), ("27128", PIN27_WARNING_23128))
+        self.assertEqual(normalize_backbit_option({"setting": "27128", "pins": 28, "chip": "27128 EPROM"}).get("warning"),
+                         None)
+        kept = normalize_backbit_option({"setting": "23128", "pins": 28, "chip": "x", "warning": "custom"})
+        self.assertEqual(kept["warning"], "custom")
+        out, err = validate_rom_dict({"name": "Old pack ROM", "size": 16384, "pins": 28,
+                                      "backbit": [{"setting": "23128", "pins": 28, "chip": "Original 23128 mask ROM"}]})
+        self.assertEqual(err, "")
+        self.assertEqual(out["backbit"][0]["setting"], "27128")
+        self.assertIn("warning", out["backbit"][0])
+
     def test_menu_badge_pin_count_first(self):
         with tempfile.TemporaryDirectory() as tmp:
             db = RomDatabase(DEFAULT_DB_PATH, Path(tmp) / "i.json")
         opt = db.rom_by_id("d64_1").backbit[0]
-        self.assertEqual(opt.menu_text, "Menu: ROM -> 28-Pin -> 23128")
+        self.assertEqual(opt.menu_text, "Menu: ROM -> 28-Pin -> 27128")
         self.assertEqual(db.rom_by_id("c64_kernal_r3").backbit[0].menu_text, "Menu: ROM -> 24-Pin -> 2364")
 
 

@@ -24,9 +24,10 @@
           "chip_type": "23128 mask ROM",
           "backbit": [
             {
-              "setting": "23128",
+              "setting": "27128",
               "pins": 28,
-              "chip": "Original 23128 mask ROM (NEC D23128C / Hitachi HN613128P)"
+              "chip": "Original 23128 mask ROM (NEC D23128C / Hitachi HN613128P) - no native 23128 setting: read as 27128 with Pin 27 tied to +5V",
+              "warning": "Use an interposer socket to tie Pin 27 to Pin 28 (+5V). Sinclair 23128 mask ROMs use Pin 27 as an active-high CS2, whereas the BackBit 27128 setting expects it to be /PGM. Failing to pull Pin 27 high will result in a blank read."
             },
             {
               "setting": "27128",
@@ -40,7 +41,7 @@
           "replacement": "27128 / 27C128 (16KB) programmed with the 16KB image. A 27C256 can be used with the image doubled (burned into both halves) so the state of A14 / pin 27 does not matter.",
           "warnings": [
             "EPROM strap: a 27128 uses pin 1 as VPP and pin 27 as /PGM. Boards built with an EPROM have a factory strap tying pin 27 (and pin 1) to pin 28 (+5V). If the board has been converted between mask ROM and EPROM, check the solder links and any bodge wires on pins 1 / 27 / 28 before trusting a dump or fitting a replacement.",
-            "Select the BackBit setting that matches the chip physically fitted. Reading a mask ROM with an EPROM setting (or vice-versa) can give a dump where one half is blank (FF) or mirrored."
+            "The BackBit has no 23128 setting. An original Sinclair mask ROM is read with the 27128 setting through a Pin 27 -> Pin 28 (+5V) interposer (see the Hardware / Polarity Warning); a genuine 27128 EPROM is read with the 27128 setting directly, without the interposer. Check which chip is fitted (quartz window / part number) first."
           ],
           "notes": [
             "Early Issue 2 boards may carry the ROM on a small EPROM daughterboard ('dead cockroach')."
@@ -473,9 +474,10 @@
           "chip_type": "23128 mask ROM",
           "backbit": [
             {
-              "setting": "23128",
+              "setting": "27128",
               "pins": 28,
-              "chip": "Original 23128 mask ROM"
+              "chip": "Original 23128 mask ROM - no native 23128 setting: read as 27128 with Pin 27 tied to +5V",
+              "warning": "Use an interposer socket to tie Pin 27 to Pin 28 (+5V). The BackBit has no 23128 setting, so this mask ROM is read with the 27128 setting, which treats Pin 27 as the EPROM's /PGM. On 23128 mask ROMs Pin 27 is a chip select (CS2, active-high on most parts); failing to pull Pin 27 high will result in a blank read. Mask ROM select polarities are factory-programmed: if this chip's datasheet shows Pin 27 as an active-LOW select, tie it to Pin 14 (GND) instead."
             },
             {
               "setting": "27128",
@@ -790,9 +792,10 @@
           "chip_type": "23128 mask ROM",
           "backbit": [
             {
-              "setting": "23128",
+              "setting": "27128",
               "pins": 28,
-              "chip": "Original mask ROM"
+              "chip": "Original mask ROM - no native 23128 setting: read as 27128 with Pin 27 tied to +5V",
+              "warning": "Use an interposer socket to tie Pin 27 to Pin 28 (+5V). The BackBit has no 23128 setting, so this mask ROM is read with the 27128 setting, which treats Pin 27 as the EPROM's /PGM. On 23128 mask ROMs Pin 27 is a chip select (CS2, active-high on most parts); failing to pull Pin 27 high will result in a blank read. Mask ROM select polarities are factory-programmed: if this chip's datasheet shows Pin 27 as an active-LOW select, tie it to Pin 14 (GND) instead."
             },
             {
               "setting": "27128",
@@ -830,9 +833,10 @@
           "chip_type": "23128 mask ROM",
           "backbit": [
             {
-              "setting": "23128",
+              "setting": "27128",
               "pins": 28,
-              "chip": "Original Atari CO61598B mask ROM"
+              "chip": "Original Atari CO61598B mask ROM - no native 23128 setting: read as 27128 with Pin 27 tied to +5V",
+              "warning": "Use an interposer socket to tie Pin 27 to Pin 28 (+5V). The BackBit has no 23128 setting, so this mask ROM is read with the 27128 setting, which treats Pin 27 as the EPROM's /PGM. On 23128 mask ROMs Pin 27 is a chip select (CS2, active-high on most parts); failing to pull Pin 27 high will result in a blank read. Mask ROM select polarities are factory-programmed: if this chip's datasheet shows Pin 27 as an active-LOW select, tie it to Pin 14 (GND) instead."
             },
             {
               "setting": "27128",
@@ -940,9 +944,10 @@
           "chip_type": "23128 mask ROM",
           "backbit": [
             {
-              "setting": "23128",
+              "setting": "27128",
               "pins": 28,
-              "chip": "Original 23128 mask ROM"
+              "chip": "Original 23128 mask ROM - no native 23128 setting: read as 27128 with Pin 27 tied to +5V",
+              "warning": "Use an interposer socket to tie Pin 27 to Pin 28 (+5V). The BackBit has no 23128 setting, so this mask ROM is read with the 27128 setting, which treats Pin 27 as the EPROM's /PGM. On 23128 mask ROMs Pin 27 is a chip select (CS2, active-high on most parts); failing to pull Pin 27 high will result in a blank read. Mask ROM select polarities are factory-programmed: if this chip's datasheet shows Pin 27 as an active-LOW select, tie it to Pin 14 (GND) instead."
             },
             {
               "setting": "27128",
@@ -955,7 +960,7 @@
           "source": "MAME acorn/bbcb.cpp - os12.rom",
           "replacement": "27C128 programmed with the 16KB image.",
           "warnings": [
-            "Many BBC Micros left the factory with the OS in a 27128 EPROM rather than a mask ROM - look at the chip (quartz window / label) and choose the matching BackBit setting."
+            "Many BBC Micros left the factory with the OS in a 27128 EPROM rather than a mask ROM - look at the chip (quartz window / label). Both are read with the 27128 setting, but only the mask ROM needs the Pin 27 -> +5V interposer."
           ],
           "notes": [],
           "label": "BBC MOS 1.20"
@@ -973,9 +978,10 @@
           "chip_type": "23128 mask ROM",
           "backbit": [
             {
-              "setting": "23128",
+              "setting": "27128",
               "pins": 28,
-              "chip": "Original 23128 mask ROM"
+              "chip": "Original 23128 mask ROM - no native 23128 setting: read as 27128 with Pin 27 tied to +5V",
+              "warning": "Use an interposer socket to tie Pin 27 to Pin 28 (+5V). The BackBit has no 23128 setting, so this mask ROM is read with the 27128 setting, which treats Pin 27 as the EPROM's /PGM. On 23128 mask ROMs Pin 27 is a chip select (CS2, active-high on most parts); failing to pull Pin 27 high will result in a blank read. Mask ROM select polarities are factory-programmed: if this chip's datasheet shows Pin 27 as an active-LOW select, tie it to Pin 14 (GND) instead."
             },
             {
               "setting": "27128",
@@ -1345,9 +1351,10 @@
           "chip_type": "23128 mask ROM",
           "backbit": [
             {
-              "setting": "23128",
+              "setting": "27128",
               "pins": 28,
-              "chip": "Original 23128 mask ROM"
+              "chip": "Original 23128 mask ROM - no native 23128 setting: read as 27128 with Pin 27 tied to +5V",
+              "warning": "Use an interposer socket to tie Pin 27 to Pin 28 (+5V). Sinclair 23128 mask ROMs use Pin 27 as an active-high CS2, whereas the BackBit 27128 setting expects it to be /PGM. Failing to pull Pin 27 high will result in a blank read."
             },
             {
               "setting": "27128",
@@ -1415,9 +1422,10 @@
           "chip_type": "23128 mask ROM",
           "backbit": [
             {
-              "setting": "23128",
+              "setting": "27128",
               "pins": 28,
-              "chip": "Original 23128 mask ROM"
+              "chip": "Original 23128 mask ROM - no native 23128 setting: read as 27128 with Pin 27 tied to +5V",
+              "warning": "Use an interposer socket to tie Pin 27 to Pin 28 (+5V). Sinclair 23128 mask ROMs use Pin 27 as an active-high CS2, whereas the BackBit 27128 setting expects it to be /PGM. Failing to pull Pin 27 high will result in a blank read."
             },
             {
               "setting": "27128",
@@ -1486,9 +1494,10 @@
           "chip_type": "23128 mask ROM",
           "backbit": [
             {
-              "setting": "23128",
+              "setting": "27128",
               "pins": 28,
-              "chip": "Original 23128 mask ROM"
+              "chip": "Original 23128 mask ROM - no native 23128 setting: read as 27128 with Pin 27 tied to +5V",
+              "warning": "Use an interposer socket to tie Pin 27 to Pin 28 (+5V). Sinclair 23128 mask ROMs use Pin 27 as an active-high CS2, whereas the BackBit 27128 setting expects it to be /PGM. Failing to pull Pin 27 high will result in a blank read."
             },
             {
               "setting": "27128",
@@ -1558,9 +1567,10 @@
           "chip_type": "23128 mask ROM",
           "backbit": [
             {
-              "setting": "23128",
+              "setting": "27128",
               "pins": 28,
-              "chip": "Original 23128 mask ROM"
+              "chip": "Original 23128 mask ROM - no native 23128 setting: read as 27128 with Pin 27 tied to +5V",
+              "warning": "Use an interposer socket to tie Pin 27 to Pin 28 (+5V). Sinclair 23128 mask ROMs use Pin 27 as an active-high CS2, whereas the BackBit 27128 setting expects it to be /PGM. Failing to pull Pin 27 high will result in a blank read."
             },
             {
               "setting": "27128",
@@ -1594,9 +1604,10 @@
           "chip_type": "23128 mask ROM",
           "backbit": [
             {
-              "setting": "23128",
+              "setting": "27128",
               "pins": 28,
-              "chip": "Original 23128 mask ROM"
+              "chip": "Original 23128 mask ROM - no native 23128 setting: read as 27128 with Pin 27 tied to +5V",
+              "warning": "Use an interposer socket to tie Pin 27 to Pin 28 (+5V). Sinclair 23128 mask ROMs use Pin 27 as an active-high CS2, whereas the BackBit 27128 setting expects it to be /PGM. Failing to pull Pin 27 high will result in a blank read."
             },
             {
               "setting": "27128",
@@ -1670,9 +1681,10 @@
           "chip_type": "23128 mask ROM",
           "backbit": [
             {
-              "setting": "23128",
+              "setting": "27128",
               "pins": 28,
-              "chip": "Original 23128 mask ROM"
+              "chip": "Original 23128 mask ROM - no native 23128 setting: read as 27128 with Pin 27 tied to +5V",
+              "warning": "Use an interposer socket to tie Pin 27 to Pin 28 (+5V). The BackBit has no 23128 setting, so this mask ROM is read with the 27128 setting, which treats Pin 27 as the EPROM's /PGM. On 23128 mask ROMs Pin 27 is a chip select (CS2, active-high on most parts); failing to pull Pin 27 high will result in a blank read. Mask ROM select polarities are factory-programmed: if this chip's datasheet shows Pin 27 as an active-LOW select, tie it to Pin 14 (GND) instead."
             },
             {
               "setting": "27128",
@@ -1893,9 +1905,10 @@
           "chip_type": "23128 mask ROM",
           "backbit": [
             {
-              "setting": "23128",
+              "setting": "27128",
               "pins": 28,
-              "chip": "Original 23128 mask ROM"
+              "chip": "Original 23128 mask ROM - no native 23128 setting: read as 27128 with Pin 27 tied to +5V",
+              "warning": "Use an interposer socket to tie Pin 27 to Pin 28 (+5V). The BackBit has no 23128 setting, so this mask ROM is read with the 27128 setting, which treats Pin 27 as the EPROM's /PGM. On 23128 mask ROMs Pin 27 is a chip select (CS2, active-high on most parts); failing to pull Pin 27 high will result in a blank read. Mask ROM select polarities are factory-programmed: if this chip's datasheet shows Pin 27 as an active-LOW select, tie it to Pin 14 (GND) instead."
             },
             {
               "setting": "27128",
@@ -1926,9 +1939,10 @@
           "chip_type": "23128 mask ROM",
           "backbit": [
             {
-              "setting": "23128",
+              "setting": "27128",
               "pins": 28,
-              "chip": "Original 23128 mask ROM"
+              "chip": "Original 23128 mask ROM - no native 23128 setting: read as 27128 with Pin 27 tied to +5V",
+              "warning": "Use an interposer socket to tie Pin 27 to Pin 28 (+5V). The BackBit has no 23128 setting, so this mask ROM is read with the 27128 setting, which treats Pin 27 as the EPROM's /PGM. On 23128 mask ROMs Pin 27 is a chip select (CS2, active-high on most parts); failing to pull Pin 27 high will result in a blank read. Mask ROM select polarities are factory-programmed: if this chip's datasheet shows Pin 27 as an active-LOW select, tie it to Pin 14 (GND) instead."
             },
             {
               "setting": "27128",
@@ -1959,9 +1973,10 @@
           "chip_type": "23128 mask ROM",
           "backbit": [
             {
-              "setting": "23128",
+              "setting": "27128",
               "pins": 28,
-              "chip": "Original 23128 mask ROM"
+              "chip": "Original 23128 mask ROM - no native 23128 setting: read as 27128 with Pin 27 tied to +5V",
+              "warning": "Use an interposer socket to tie Pin 27 to Pin 28 (+5V). The BackBit has no 23128 setting, so this mask ROM is read with the 27128 setting, which treats Pin 27 as the EPROM's /PGM. On 23128 mask ROMs Pin 27 is a chip select (CS2, active-high on most parts); failing to pull Pin 27 high will result in a blank read. Mask ROM select polarities are factory-programmed: if this chip's datasheet shows Pin 27 as an active-LOW select, tie it to Pin 14 (GND) instead."
             },
             {
               "setting": "27128",
@@ -1992,9 +2007,10 @@
           "chip_type": "23128 mask ROM",
           "backbit": [
             {
-              "setting": "23128",
+              "setting": "27128",
               "pins": 28,
-              "chip": "Original 23128 mask ROM"
+              "chip": "Original 23128 mask ROM - no native 23128 setting: read as 27128 with Pin 27 tied to +5V",
+              "warning": "Use an interposer socket to tie Pin 27 to Pin 28 (+5V). The BackBit has no 23128 setting, so this mask ROM is read with the 27128 setting, which treats Pin 27 as the EPROM's /PGM. On 23128 mask ROMs Pin 27 is a chip select (CS2, active-high on most parts); failing to pull Pin 27 high will result in a blank read. Mask ROM select polarities are factory-programmed: if this chip's datasheet shows Pin 27 as an active-LOW select, tie it to Pin 14 (GND) instead."
             },
             {
               "setting": "27128",
@@ -2025,9 +2041,10 @@
           "chip_type": "23128 mask ROM",
           "backbit": [
             {
-              "setting": "23128",
+              "setting": "27128",
               "pins": 28,
-              "chip": "Original 23128 mask ROM"
+              "chip": "Original 23128 mask ROM - no native 23128 setting: read as 27128 with Pin 27 tied to +5V",
+              "warning": "Use an interposer socket to tie Pin 27 to Pin 28 (+5V). The BackBit has no 23128 setting, so this mask ROM is read with the 27128 setting, which treats Pin 27 as the EPROM's /PGM. On 23128 mask ROMs Pin 27 is a chip select (CS2, active-high on most parts); failing to pull Pin 27 high will result in a blank read. Mask ROM select polarities are factory-programmed: if this chip's datasheet shows Pin 27 as an active-LOW select, tie it to Pin 14 (GND) instead."
             },
             {
               "setting": "27128",
@@ -2058,9 +2075,10 @@
           "chip_type": "23128 mask ROM",
           "backbit": [
             {
-              "setting": "23128",
+              "setting": "27128",
               "pins": 28,
-              "chip": "Original 23128 mask ROM"
+              "chip": "Original 23128 mask ROM - no native 23128 setting: read as 27128 with Pin 27 tied to +5V",
+              "warning": "Use an interposer socket to tie Pin 27 to Pin 28 (+5V). The BackBit has no 23128 setting, so this mask ROM is read with the 27128 setting, which treats Pin 27 as the EPROM's /PGM. On 23128 mask ROMs Pin 27 is a chip select (CS2, active-high on most parts); failing to pull Pin 27 high will result in a blank read. Mask ROM select polarities are factory-programmed: if this chip's datasheet shows Pin 27 as an active-LOW select, tie it to Pin 14 (GND) instead."
             },
             {
               "setting": "27128",
@@ -2089,9 +2107,10 @@
           "chip_type": "23128 mask ROM",
           "backbit": [
             {
-              "setting": "23128",
+              "setting": "27128",
               "pins": 28,
-              "chip": "Original 23128 mask ROM"
+              "chip": "Original 23128 mask ROM - no native 23128 setting: read as 27128 with Pin 27 tied to +5V",
+              "warning": "Use an interposer socket to tie Pin 27 to Pin 28 (+5V). The BackBit has no 23128 setting, so this mask ROM is read with the 27128 setting, which treats Pin 27 as the EPROM's /PGM. On 23128 mask ROMs Pin 27 is a chip select (CS2, active-high on most parts); failing to pull Pin 27 high will result in a blank read. Mask ROM select polarities are factory-programmed: if this chip's datasheet shows Pin 27 as an active-LOW select, tie it to Pin 14 (GND) instead."
             },
             {
               "setting": "27128",
@@ -2129,9 +2148,10 @@
           "chip_type": "23128 mask ROM",
           "backbit": [
             {
-              "setting": "23128",
+              "setting": "27128",
               "pins": 28,
-              "chip": "Original 23128 mask ROM"
+              "chip": "Original 23128 mask ROM - no native 23128 setting: read as 27128 with Pin 27 tied to +5V",
+              "warning": "Use an interposer socket to tie Pin 27 to Pin 28 (+5V). The BackBit has no 23128 setting, so this mask ROM is read with the 27128 setting, which treats Pin 27 as the EPROM's /PGM. On 23128 mask ROMs Pin 27 is a chip select (CS2, active-high on most parts); failing to pull Pin 27 high will result in a blank read. Mask ROM select polarities are factory-programmed: if this chip's datasheet shows Pin 27 as an active-LOW select, tie it to Pin 14 (GND) instead."
             },
             {
               "setting": "27128",
@@ -2180,9 +2200,10 @@
           "chip_type": "23128 mask ROM",
           "backbit": [
             {
-              "setting": "23128",
+              "setting": "27128",
               "pins": 28,
-              "chip": "Original 23128 mask ROM"
+              "chip": "Original 23128 mask ROM - no native 23128 setting: read as 27128 with Pin 27 tied to +5V",
+              "warning": "Use an interposer socket to tie Pin 27 to Pin 28 (+5V). The BackBit has no 23128 setting, so this mask ROM is read with the 27128 setting, which treats Pin 27 as the EPROM's /PGM. On 23128 mask ROMs Pin 27 is a chip select (CS2, active-high on most parts); failing to pull Pin 27 high will result in a blank read. Mask ROM select polarities are factory-programmed: if this chip's datasheet shows Pin 27 as an active-LOW select, tie it to Pin 14 (GND) instead."
             },
             {
               "setting": "27128",
@@ -2213,9 +2234,10 @@
           "chip_type": "23128 mask ROM",
           "backbit": [
             {
-              "setting": "23128",
+              "setting": "27128",
               "pins": 28,
-              "chip": "Original 23128 mask ROM"
+              "chip": "Original 23128 mask ROM - no native 23128 setting: read as 27128 with Pin 27 tied to +5V",
+              "warning": "Use an interposer socket to tie Pin 27 to Pin 28 (+5V). The BackBit has no 23128 setting, so this mask ROM is read with the 27128 setting, which treats Pin 27 as the EPROM's /PGM. On 23128 mask ROMs Pin 27 is a chip select (CS2, active-high on most parts); failing to pull Pin 27 high will result in a blank read. Mask ROM select polarities are factory-programmed: if this chip's datasheet shows Pin 27 as an active-LOW select, tie it to Pin 14 (GND) instead."
             },
             {
               "setting": "27128",
@@ -2246,9 +2268,10 @@
           "chip_type": "23128 mask ROM",
           "backbit": [
             {
-              "setting": "23128",
+              "setting": "27128",
               "pins": 28,
-              "chip": "Original 23128 mask ROM"
+              "chip": "Original 23128 mask ROM - no native 23128 setting: read as 27128 with Pin 27 tied to +5V",
+              "warning": "Use an interposer socket to tie Pin 27 to Pin 28 (+5V). The BackBit has no 23128 setting, so this mask ROM is read with the 27128 setting, which treats Pin 27 as the EPROM's /PGM. On 23128 mask ROMs Pin 27 is a chip select (CS2, active-high on most parts); failing to pull Pin 27 high will result in a blank read. Mask ROM select polarities are factory-programmed: if this chip's datasheet shows Pin 27 as an active-LOW select, tie it to Pin 14 (GND) instead."
             },
             {
               "setting": "27128",
@@ -2279,9 +2302,10 @@
           "chip_type": "23128 mask ROM",
           "backbit": [
             {
-              "setting": "23128",
+              "setting": "27128",
               "pins": 28,
-              "chip": "Original 23128 mask ROM"
+              "chip": "Original 23128 mask ROM - no native 23128 setting: read as 27128 with Pin 27 tied to +5V",
+              "warning": "Use an interposer socket to tie Pin 27 to Pin 28 (+5V). The BackBit has no 23128 setting, so this mask ROM is read with the 27128 setting, which treats Pin 27 as the EPROM's /PGM. On 23128 mask ROMs Pin 27 is a chip select (CS2, active-high on most parts); failing to pull Pin 27 high will result in a blank read. Mask ROM select polarities are factory-programmed: if this chip's datasheet shows Pin 27 as an active-LOW select, tie it to Pin 14 (GND) instead."
             },
             {
               "setting": "27128",
@@ -2312,9 +2336,10 @@
           "chip_type": "23128 mask ROM",
           "backbit": [
             {
-              "setting": "23128",
+              "setting": "27128",
               "pins": 28,
-              "chip": "Original 23128 mask ROM"
+              "chip": "Original 23128 mask ROM - no native 23128 setting: read as 27128 with Pin 27 tied to +5V",
+              "warning": "Use an interposer socket to tie Pin 27 to Pin 28 (+5V). The BackBit has no 23128 setting, so this mask ROM is read with the 27128 setting, which treats Pin 27 as the EPROM's /PGM. On 23128 mask ROMs Pin 27 is a chip select (CS2, active-high on most parts); failing to pull Pin 27 high will result in a blank read. Mask ROM select polarities are factory-programmed: if this chip's datasheet shows Pin 27 as an active-LOW select, tie it to Pin 14 (GND) instead."
             },
             {
               "setting": "27128",
@@ -2345,9 +2370,10 @@
           "chip_type": "23128 mask ROM",
           "backbit": [
             {
-              "setting": "23128",
+              "setting": "27128",
               "pins": 28,
-              "chip": "Original 23128 mask ROM"
+              "chip": "Original 23128 mask ROM - no native 23128 setting: read as 27128 with Pin 27 tied to +5V",
+              "warning": "Use an interposer socket to tie Pin 27 to Pin 28 (+5V). The BackBit has no 23128 setting, so this mask ROM is read with the 27128 setting, which treats Pin 27 as the EPROM's /PGM. On 23128 mask ROMs Pin 27 is a chip select (CS2, active-high on most parts); failing to pull Pin 27 high will result in a blank read. Mask ROM select polarities are factory-programmed: if this chip's datasheet shows Pin 27 as an active-LOW select, tie it to Pin 14 (GND) instead."
             },
             {
               "setting": "27128",
@@ -2378,9 +2404,10 @@
           "chip_type": "23128 mask ROM",
           "backbit": [
             {
-              "setting": "23128",
+              "setting": "27128",
               "pins": 28,
-              "chip": "Original 23128 mask ROM"
+              "chip": "Original 23128 mask ROM - no native 23128 setting: read as 27128 with Pin 27 tied to +5V",
+              "warning": "Use an interposer socket to tie Pin 27 to Pin 28 (+5V). The BackBit has no 23128 setting, so this mask ROM is read with the 27128 setting, which treats Pin 27 as the EPROM's /PGM. On 23128 mask ROMs Pin 27 is a chip select (CS2, active-high on most parts); failing to pull Pin 27 high will result in a blank read. Mask ROM select polarities are factory-programmed: if this chip's datasheet shows Pin 27 as an active-LOW select, tie it to Pin 14 (GND) instead."
             },
             {
               "setting": "27128",
@@ -2411,9 +2438,10 @@
           "chip_type": "23128 mask ROM",
           "backbit": [
             {
-              "setting": "23128",
+              "setting": "27128",
               "pins": 28,
-              "chip": "Original 23128 mask ROM"
+              "chip": "Original 23128 mask ROM - no native 23128 setting: read as 27128 with Pin 27 tied to +5V",
+              "warning": "Use an interposer socket to tie Pin 27 to Pin 28 (+5V). The BackBit has no 23128 setting, so this mask ROM is read with the 27128 setting, which treats Pin 27 as the EPROM's /PGM. On 23128 mask ROMs Pin 27 is a chip select (CS2, active-high on most parts); failing to pull Pin 27 high will result in a blank read. Mask ROM select polarities are factory-programmed: if this chip's datasheet shows Pin 27 as an active-LOW select, tie it to Pin 14 (GND) instead."
             },
             {
               "setting": "27128",
@@ -2444,9 +2472,10 @@
           "chip_type": "23128 mask ROM",
           "backbit": [
             {
-              "setting": "23128",
+              "setting": "27128",
               "pins": 28,
-              "chip": "Original 23128 mask ROM"
+              "chip": "Original 23128 mask ROM - no native 23128 setting: read as 27128 with Pin 27 tied to +5V",
+              "warning": "Use an interposer socket to tie Pin 27 to Pin 28 (+5V). The BackBit has no 23128 setting, so this mask ROM is read with the 27128 setting, which treats Pin 27 as the EPROM's /PGM. On 23128 mask ROMs Pin 27 is a chip select (CS2, active-high on most parts); failing to pull Pin 27 high will result in a blank read. Mask ROM select polarities are factory-programmed: if this chip's datasheet shows Pin 27 as an active-LOW select, tie it to Pin 14 (GND) instead."
             },
             {
               "setting": "27128",
@@ -4368,9 +4397,10 @@
           "chip_type": "23128 16KB 28-pin mask ROM",
           "backbit": [
             {
-              "setting": "23128",
+              "setting": "27128",
               "pins": 28,
-              "chip": "mask ROM"
+              "chip": "mask ROM - no native 23128 setting: read as 27128 with Pin 27 tied to +5V",
+              "warning": "Use an interposer socket to tie Pin 27 to Pin 28 (+5V). The BackBit has no 23128 setting, so this mask ROM is read with the 27128 setting, which treats Pin 27 as the EPROM's /PGM. On 23128 mask ROMs Pin 27 is a chip select (CS2, active-high on most parts); failing to pull Pin 27 high will result in a blank read. Mask ROM select polarities are factory-programmed: if this chip's datasheet shows Pin 27 as an active-LOW select, tie it to Pin 14 (GND) instead."
             },
             {
               "setting": "27128",
@@ -4401,9 +4431,10 @@
           "chip_type": "23128 16KB 28-pin mask ROM",
           "backbit": [
             {
-              "setting": "23128",
+              "setting": "27128",
               "pins": 28,
-              "chip": "mask ROM"
+              "chip": "mask ROM - no native 23128 setting: read as 27128 with Pin 27 tied to +5V",
+              "warning": "Use an interposer socket to tie Pin 27 to Pin 28 (+5V). The BackBit has no 23128 setting, so this mask ROM is read with the 27128 setting, which treats Pin 27 as the EPROM's /PGM. On 23128 mask ROMs Pin 27 is a chip select (CS2, active-high on most parts); failing to pull Pin 27 high will result in a blank read. Mask ROM select polarities are factory-programmed: if this chip's datasheet shows Pin 27 as an active-LOW select, tie it to Pin 14 (GND) instead."
             },
             {
               "setting": "27128",
@@ -4992,9 +5023,10 @@
           "chip_type": "23128 mask ROM",
           "backbit": [
             {
-              "setting": "23128",
+              "setting": "27128",
               "pins": 28,
-              "chip": "Original 23128 mask ROM"
+              "chip": "Original 23128 mask ROM - no native 23128 setting: read as 27128 with Pin 27 tied to +5V",
+              "warning": "Use an interposer socket to tie Pin 27 to Pin 28 (+5V). The BackBit has no 23128 setting, so this mask ROM is read with the 27128 setting, which treats Pin 27 as the EPROM's /PGM. On 23128 mask ROMs Pin 27 is a chip select (CS2, active-high on most parts); failing to pull Pin 27 high will result in a blank read. Mask ROM select polarities are factory-programmed: if this chip's datasheet shows Pin 27 as an active-LOW select, tie it to Pin 14 (GND) instead."
             },
             {
               "setting": "27128",
@@ -5023,9 +5055,10 @@
           "chip_type": "23128 mask ROM",
           "backbit": [
             {
-              "setting": "23128",
+              "setting": "27128",
               "pins": 28,
-              "chip": "Original 23128 mask ROM"
+              "chip": "Original 23128 mask ROM - no native 23128 setting: read as 27128 with Pin 27 tied to +5V",
+              "warning": "Use an interposer socket to tie Pin 27 to Pin 28 (+5V). The BackBit has no 23128 setting, so this mask ROM is read with the 27128 setting, which treats Pin 27 as the EPROM's /PGM. On 23128 mask ROMs Pin 27 is a chip select (CS2, active-high on most parts); failing to pull Pin 27 high will result in a blank read. Mask ROM select polarities are factory-programmed: if this chip's datasheet shows Pin 27 as an active-LOW select, tie it to Pin 14 (GND) instead."
             },
             {
               "setting": "27128",
@@ -5054,9 +5087,10 @@
           "chip_type": "23128 mask ROM",
           "backbit": [
             {
-              "setting": "23128",
+              "setting": "27128",
               "pins": 28,
-              "chip": "Original 23128 mask ROM"
+              "chip": "Original 23128 mask ROM - no native 23128 setting: read as 27128 with Pin 27 tied to +5V",
+              "warning": "Use an interposer socket to tie Pin 27 to Pin 28 (+5V). The BackBit has no 23128 setting, so this mask ROM is read with the 27128 setting, which treats Pin 27 as the EPROM's /PGM. On 23128 mask ROMs Pin 27 is a chip select (CS2, active-high on most parts); failing to pull Pin 27 high will result in a blank read. Mask ROM select polarities are factory-programmed: if this chip's datasheet shows Pin 27 as an active-LOW select, tie it to Pin 14 (GND) instead."
             },
             {
               "setting": "27128",
@@ -6156,9 +6190,10 @@
           "chip_type": "23128 mask ROM",
           "backbit": [
             {
-              "setting": "23128",
+              "setting": "27128",
               "pins": 28,
-              "chip": "Original 23128 mask ROM"
+              "chip": "Original 23128 mask ROM - no native 23128 setting: read as 27128 with Pin 27 tied to +5V",
+              "warning": "Use an interposer socket to tie Pin 27 to Pin 28 (+5V). The BackBit has no 23128 setting, so this mask ROM is read with the 27128 setting, which treats Pin 27 as the EPROM's /PGM. On 23128 mask ROMs Pin 27 is a chip select (CS2, active-high on most parts); failing to pull Pin 27 high will result in a blank read. Mask ROM select polarities are factory-programmed: if this chip's datasheet shows Pin 27 as an active-LOW select, tie it to Pin 14 (GND) instead."
             },
             {
               "setting": "27128",
@@ -6291,9 +6326,10 @@
           "chip_type": "23128 mask ROM",
           "backbit": [
             {
-              "setting": "23128",
+              "setting": "27128",
               "pins": 28,
-              "chip": "Original 23128 mask ROM"
+              "chip": "Original 23128 mask ROM - no native 23128 setting: read as 27128 with Pin 27 tied to +5V",
+              "warning": "Use an interposer socket to tie Pin 27 to Pin 28 (+5V). The BackBit has no 23128 setting, so this mask ROM is read with the 27128 setting, which treats Pin 27 as the EPROM's /PGM. On 23128 mask ROMs Pin 27 is a chip select (CS2, active-high on most parts); failing to pull Pin 27 high will result in a blank read. Mask ROM select polarities are factory-programmed: if this chip's datasheet shows Pin 27 as an active-LOW select, tie it to Pin 14 (GND) instead."
             },
             {
               "setting": "27128",

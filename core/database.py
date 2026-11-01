@@ -41,6 +41,41 @@ KNOWN_PINS = {
 }
 
 
+# Mask ROM types the BackBit Chip Tester Pro V2 has no native menu setting for, mapped to the EPROM setting
+# that must be used instead (with an interposer - see the warnings below).
+NO_NATIVE_SETTING = {"23128": "27128"}
+
+PIN27_WARNING_SINCLAIR = (
+    "Use an interposer socket to tie Pin 27 to Pin 28 (+5V). Sinclair 23128 mask ROMs use Pin 27 as an "
+    "active-high CS2, whereas the BackBit 27128 setting expects it to be /PGM. Failing to pull Pin 27 high "
+    "will result in a blank read.")
+PIN27_WARNING_23128 = (
+    "Use an interposer socket to tie Pin 27 to Pin 28 (+5V). The BackBit has no 23128 setting, so this mask "
+    "ROM is read with the 27128 setting, which treats Pin 27 as the EPROM's /PGM. On 23128 mask ROMs Pin 27 is "
+    "a chip select (CS2, active-high on most parts); failing to pull Pin 27 high will result in a blank read. "
+    "Mask ROM select polarities are factory-programmed: if this chip's datasheet shows Pin 27 as an "
+    "active-LOW select, tie it to Pin 14 (GND) instead.")
+
+
+def normalize_backbit_option(opt: dict) -> dict:
+    """Map a mask ROM setting the tester doesn't have (23128) to the setting to use (27128) and make sure such
+    an option carries the Pin 27 interposer warning. Also covers a 27128 option whose chip is a 23128 mask ROM
+    (as entered in the Database Manager). Returns a new dict."""
+    opt = dict(opt)
+    setting = str(opt.get("setting", "")).strip()
+    chip = str(opt.get("chip", ""))
+    native = NO_NATIVE_SETTING.get(setting.upper())
+    is_mask_23128 = native is not None or (setting.upper() == "27128" and "23128" in chip
+                                           and "mask" in chip.lower())
+    if native:
+        opt["setting"] = native
+        if "23128" not in chip:
+            opt["chip"] = f"{chip or 'Original mask ROM'} (23128 type)".strip()
+    if is_mask_23128 and not str(opt.get("warning", "")).strip():
+        opt["warning"] = PIN27_WARNING_23128
+    return opt
+
+
 def guess_pins(setting: str, default: int) -> int:
     def norm(x: str) -> str:
         return x.upper().replace(" ", "").replace("27C", "27")
@@ -85,6 +120,7 @@ class BackBitOption:
     setting: str
     pins: int
     chip: str
+    warning: str = ""          # hardware / polarity warning specific to reading this chip with this setting
 
     @property
     def menu_text(self) -> str:
@@ -243,8 +279,11 @@ def validate_rom_dict(r: dict) -> tuple[dict | None, str]:
         if not isinstance(o, dict) or not str(o.get("setting", "")).strip():
             return None, f"{name}: invalid BackBit setting"
         try:
-            backbit.append({"setting": str(o["setting"]).strip(), "pins": int(o.get("pins", pins)),
-                            "chip": str(o.get("chip", ""))})
+            opt = {"setting": str(o["setting"]).strip(), "pins": int(o.get("pins", pins)),
+                   "chip": str(o.get("chip", ""))}
+            if str(o.get("warning", "")).strip():
+                opt["warning"] = str(o["warning"]).strip()
+            backbit.append(normalize_backbit_option(opt))
         except (TypeError, ValueError):
             return None, f"{name}: invalid BackBit pin count"
     if not backbit:
@@ -290,7 +329,8 @@ def rom_to_dict(rom: RomEntry) -> dict:
         "id": rom.id, "name": rom.name, "label": rom.label, "description": rom.description,
         "part_numbers": list(rom.part_numbers), "socket": rom.socket, "size": rom.size, "pins": rom.pins,
         "chip_type": rom.chip_type,
-        "backbit": [{"setting": o.setting, "pins": o.pins, "chip": o.chip} for o in rom.backbit],
+        "backbit": [{"setting": o.setting, "pins": o.pins, "chip": o.chip,
+                     **({"warning": o.warning} if o.warning else {})} for o in rom.backbit],
         "sha1": rom.sha1, "crc32": rom.crc32, "source": rom.source, "replacement": rom.replacement,
         "warnings": list(rom.warnings), "notes": list(rom.notes),
     }
@@ -385,8 +425,8 @@ class RomDatabase:
                     description=r.get("description", ""), part_numbers=list(r.get("part_numbers", [])),
                     socket=r.get("socket", ""), size=int(r["size"]), pins=int(r["pins"]),
                     chip_type=r.get("chip_type", ""),
-                    backbit=[BackBitOption(o["setting"], int(o["pins"]), o.get("chip", ""))
-                             for o in r.get("backbit", [])],
+                    backbit=[BackBitOption(n["setting"], int(n["pins"]), n.get("chip", ""), n.get("warning", ""))
+                             for n in map(normalize_backbit_option, r.get("backbit", []))],
                     sha1=_norm_sha(r.get("sha1")), crc32=_norm_crc(r.get("crc32")),
                     source=r.get("source", ""), replacement=r.get("replacement", ""),
                     warnings=list(r.get("warnings", [])), notes=list(r.get("notes", [])),

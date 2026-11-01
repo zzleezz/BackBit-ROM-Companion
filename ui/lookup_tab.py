@@ -75,6 +75,10 @@ class LookupTab(QWidget):
         opt_label = QLabel("Chip physically fitted:")
         opt_label.setStyleSheet("font-weight:600;")
         self.option_combo = QComboBox()
+        # long chip descriptions must not widen the detail panel; the drop-down list still shows them in full
+        self.option_combo.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToMinimumContentsLengthWithIcon)
+        self.option_combo.setMinimumContentsLength(24)
+        self.option_combo.view().setTextElideMode(Qt.TextElideMode.ElideNone)
         self.option_combo.currentIndexChanged.connect(self._on_option_changed)
         opt_row.addWidget(opt_label)
         opt_row.addWidget(self.option_combo, 1)
@@ -85,6 +89,14 @@ class LookupTab(QWidget):
         self.badge = BadgeLabel("—", point_size=20)
         dl.addWidget(badge_caption)
         dl.addWidget(self.badge)
+        # chip-specific hardware warning for the selected setting (e.g. 23128 read as 27128 needs an interposer)
+        self.option_warn = QLabel()
+        self.option_warn.setWordWrap(True)
+        self.option_warn.setTextFormat(Qt.TextFormat.RichText)
+        self.option_warn.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
+        set_role(self.option_warn, "alert")
+        self.option_warn.hide()
+        dl.addWidget(self.option_warn)
 
         info = QGroupBox("Chip details")
         grid = QGridLayout(info)
@@ -257,6 +269,7 @@ class LookupTab(QWidget):
             self.f_sha1.set_value(None)
             self.f_crc.set_value(None)
             self.badge.setText("—")
+            self.option_warn.hide()
             self.banks_box.hide()
             self.warn_box.hide()
             self.notes_label.setText("")
@@ -311,6 +324,14 @@ class LookupTab(QWidget):
         self.badge.setText(opt.menu_text)
         self.badge.set_variant("primary" if index == 0 else "alt")
         self.zif.set_chip(opt.pins, rom.title, opt.setting)
+        if opt.warning:
+            self.option_warn.setText(
+                f"<div style='font-size:11pt; font-weight:800; color:{COLORS['error']}'>"
+                f"⚠ HARDWARE / POLARITY WARNING</div>"
+                f"<div style='margin-top:4px'>{html.escape(opt.warning)}</div>")
+            self.option_warn.show()
+        else:
+            self.option_warn.hide()
 
         warnings = list(rom.warnings)
         if opt.pins != rom.pins:

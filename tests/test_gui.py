@@ -70,7 +70,26 @@ class TestGui(unittest.TestCase):
         self.assertEqual(self.win.lookup.zif.describe()[-1], "Leave EMPTY: ZIF pins 17–32 (bottom 8 rows)")
         self.shot("tab1_master_32pin")
         self.win.show_rom_in_lookup("d64_1")
-        self.assertEqual(self.win.lookup.badge.text(), "Menu: ROM -> 28-Pin -> 23128")
+        self.assertEqual(self.win.lookup.badge.text(), "Menu: ROM -> 28-Pin -> 27128")
+        self.assertTrue(self.win.lookup.option_warn.isVisibleTo(self.win.lookup))
+        self.assertIn("HARDWARE / POLARITY WARNING", self.win.lookup.option_warn.text())
+        self.win.lookup.option_combo.setCurrentIndex(1)       # genuine 27128 EPROM: no interposer warning
+        self.assertFalse(self.win.lookup.option_warn.isVisibleTo(self.win.lookup))
+        self.win.show_rom_in_lookup("zx48_rom")
+        self.assertEqual(self.win.lookup.badge.text(), "Menu: ROM -> 28-Pin -> 27128")
+        self.assertIn("Sinclair 23128 mask ROMs use Pin 27 as an active-high CS2", self.win.lookup.option_warn.text())
+        self.shot("tab1_zx48_interposer")
+        # the long option text must not push the detail column under the ZIF drawing (either theme)
+        for name in ("light", "dark"):
+            self.win.set_theme(name, save=False)
+            APP.processEvents()
+            scroll = self.win.lookup.badge.parentWidget()
+            while scroll is not None and not hasattr(scroll, "viewport"):
+                scroll = scroll.parentWidget()
+            self.assertLessEqual(self.win.lookup.badge.width(), scroll.viewport().width(), name)
+        self.win.show_rom_in_lookup("c64_kernal_r3")                # 2364 has a native setting: no alert
+        self.assertFalse(self.win.lookup.option_warn.isVisibleTo(self.win.lookup))
+        self.win.show_rom_in_lookup("d64_1")
         self.assertEqual(self.win.lookup.zif.describe(), [
             "Chip pin 1 -> ZIF pin 1  •  Chip pin 14 -> ZIF pin 14",
             "Chip pin 15 -> ZIF pin 35  •  Chip pin 28 -> ZIF pin 48",
@@ -93,7 +112,7 @@ class TestGui(unittest.TestCase):
         dlg = RomEditDialog(self.db, prefill={"size": len(data), "sha1": self.win.inspector.result.hashes.sha1,
                                               "crc32": self.win.inspector.result.hashes.crc32, "name": "Mystery"})
         self.assertEqual(dlg.size.value(), 16384)
-        self.assertEqual(dlg.mask_setting.text(), "23128")
+        self.assertEqual(dlg.mask_setting.text(), "27128")
         self.assertEqual(dlg.pins.currentText(), "28")
         dlg.machine.setCurrentText("Workbench Specials")
         dlg.write_master.setChecked(True)
@@ -103,6 +122,10 @@ class TestGui(unittest.TestCase):
         self.assertTrue(self.win.inspector.result.whole_matches)
         self.assertFalse(self.win.inspector.register_btn.isVisibleTo(self.win.inspector))
         self.assertEqual(self.win.lookup._rom.id, dlg.saved_rom_id)
+        saved = self.db.rom_by_id(dlg.saved_rom_id)            # 16KB mask ROM: 27128 + interposer, then EPROM
+        self.assertEqual([o.setting for o in saved.backbit], ["27128", "27128"])
+        self.assertIn("Pin 27 to Pin 28", saved.backbit[0].warning)
+        self.assertEqual(saved.backbit[1].warning, "")
 
     def test_compare(self):
         ref = rnd(8192, 8)

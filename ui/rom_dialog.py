@@ -14,7 +14,7 @@ from PyQt6.QtWidgets import (QCheckBox, QComboBox, QDialog, QDialogButtonBox, QF
                              QVBoxLayout, QWidget)
 
 from core.analyzer import CHIP_HINTS
-from core.database import USER_SOURCE, RomDatabase, RomEntry, guess_pins, rom_to_dict
+from core.database import USER_SOURCE, RomDatabase, RomEntry, guess_pins, normalize_backbit_option, rom_to_dict
 from core.shatxt import DEFAULT_LABEL_LIMIT, auto_label, sanitize_label
 from ui.widgets import mono_font, set_role, set_state
 
@@ -25,7 +25,7 @@ SIZE_DEFAULTS = {
     2048: ("2316", "2716", 24, "2316 mask ROM"),
     4096: ("2332", "2532", 24, "2332 mask ROM"),
     8192: ("2364", "2764", 24, "2364 mask ROM"),
-    16384: ("23128", "27128", 28, "23128 mask ROM"),
+    16384: ("27128", "27128", 28, "23128 mask ROM"),   # no native 23128 setting: 27128 + Pin 27 interposer
     32768: ("23256", "27256", 28, "23256 mask ROM"),
     65536: ("23512", "27512", 28, "27512 EPROM"),
     131072: ("231024", "27C010", 28, "1Mbit mask ROM"),
@@ -284,9 +284,14 @@ class RomEditDialog(QDialog):
 
         pins = int(self.pins.currentText())
         eprom = self.eprom_setting.text().strip()
-        backbit = [{"setting": mask, "pins": pins,
-                    "chip": f"Original {self.chip_type.text().strip() or mask}"}]
-        if eprom and eprom.lower() != mask.lower():
+        mask_opt = {"setting": mask, "pins": pins, "chip": f"Original {self.chip_type.text().strip() or mask}"}
+        old = self.rom.backbit[0] if self.rom and self.rom.backbit else None
+        if old is not None and old.warning and old.setting.upper() == mask.upper():
+            mask_opt["warning"] = self.rom.backbit[0].warning     # keep a curated (e.g. Sinclair) warning
+        # 23128 -> 27128 and the Pin 27 interposer warning (the tester has no 23128 setting)
+        mask_opt = normalize_backbit_option(mask_opt)
+        backbit = [mask_opt]
+        if eprom and (eprom.lower() != mask_opt["setting"].lower() or mask_opt.get("warning")):
             backbit.append({"setting": eprom, "pins": guess_pins(eprom, pins), "chip": f"{eprom} EPROM equivalent"})
 
         if self.rom:
