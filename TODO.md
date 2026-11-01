@@ -17,6 +17,16 @@ Open items for BackBit ROM Companion. Each one needs a fact checked on a real Ba
 - [ ] Run the macOS and Linux builds on real machines. CI only smoke-tests them; only Windows has been tried by hand.
 - [ ] Code-sign the builds to remove the Windows SmartScreen and macOS Gatekeeper warnings. This needs a signing certificate and an Apple Developer ID.
 
+## Stretch goal: phone version
+
+- [ ] Phone version as a web app you install from the browser (works offline). Planned approach:
+  - Run the existing Python `core/` package and `roms_database.json` in the browser with Pyodide, so results match the desktop app exactly.
+  - Build a phone layout for lookup (BackBit setting, warnings, pin diagram), checking a dump, comparing two files and exporting `sha.txt` through a save dialog.
+  - Read dumps with the phone's file picker, including an SD card in a USB-C reader.
+  - Host it free on GitHub Pages, deployed from CI next to the desktop releases. It works on Android and iPhone with no app store or signing.
+  - A native Android app (PySide6) was considered and set aside: it means more work, a large app, a Linux-only build, and it covers Android only.
+  - Wait until the desktop version is settled.
+
 ## Housekeeping
 
 - [ ] The first commit (`579acf4`) has no co-author line. Fixing it means rewriting history and force-pushing `main`, so leave it unless that is wanted.
