@@ -8,6 +8,10 @@ the tester show a ROM's name on its 16x2 character LCD.
 Runs on **Windows**, **macOS** (Intel and Apple Silicon) and **Linux**, either from source (Python + PyQt6) or as a
 standalone build with no Python required.
 
+> **Made with Claude Code.** This project was generated with [Claude Code](https://claude.com/claude-code),
+> Anthropic's AI coding assistant, working to the specification and review of
+> [@zzleezz](https://github.com/zzleezz). See [Credits](#credits).
+
 ---
 
 ## Features
@@ -180,6 +184,16 @@ scripts/generate_icons.py
 build.py                PyInstaller packaging
 tests/                  unittest suite
 ```
+
+## Credits
+
+- **[@zzleezz](https://github.com/zzleezz)**: project owner. Defined the requirements, directed the work and
+  reviewed the results.
+- **Claude (Anthropic)**: wrote the code, tests, build scripts, CI workflow and documentation using
+  [Claude Code](https://claude.com/claude-code).
+
+The application code, ROM database and documentation were generated with AI assistance. ROM hashes were transcribed
+from MAME driver sources. Please report any errors you find in the issue tracker.
 
 ## Disclaimer
 

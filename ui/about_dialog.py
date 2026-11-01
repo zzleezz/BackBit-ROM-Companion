@@ -68,6 +68,7 @@ class AboutDialog(QDialog):
             ("Master database", f"{db.db_path}"),
             ("Master access", "Writable - Database Manager edits are also saved here" if db.master_writable else
              "Read-only bundle - edits are kept in your user data"),
+            ("Created with", "Claude Code (Anthropic's AI coding assistant), directed and reviewed by zzleezz"),
             ("Runtime", f"Python {platform.python_version()} • Qt {QT_VERSION_STR} • PyQt {PYQT_VERSION_STR}"
                         f" • {platform.system()} {platform.machine()}"
                         f"{frozen}"),

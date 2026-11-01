@@ -187,6 +187,7 @@ class TestGui(unittest.TestCase):
         self.assertIn(str(len(self.db.machines)), dlg.value_labels["Machines"].text())
         self.assertIn(str(self.db.user_db_path.parent), text)
         self.assertEqual(dlg.open_btn.text(), "Open User Data Folder")
+        self.assertIn("Claude Code", dlg.value_labels["Created with"].text())
         self.assertTrue(paths.icon_path("png").exists())
         dlg.show()
         APP.processEvents()
