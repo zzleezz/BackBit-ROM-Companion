@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import html
+import re
 
 from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtGui import QColor
@@ -14,6 +15,27 @@ from core.analyzer import hex_range
 from ui.rom_dialog import RomEditDialog, confirm_delete
 from ui import theme
 from ui.widgets import COLORS, MONO_CSS, set_role, BadgeLabel, CopyField, ZifSocketWidget
+
+_URL = re.compile(r"https?://[^\s<>\"]+[^\s<>\".,;:!?)\]]")
+# selectable with mouse and keyboard, and links open in the browser
+_TEXT_FLAGS = Qt.TextInteractionFlag.TextBrowserInteraction
+
+
+def _rich(text: str) -> str:
+    """Escape database text for a rich-text label and turn web addresses into clickable links."""
+    out, pos = [], 0
+    for m in _URL.finditer(text):
+        out.append(html.escape(text[pos:m.start()]))
+        url = html.escape(m.group(0), quote=True)
+        out.append(f"<a href=\"{url}\" style=\"color:{COLORS['accent']}\">{url}</a>")
+        pos = m.end()
+    out.append(html.escape(text[pos:]))
+    return "".join(out)
+
+
+def _selectable(label: QLabel) -> None:
+    label.setTextInteractionFlags(_TEXT_FLAGS)
+    label.setOpenExternalLinks(True)
 
 ROLE_ROM_ID = Qt.ItemDataRole.UserRole
 
@@ -93,7 +115,7 @@ class LookupTab(QWidget):
         self.option_warn = QLabel()
         self.option_warn.setWordWrap(True)
         self.option_warn.setTextFormat(Qt.TextFormat.RichText)
-        self.option_warn.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
+        _selectable(self.option_warn)
         set_role(self.option_warn, "alert")
         self.option_warn.hide()
         dl.addWidget(self.option_warn)
@@ -133,6 +155,7 @@ class LookupTab(QWidget):
         self.warn_label = QLabel()
         self.warn_label.setWordWrap(True)
         self.warn_label.setTextFormat(Qt.TextFormat.RichText)
+        _selectable(self.warn_label)
         wl.addWidget(self.warn_label)
         dl.addWidget(self.warn_box)
 
@@ -141,6 +164,7 @@ class LookupTab(QWidget):
         self.notes_label = QLabel()
         self.notes_label.setWordWrap(True)
         self.notes_label.setTextFormat(Qt.TextFormat.RichText)
+        _selectable(self.notes_label)
         nl.addWidget(self.notes_label)
         dl.addWidget(notes_box)
         dl.addStretch(1)
@@ -308,9 +332,9 @@ class LookupTab(QWidget):
 
         notes = []
         if rom.replacement:
-            notes.append(f"<p><b style='color:{COLORS['ok']}'>Modern replacement:</b> {html.escape(rom.replacement)}</p>")
+            notes.append(f"<p><b style='color:{COLORS['ok']}'>Modern replacement:</b> {_rich(rom.replacement)}</p>")
         for n in rom.notes:
-            notes.append(f"<p>• {html.escape(n)}</p>")
+            notes.append(f"<p>• {_rich(n)}</p>")
         self.notes_label.setText("".join(notes) or "—")
 
         self.option_combo.setCurrentIndex(0)
@@ -328,7 +352,7 @@ class LookupTab(QWidget):
             self.option_warn.setText(
                 f"<div style='font-size:11pt; font-weight:800; color:{COLORS['error']}'>"
                 f"⚠ HARDWARE / POLARITY WARNING</div>"
-                f"<div style='margin-top:4px'>{html.escape(opt.warning)}</div>")
+                f"<div style='margin-top:4px'>{_rich(opt.warning)}</div>")
             self.option_warn.show()
         else:
             self.option_warn.hide()
@@ -340,7 +364,7 @@ class LookupTab(QWidget):
                                f"pin adapter in the machine, and must be taken OFF that adapter and seated "
                                f"directly in the ZIF to read it with the {opt.setting} setting.")
         if warnings:
-            self.warn_label.setText("".join(f"<p style='margin:4px 0'>⚠ {html.escape(w)}</p>"
+            self.warn_label.setText("".join(f"<p style='margin:4px 0'>⚠ {_rich(w)}</p>"
                                             for w in warnings))
             self.warn_box.show()
         else:

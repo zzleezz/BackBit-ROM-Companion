@@ -69,6 +69,14 @@ class TestGui(unittest.TestCase):
         self.assertEqual(self.win.lookup.badge.text(), "Menu: ROM -> 32-Pin -> 27100-0")
         self.assertEqual(self.win.lookup.zif.describe()[-1], "Leave EMPTY: ZIF pins 17–32 (bottom 8 rows)")
         self.shot("tab1_master_32pin")
+        # warnings / notes text can be selected and copied, and web links open in the browser
+        from PyQt6.QtCore import Qt
+        lk = self.win.lookup
+        self.win.show_rom_in_lookup("zx48_rom")
+        for lab in (lk.warn_label, lk.notes_label, lk.option_warn):
+            self.assertTrue(lab.textInteractionFlags() & Qt.TextInteractionFlag.TextSelectableByMouse)
+            self.assertTrue(lab.openExternalLinks())
+        self.assertIn('<a href="https://blog.retroleum.co.uk/', lk.notes_label.text())
         self.win.show_rom_in_lookup("cd32_391640")                  # 42-pin 16-bit 1MB
         self.assertEqual(self.win.lookup.badge.text(), "Menu: ROM -> 42-Pin -> 27800")
         self.assertEqual(self.win.lookup.zif.describe()[-1], "Leave EMPTY: ZIF pins 22–27 (bottom 3 rows)")
