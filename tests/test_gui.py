@@ -60,6 +60,42 @@ class TestGui(unittest.TestCase):
         for i in range(4):
             self.assertTrue(self.win.tabs.isTabEnabled(i))
 
+    def test_lookup_tree_order_and_collapse(self):
+        lk = self.win.lookup
+        tree = lk.tree
+        names = [tree.topLevelItem(i).text(0) for i in range(tree.topLevelItemCount())]
+        # manufacturer, then machine: every brand's machines are together, and the brands are in order
+        brands = [n.split(" ")[0] for n in names]
+        self.assertEqual(names[0].split(" ")[0], "Acorn")
+        firsts = [b for i, b in enumerate(brands) if i == 0 or brands[i - 1] != b]
+        self.assertEqual(len(firsts), len(set(firsts)), firsts)          # no brand appears in two places
+        sinclair = [n for n in names if n.startswith("Sinclair")]
+        self.assertEqual(names.index(sinclair[-1]) - names.index(sinclair[0]), len(sinclair) - 1)
+        self.assertTrue(any("+2A" in n for n in sinclair))               # Amstrad-built Spectrums stay with Sinclair
+        c = [n for n in names if n.startswith("Commodore")]
+        self.assertLess(c.index("Commodore 64 / 64C (1982)"), c.index("Commodore 128 (1985)"))
+        # collapsed by default; buttons open / close every machine
+        self.assertFalse(any(tree.topLevelItem(i).isExpanded() for i in range(tree.topLevelItemCount())))
+        lk.expand_btn.click()
+        self.assertTrue(all(tree.topLevelItem(i).isExpanded() for i in range(tree.topLevelItemCount())))
+        lk.collapse_btn.click()
+        self.assertFalse(any(tree.topLevelItem(i).isExpanded() for i in range(tree.topLevelItemCount())))
+        # a machine the user opened stays open across a rebuild (theme switch)
+        tree.topLevelItem(2).setExpanded(True)
+        lk.refresh_theme()
+        self.assertEqual([i for i in range(tree.topLevelItemCount()) if tree.topLevelItem(i).isExpanded()], [2])
+        # search results are shown opened; selecting a ROM opens its machine
+        lk.search.setText("2364")
+        self.assertTrue(all(tree.topLevelItem(i).isExpanded() for i in range(tree.topLevelItemCount())))
+        lk.search.clear()                     # back to what was open before the search
+        self.assertEqual([i for i in range(tree.topLevelItemCount()) if tree.topLevelItem(i).isExpanded()], [2])
+        tree.topLevelItem(2).setExpanded(False)
+        self.win.show_rom_in_lookup("cd32_391640")
+        self.assertEqual(lk._rom.id, "cd32_391640")
+        self.assertTrue(tree.currentItem().parent().isExpanded())
+        self.win.tabs.setCurrentWidget(lk)
+        self.shot("tab1_sorted_collapsed")
+
     def test_lookup(self):
         self.win.show_rom_in_lookup("d32_lo")
         self.assertEqual(self.win.lookup._rom.id, "d32_lo")

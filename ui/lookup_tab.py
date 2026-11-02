@@ -33,11 +33,27 @@ def _rich(text: str) -> str:
     return "".join(out)
 
 
+def _natural(text: str) -> list:
+    """Sort key that orders embedded numbers by value (Commodore 64 before Commodore 128)."""
+    return [int(t) if t.isdigit() else t.casefold() for t in re.split(r"(\d+)", text)]
+
+
+def machine_sort_key(machine) -> tuple:
+    """Manufacturer (its first word: "Sinclair Research" -> Sinclair), then machine name. A shared credit such as
+    "Amstrad / Sinclair" sorts under the brand the machine is sold as (the one its name starts with), so the
+    Amstrad-built Spectrums stay with Sinclair."""
+    makers = [m.strip().split(" ")[0] for m in machine.manufacturer.split("/") if m.strip()] or [""]
+    name = machine.name.casefold()
+    brand = next((m for m in makers if name.startswith(m.casefold())), makers[0])
+    return _natural(brand) + [""] + _natural(machine.name)
+
+
 def _selectable(label: QLabel) -> None:
     label.setTextInteractionFlags(_TEXT_FLAGS)
     label.setOpenExternalLinks(True)
 
 ROLE_ROM_ID = Qt.ItemDataRole.UserRole
+ROLE_MACHINE_ID = Qt.ItemDataRole.UserRole + 1
 
 
 class LookupTab(QWidget):
@@ -47,6 +63,8 @@ class LookupTab(QWidget):
         super().__init__(parent)
         self.db = db
         self._rom: RomEntry | None = None
+        self._searching = False
+        self._expanded_before_search: set[str] = set()
 
         # ---------------- left: search + tree
         left = QWidget()
@@ -62,7 +80,18 @@ class LookupTab(QWidget):
         self.tree.setColumnWidth(1, 70)
         self.tree.setAlternatingRowColors(True)
         self.tree.currentItemChanged.connect(self._on_item_changed)
+        self.expand_btn = QPushButton("Expand all")
+        self.collapse_btn = QPushButton("Collapse all")
+        self.expand_btn.setToolTip("Open every machine to show its ROMs")
+        self.collapse_btn.setToolTip("Close every machine")
+        self.expand_btn.clicked.connect(self.tree.expandAll)
+        self.collapse_btn.clicked.connect(self.tree.collapseAll)
+        tree_row = QHBoxLayout()
+        tree_row.addWidget(self.expand_btn)
+        tree_row.addWidget(self.collapse_btn)
+        tree_row.addStretch(1)
         ll.addWidget(self.search)
+        ll.addLayout(tree_row)
         ll.addWidget(self.tree, 1)
         btn_row = QHBoxLayout()
         self.add_btn = QPushButton("+ Add Machine / ROM")
@@ -222,10 +251,19 @@ class LookupTab(QWidget):
     def _populate(self) -> None:
         text = self.search.text()
         matches = {rom.id for rom in self.db.search(text)}
+        # machines start collapsed; ones the user opened stay open when the list is rebuilt (theme change, edits)
+        searching = bool(text.strip())
+        expanded = {self.tree.topLevelItem(i).data(0, ROLE_MACHINE_ID)
+                    for i in range(self.tree.topLevelItemCount()) if self.tree.topLevelItem(i).isExpanded()}
+        if searching and not self._searching:
+            self._expanded_before_search = expanded        # remembered while results are shown opened
+        elif not searching and self._searching:
+            expanded = self._expanded_before_search        # clearing the search restores the previous state
+        self._searching = searching
         self.tree.blockSignals(True)
         self.tree.clear()
         shown = 0
-        for machine in self.db.machines:
+        for machine in sorted(self.db.machines, key=machine_sort_key):
             roms = [r for r in machine.roms if r.id in matches]
             if not roms:
                 continue
@@ -235,6 +273,8 @@ class LookupTab(QWidget):
             font.setBold(True)
             parent.setFont(0, font)
             parent.setFlags(parent.flags() & ~Qt.ItemFlag.ItemIsSelectable)
+            parent.setData(0, ROLE_MACHINE_ID, machine.id)
+            parent.setToolTip(0, machine.manufacturer)
             for rom in roms:
                 part = rom.part_numbers[0] if rom.part_numbers else ""
                 label = rom.name + (f"  [{part}]" if part and " " not in part and len(part) <= 12 else "")
@@ -249,7 +289,8 @@ class LookupTab(QWidget):
                 parent.addChild(child)
                 shown += 1
             self.tree.addTopLevelItem(parent)
-        self.tree.expandAll()
+            # a search shows its hits opened; otherwise keep the user's open / closed state
+            parent.setExpanded(searching or machine.id in expanded)
         self.tree.blockSignals(False)
         user = f" ({self.db.user_rom_count} user-added/edited)" if self.db.user_rom_count else ""
         self.count_label.setText(f"{shown} ROM(s) shown • {self.db.builtin_rom_count} in database{user}")
@@ -262,6 +303,7 @@ class LookupTab(QWidget):
             for j in range(top.childCount()):
                 item = top.child(j)
                 if item.data(0, ROLE_ROM_ID) == rom_id:
+                    top.setExpanded(True)
                     self.tree.setCurrentItem(item)
                     self.tree.scrollToItem(item)
                     return True
