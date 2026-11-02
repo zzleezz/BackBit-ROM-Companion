@@ -43,9 +43,7 @@
             "EPROM strap: a 27128 uses pin 1 as VPP and pin 27 as /PGM. Boards built with an EPROM have a factory strap tying pin 27 (and pin 1) to pin 28 (+5V). If the board has been converted between mask ROM and EPROM, check the solder links and any bodge wires on pins 1 / 27 / 28 before trusting a dump or fitting a replacement.",
             "The BackBit has no 23128 setting. An original Sinclair mask ROM is read with the 27128 setting through a Pin 27 -> Pin 28 (+5V) interposer (see the Hardware / Polarity Warning); a genuine 27128 EPROM is read with the 27128 setting directly, without the interposer. Check which chip is fitted (quartz window / part number) first."
           ],
-          "notes": [
-            "Early Issue 2 boards may carry the ROM on a small EPROM daughterboard ('dead cockroach')."
-          ],
+          "notes": [],
           "label": "Spec48 ROM IC5"
         }
       ],
