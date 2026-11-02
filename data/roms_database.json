@@ -71,9 +71,10 @@
           "chip_type": "23256 mask ROM",
           "backbit": [
             {
-              "setting": "23256",
+              "setting": "27256",
               "pins": 28,
-              "chip": "Original 23256 mask ROM"
+              "chip": "Original 23256 mask ROM",
+              "warning": "The BackBit has no 23256 setting, so this mask ROM is read with the 27256 setting. Address and data pins match, but mask ROM chip selects (Pins 20 and 22, and Pin 1 on some makers' parts) have factory-programmed polarity. If the read is blank or every byte is the same, check the chip's data sheet: lift any active-HIGH select out of the tester with an interposer socket and tie it to Pin 28 (+5V)."
             },
             {
               "setting": "27256",
@@ -134,9 +135,10 @@
           "chip_type": "23256 mask ROM",
           "backbit": [
             {
-              "setting": "23256",
+              "setting": "27256",
               "pins": 28,
-              "chip": "Original 23256 mask ROM"
+              "chip": "Original 23256 mask ROM",
+              "warning": "The BackBit has no 23256 setting, so this mask ROM is read with the 27256 setting. Address and data pins match, but mask ROM chip selects (Pins 20 and 22, and Pin 1 on some makers' parts) have factory-programmed polarity. If the read is blank or every byte is the same, check the chip's data sheet: lift any active-HIGH select out of the tester with an interposer socket and tie it to Pin 28 (+5V)."
             },
             {
               "setting": "27256",
@@ -717,9 +719,10 @@
           "chip_type": "23256 mask ROM",
           "backbit": [
             {
-              "setting": "23256",
+              "setting": "27256",
               "pins": 28,
-              "chip": "Original Amstrad 40009 mask ROM"
+              "chip": "Original Amstrad 40009 mask ROM (23256 type)",
+              "warning": "The BackBit has no 23256 setting, so this mask ROM is read with the 27256 setting. Address and data pins match, but mask ROM chip selects (Pins 20 and 22, and Pin 1 on some makers' parts) have factory-programmed polarity. If the read is blank or every byte is the same, check the chip's data sheet: lift any active-HIGH select out of the tester with an interposer socket and tie it to Pin 28 (+5V)."
             },
             {
               "setting": "27256",
@@ -731,9 +734,7 @@
           "crc32": "40852f25",
           "source": "MAME amstrad/amstrad.cpp - cpc464.rom",
           "replacement": "27C256 programmed with the full 32KB image.",
-          "warnings": [
-            "Mask ROM control pins are factory programmed. If the 23256 setting gives an all-FF or noisy dump, re-seat the chip and try the 27256 setting before condemning it."
-          ],
+          "warnings": [],
           "notes": [],
           "label": "CPC464 OS IC104"
         }
@@ -759,9 +760,10 @@
           "chip_type": "23256 mask ROM",
           "backbit": [
             {
-              "setting": "23256",
+              "setting": "27256",
               "pins": 28,
-              "chip": "Original Amstrad 40025 mask ROM"
+              "chip": "Original Amstrad 40025 mask ROM (23256 type)",
+              "warning": "The BackBit has no 23256 setting, so this mask ROM is read with the 27256 setting. Address and data pins match, but mask ROM chip selects (Pins 20 and 22, and Pin 1 on some makers' parts) have factory-programmed polarity. If the read is blank or every byte is the same, check the chip's data sheet: lift any active-HIGH select out of the tester with an interposer socket and tie it to Pin 28 (+5V)."
             },
             {
               "setting": "27256",
@@ -773,9 +775,7 @@
           "crc32": "9e827fe1",
           "source": "MAME amstrad/amstrad.cpp - cpc6128.rom",
           "replacement": "27C256 programmed with the full 32KB image.",
-          "warnings": [
-            "Mask ROM control pins are factory programmed. If the 23256 setting gives an all-FF or noisy dump, re-seat the chip and try the 27256 setting before condemning it."
-          ],
+          "warnings": [],
           "notes": [],
           "label": "CPC6128 OS IC103"
         },
@@ -1073,9 +1073,10 @@
           "chip_type": "23256 mask ROM",
           "backbit": [
             {
-              "setting": "23256",
+              "setting": "27256",
               "pins": 28,
-              "chip": "Original 23256 mask ROM"
+              "chip": "Original 23256 mask ROM",
+              "warning": "The BackBit has no 23256 setting, so this mask ROM is read with the 27256 setting. Address and data pins match, but mask ROM chip selects (Pins 20 and 22, and Pin 1 on some makers' parts) have factory-programmed polarity. If the read is blank or every byte is the same, check the chip's data sheet: lift any active-HIGH select out of the tester with an interposer socket and tie it to Pin 28 (+5V)."
             },
             {
               "setting": "27256",
@@ -1124,9 +1125,10 @@
           "chip_type": "23256 mask ROM",
           "backbit": [
             {
-              "setting": "23256",
+              "setting": "27256",
               "pins": 28,
-              "chip": "Original 23256 mask ROM"
+              "chip": "Original 23256 mask ROM",
+              "warning": "The BackBit has no 23256 setting, so this mask ROM is read with the 27256 setting. Address and data pins match, but mask ROM chip selects (Pins 20 and 22, and Pin 1 on some makers' parts) have factory-programmed polarity. If the read is blank or every byte is the same, check the chip's data sheet: lift any active-HIGH select out of the tester with an interposer socket and tie it to Pin 28 (+5V)."
             },
             {
               "setting": "27256",
@@ -1175,9 +1177,10 @@
           "chip_type": "23256 mask ROM",
           "backbit": [
             {
-              "setting": "23256",
+              "setting": "27256",
               "pins": 28,
-              "chip": "Original 23256 mask ROM"
+              "chip": "Original 23256 mask ROM",
+              "warning": "The BackBit has no 23256 setting, so this mask ROM is read with the 27256 setting. Address and data pins match, but mask ROM chip selects (Pins 20 and 22, and Pin 1 on some makers' parts) have factory-programmed polarity. If the read is blank or every byte is the same, check the chip's data sheet: lift any active-HIGH select out of the tester with an interposer socket and tie it to Pin 28 (+5V)."
             },
             {
               "setting": "27256",
@@ -1208,9 +1211,10 @@
           "chip_type": "23256 mask ROM",
           "backbit": [
             {
-              "setting": "23256",
+              "setting": "27256",
               "pins": 28,
-              "chip": "Original 23256 mask ROM"
+              "chip": "Original 23256 mask ROM",
+              "warning": "The BackBit has no 23256 setting, so this mask ROM is read with the 27256 setting. Address and data pins match, but mask ROM chip selects (Pins 20 and 22, and Pin 1 on some makers' parts) have factory-programmed polarity. If the read is blank or every byte is the same, check the chip's data sheet: lift any active-HIGH select out of the tester with an interposer socket and tie it to Pin 28 (+5V)."
             },
             {
               "setting": "27256",
@@ -1241,9 +1245,10 @@
           "chip_type": "23256 mask ROM",
           "backbit": [
             {
-              "setting": "23256",
+              "setting": "27256",
               "pins": 28,
-              "chip": "Original 23256 mask ROM"
+              "chip": "Original 23256 mask ROM",
+              "warning": "The BackBit has no 23256 setting, so this mask ROM is read with the 27256 setting. Address and data pins match, but mask ROM chip selects (Pins 20 and 22, and Pin 1 on some makers' parts) have factory-programmed polarity. If the read is blank or every byte is the same, check the chip's data sheet: lift any active-HIGH select out of the tester with an interposer socket and tie it to Pin 28 (+5V)."
             },
             {
               "setting": "27256",
@@ -1274,9 +1279,10 @@
           "chip_type": "23256 mask ROM",
           "backbit": [
             {
-              "setting": "23256",
+              "setting": "27256",
               "pins": 28,
-              "chip": "Original 23256 mask ROM"
+              "chip": "Original 23256 mask ROM",
+              "warning": "The BackBit has no 23256 setting, so this mask ROM is read with the 27256 setting. Address and data pins match, but mask ROM chip selects (Pins 20 and 22, and Pin 1 on some makers' parts) have factory-programmed polarity. If the read is blank or every byte is the same, check the chip's data sheet: lift any active-HIGH select out of the tester with an interposer socket and tie it to Pin 28 (+5V)."
             },
             {
               "setting": "27256",
@@ -1316,9 +1322,10 @@
           "chip_type": "23256 mask ROM",
           "backbit": [
             {
-              "setting": "23256",
+              "setting": "27256",
               "pins": 28,
-              "chip": "Original 23256 mask ROM"
+              "chip": "Original 23256 mask ROM",
+              "warning": "The BackBit has no 23256 setting, so this mask ROM is read with the 27256 setting. Address and data pins match, but mask ROM chip selects (Pins 20 and 22, and Pin 1 on some makers' parts) have factory-programmed polarity. If the read is blank or every byte is the same, check the chip's data sheet: lift any active-HIGH select out of the tester with an interposer socket and tie it to Pin 28 (+5V)."
             },
             {
               "setting": "27256",
@@ -1387,9 +1394,10 @@
           "chip_type": "23256 mask ROM",
           "backbit": [
             {
-              "setting": "23256",
+              "setting": "27256",
               "pins": 28,
-              "chip": "Original 23256 mask ROM"
+              "chip": "Original 23256 mask ROM",
+              "warning": "The BackBit has no 23256 setting, so this mask ROM is read with the 27256 setting. Address and data pins match, but mask ROM chip selects (Pins 20 and 22, and Pin 1 on some makers' parts) have factory-programmed polarity. If the read is blank or every byte is the same, check the chip's data sheet: lift any active-HIGH select out of the tester with an interposer socket and tie it to Pin 28 (+5V)."
             },
             {
               "setting": "27256",
@@ -1458,9 +1466,10 @@
           "chip_type": "23256 mask ROM",
           "backbit": [
             {
-              "setting": "23256",
+              "setting": "27256",
               "pins": 28,
-              "chip": "Original 23256 mask ROM"
+              "chip": "Original 23256 mask ROM",
+              "warning": "The BackBit has no 23256 setting, so this mask ROM is read with the 27256 setting. Address and data pins match, but mask ROM chip selects (Pins 20 and 22, and Pin 1 on some makers' parts) have factory-programmed polarity. If the read is blank or every byte is the same, check the chip's data sheet: lift any active-HIGH select out of the tester with an interposer socket and tie it to Pin 28 (+5V)."
             },
             {
               "setting": "27256",
@@ -1531,9 +1540,10 @@
           "chip_type": "23256 mask ROM",
           "backbit": [
             {
-              "setting": "23256",
+              "setting": "27256",
               "pins": 28,
-              "chip": "Original 23256 mask ROM"
+              "chip": "Original 23256 mask ROM",
+              "warning": "The BackBit has no 23256 setting, so this mask ROM is read with the 27256 setting. Address and data pins match, but mask ROM chip selects (Pins 20 and 22, and Pin 1 on some makers' parts) have factory-programmed polarity. If the read is blank or every byte is the same, check the chip's data sheet: lift any active-HIGH select out of the tester with an interposer socket and tie it to Pin 28 (+5V)."
             },
             {
               "setting": "27256",
@@ -1650,9 +1660,10 @@
           "chip_type": "23256 mask ROM",
           "backbit": [
             {
-              "setting": "23256",
+              "setting": "27256",
               "pins": 28,
-              "chip": "Original 23256 mask ROM"
+              "chip": "Original 23256 mask ROM",
+              "warning": "The BackBit has no 23256 setting, so this mask ROM is read with the 27256 setting. Address and data pins match, but mask ROM chip selects (Pins 20 and 22, and Pin 1 on some makers' parts) have factory-programmed polarity. If the read is blank or every byte is the same, check the chip's data sheet: lift any active-HIGH select out of the tester with an interposer socket and tie it to Pin 28 (+5V)."
             },
             {
               "setting": "27256",
@@ -1722,9 +1733,14 @@
           "chip_type": "27C1001 / 27C010 (1Mbit)",
           "backbit": [
             {
-              "setting": "27C010",
+              "setting": "27100-0",
               "pins": 32,
               "chip": "27C010 / 27C1001 1Mbit EPROM"
+            },
+            {
+              "setting": "27100-1",
+              "pins": 32,
+              "chip": "27C010 / 27C1001 1Mbit EPROM - alternative 128K menu entry, if 27100-0 fails"
             }
           ],
           "sha1": null,
@@ -1734,7 +1750,9 @@
           "warnings": [
             "Several cartridge revisions exist (English, French, Spanish, Burnin' Rubber / BASIC variants), so no single hash is stored. Dump a known-good cartridge and use 'Register in Database' to add it."
           ],
-          "notes": []
+          "notes": [
+            "The menu has two 128K entries, 27100-0 and 27100-1. Read with 27100-0 first; if the read fails or is blank, try 27100-1."
+          ]
         }
       ]
     },
@@ -3523,9 +3541,10 @@
           "chip_type": "23256 mask ROM",
           "backbit": [
             {
-              "setting": "23256",
+              "setting": "27256",
               "pins": 28,
-              "chip": "Original 23256 mask ROM"
+              "chip": "Original 23256 mask ROM",
+              "warning": "The BackBit has no 23256 setting, so this mask ROM is read with the 27256 setting. Address and data pins match, but mask ROM chip selects (Pins 20 and 22, and Pin 1 on some makers' parts) have factory-programmed polarity. If the read is blank or every byte is the same, check the chip's data sheet: lift any active-HIGH select out of the tester with an interposer socket and tie it to Pin 28 (+5V)."
             },
             {
               "setting": "27256",
@@ -3563,14 +3582,20 @@
           "chip_type": "1Mbit 28-pin mask ROM",
           "backbit": [
             {
-              "setting": "231024",
+              "setting": "531000",
               "pins": 28,
-              "chip": "Original 1Mbit 28-pin mask ROM"
+              "chip": "Original 1Mbit 28-pin mask ROM",
+              "warning": "Read with the BackBit 531000 setting (28-pin 1Mbit mask ROM). 28-pin 1Mbit mask ROMs are not standardised: the top address lines and the chip select differ between makers. If the read is blank, or the image repeats itself, compare this chip's pinout with a 531000 data sheet before trusting the dump."
             },
             {
-              "setting": "27C1001",
+              "setting": "27100-0",
               "pins": 32,
               "chip": "27C1001 / 27C010 on 32-to-28 adapter"
+            },
+            {
+              "setting": "27100-1",
+              "pins": 32,
+              "chip": "27C1001 / 27C010 on 32-to-28 adapter - alternative 128K menu entry, if 27100-0 fails"
             }
           ],
           "sha1": "eacacbec3892dc4809ad5800e6c8299ff9eb528f",
@@ -3580,7 +3605,9 @@
           "warnings": [
             "The 128KB MegaROM is a 28-pin 1Mbit JEDEC mask ROM. A 27C1001/27C010 EPROM replacement is 32-pin and needs a 32-to-28 adapter (A16 and the extra control pins are re-routed)."
           ],
-          "notes": []
+          "notes": [
+            "The menu has two 128K entries, 27100-0 and 27100-1. Read with 27100-0 first; if the read fails or is blank, try 27100-1."
+          ]
         },
         {
           "id": "bbcm_mos350",
@@ -3596,14 +3623,20 @@
           "chip_type": "1Mbit 28-pin mask ROM",
           "backbit": [
             {
-              "setting": "231024",
+              "setting": "531000",
               "pins": 28,
-              "chip": "Original 1Mbit 28-pin mask ROM"
+              "chip": "Original 1Mbit 28-pin mask ROM",
+              "warning": "Read with the BackBit 531000 setting (28-pin 1Mbit mask ROM). 28-pin 1Mbit mask ROMs are not standardised: the top address lines and the chip select differ between makers. If the read is blank, or the image repeats itself, compare this chip's pinout with a 531000 data sheet before trusting the dump."
             },
             {
-              "setting": "27C1001",
+              "setting": "27100-0",
               "pins": 32,
               "chip": "27C1001 / 27C010 on 32-to-28 adapter"
+            },
+            {
+              "setting": "27100-1",
+              "pins": 32,
+              "chip": "27C1001 / 27C010 on 32-to-28 adapter - alternative 128K menu entry, if 27100-0 fails"
             }
           ],
           "sha1": "85211b5bc7c7a269952d2b063b7ec0e1f0196803",
@@ -3613,7 +3646,9 @@
           "warnings": [
             "The 128KB MegaROM is a 28-pin 1Mbit JEDEC mask ROM. A 27C1001/27C010 EPROM replacement is 32-pin and needs a 32-to-28 adapter (A16 and the extra control pins are re-routed)."
           ],
-          "notes": []
+          "notes": [
+            "The menu has two 128K entries, 27100-0 and 27100-1. Read with 27100-0 first; if the read fails or is blank, try 27100-1."
+          ]
         }
       ]
     },
@@ -3720,9 +3755,14 @@
           "chip_type": "1Mbit mask ROM",
           "backbit": [
             {
-              "setting": "27C010",
+              "setting": "27100-0",
               "pins": 32,
               "chip": "27C010 / 27C1001 (1Mbit)"
+            },
+            {
+              "setting": "27100-1",
+              "pins": 32,
+              "chip": "27C010 / 27C1001 (1Mbit) - alternative 128K menu entry, if 27100-0 fails"
             }
           ],
           "sha1": "758adaf6f73b4041a680cdf9a0b2107da12ca5a0",
@@ -3733,7 +3773,8 @@
             "32-bit ROM set: each chip carries ONE byte lane of every 32-bit word, so a single-chip dump is not a contiguous OS image. All four chips must come from the same RISC OS version and sit in the correct sockets."
           ],
           "notes": [
-            "MAME byte lane 0 (0283,022-01.rom). Confirmed silkscreen: IC24 = Byte 0 / LSB (IC24 = byte 0 / LSB ... IC27 = byte 3 / MSB)."
+            "MAME byte lane 0 (0283,022-01.rom). Confirmed silkscreen: IC24 = Byte 0 / LSB (IC24 = byte 0 / LSB ... IC27 = byte 3 / MSB).",
+            "The menu has two 128K entries, 27100-0 and 27100-1. Read with 27100-0 first; if the read fails or is blank, try 27100-1."
           ]
         },
         {
@@ -3750,9 +3791,14 @@
           "chip_type": "1Mbit mask ROM",
           "backbit": [
             {
-              "setting": "27C010",
+              "setting": "27100-0",
               "pins": 32,
               "chip": "27C010 / 27C1001 (1Mbit)"
+            },
+            {
+              "setting": "27100-1",
+              "pins": 32,
+              "chip": "27C010 / 27C1001 (1Mbit) - alternative 128K menu entry, if 27100-0 fails"
             }
           ],
           "sha1": "2db7f06e692c3191b2e131d55a1cf997e226c7c6",
@@ -3763,7 +3809,8 @@
             "32-bit ROM set: each chip carries ONE byte lane of every 32-bit word, so a single-chip dump is not a contiguous OS image. All four chips must come from the same RISC OS version and sit in the correct sockets."
           ],
           "notes": [
-            "MAME byte lane 1 (0283,023-01.rom). Confirmed silkscreen: IC25 = Byte 1 (IC24 = byte 0 / LSB ... IC27 = byte 3 / MSB)."
+            "MAME byte lane 1 (0283,023-01.rom). Confirmed silkscreen: IC25 = Byte 1 (IC24 = byte 0 / LSB ... IC27 = byte 3 / MSB).",
+            "The menu has two 128K entries, 27100-0 and 27100-1. Read with 27100-0 first; if the read fails or is blank, try 27100-1."
           ]
         },
         {
@@ -3780,9 +3827,14 @@
           "chip_type": "1Mbit mask ROM",
           "backbit": [
             {
-              "setting": "27C010",
+              "setting": "27100-0",
               "pins": 32,
               "chip": "27C010 / 27C1001 (1Mbit)"
+            },
+            {
+              "setting": "27100-1",
+              "pins": 32,
+              "chip": "27C010 / 27C1001 (1Mbit) - alternative 128K menu entry, if 27100-0 fails"
             }
           ],
           "sha1": "779fcb13ce4107c27a003cdc848e8a5b7e039268",
@@ -3793,7 +3845,8 @@
             "32-bit ROM set: each chip carries ONE byte lane of every 32-bit word, so a single-chip dump is not a contiguous OS image. All four chips must come from the same RISC OS version and sit in the correct sockets."
           ],
           "notes": [
-            "MAME byte lane 2 (0283,024-01.rom). Confirmed silkscreen: IC26 = Byte 2 (IC24 = byte 0 / LSB ... IC27 = byte 3 / MSB)."
+            "MAME byte lane 2 (0283,024-01.rom). Confirmed silkscreen: IC26 = Byte 2 (IC24 = byte 0 / LSB ... IC27 = byte 3 / MSB).",
+            "The menu has two 128K entries, 27100-0 and 27100-1. Read with 27100-0 first; if the read fails or is blank, try 27100-1."
           ]
         },
         {
@@ -3810,9 +3863,14 @@
           "chip_type": "1Mbit mask ROM",
           "backbit": [
             {
-              "setting": "27C010",
+              "setting": "27100-0",
               "pins": 32,
               "chip": "27C010 / 27C1001 (1Mbit)"
+            },
+            {
+              "setting": "27100-1",
+              "pins": 32,
+              "chip": "27C010 / 27C1001 (1Mbit) - alternative 128K menu entry, if 27100-0 fails"
             }
           ],
           "sha1": "0e0631ee43acf3d005f24a4d5c11c5c60e6f29a2",
@@ -3823,7 +3881,8 @@
             "32-bit ROM set: each chip carries ONE byte lane of every 32-bit word, so a single-chip dump is not a contiguous OS image. All four chips must come from the same RISC OS version and sit in the correct sockets."
           ],
           "notes": [
-            "MAME byte lane 3 (0283,025-01.rom). Confirmed silkscreen: IC27 = Byte 3 / MSB (IC24 = byte 0 / LSB ... IC27 = byte 3 / MSB)."
+            "MAME byte lane 3 (0283,025-01.rom). Confirmed silkscreen: IC27 = Byte 3 / MSB (IC24 = byte 0 / LSB ... IC27 = byte 3 / MSB).",
+            "The menu has two 128K entries, 27100-0 and 27100-1. Read with 27100-0 first; if the read fails or is blank, try 27100-1."
           ]
         },
         {
@@ -3840,7 +3899,7 @@
           "chip_type": "4Mbit mask ROM",
           "backbit": [
             {
-              "setting": "27C040",
+              "setting": "27040",
               "pins": 32,
               "chip": "27C040 / 27C4001 (4Mbit)"
             }
@@ -3870,7 +3929,7 @@
           "chip_type": "4Mbit mask ROM",
           "backbit": [
             {
-              "setting": "27C040",
+              "setting": "27040",
               "pins": 32,
               "chip": "27C040 / 27C4001 (4Mbit)"
             }
@@ -3900,7 +3959,7 @@
           "chip_type": "4Mbit mask ROM",
           "backbit": [
             {
-              "setting": "27C040",
+              "setting": "27040",
               "pins": 32,
               "chip": "27C040 / 27C4001 (4Mbit)"
             }
@@ -3930,7 +3989,7 @@
           "chip_type": "4Mbit mask ROM",
           "backbit": [
             {
-              "setting": "27C040",
+              "setting": "27040",
               "pins": 32,
               "chip": "27C040 / 27C4001 (4Mbit)"
             }
@@ -4319,14 +4378,16 @@
           "chip_type": "MCM68364 mask ROM",
           "backbit": [
             {
-              "setting": "68364",
+              "setting": "2364",
               "pins": 24,
-              "chip": "Motorola MCM68364 / 68A364 mask ROM"
+              "chip": "Motorola MCM68364 / 68A364 mask ROM",
+              "warning": "The BackBit has no 68364 setting. The MCM68364 has the same pin layout as the 2364 (A11 on Pin 18, A12 on Pin 21, chip select on Pin 20), so it is read with the 2364 setting. Its chip-select polarity is set at the factory: if the read is blank, use an interposer socket to tie Pin 20 to Pin 24 (+5V) for an active-high select, or to Pin 12 (GND) for an active-low one."
             },
             {
-              "setting": "68764",
+              "setting": "2364",
               "pins": 24,
-              "chip": "MCM68764 / 68766 24-pin EPROM"
+              "chip": "MCM68764 / 68766 24-pin EPROM",
+              "warning": "The BackBit has no 68764 / 68766 setting. These EPROMs have the 2364 pin layout (A11 on Pin 18, A12 on Pin 21, /E or /G on Pin 20), so they are read with the 2364 setting. If the read is blank, use an interposer socket to tie Pin 20 to Pin 12 (GND)."
             },
             {
               "setting": "2764",
@@ -4358,14 +4419,16 @@
           "chip_type": "MCM68364 mask ROM",
           "backbit": [
             {
-              "setting": "68364",
+              "setting": "2364",
               "pins": 24,
-              "chip": "Motorola MCM68364 / 68A364 mask ROM"
+              "chip": "Motorola MCM68364 / 68A364 mask ROM",
+              "warning": "The BackBit has no 68364 setting. The MCM68364 has the same pin layout as the 2364 (A11 on Pin 18, A12 on Pin 21, chip select on Pin 20), so it is read with the 2364 setting. Its chip-select polarity is set at the factory: if the read is blank, use an interposer socket to tie Pin 20 to Pin 24 (+5V) for an active-high select, or to Pin 12 (GND) for an active-low one."
             },
             {
-              "setting": "68764",
+              "setting": "2364",
               "pins": 24,
-              "chip": "MCM68764 / 68766 24-pin EPROM"
+              "chip": "MCM68764 / 68766 24-pin EPROM",
+              "warning": "The BackBit has no 68764 / 68766 setting. These EPROMs have the 2364 pin layout (A11 on Pin 18, A12 on Pin 21, /E or /G on Pin 20), so they are read with the 2364 setting. If the read is blank, use an interposer socket to tie Pin 20 to Pin 12 (GND)."
             },
             {
               "setting": "2764",
@@ -4474,14 +4537,16 @@
           "chip_type": "MCM68364 / 2364 mask ROM",
           "backbit": [
             {
-              "setting": "68364",
+              "setting": "2364",
               "pins": 24,
-              "chip": "Motorola MCM68364 / 68A364 mask ROM"
+              "chip": "Motorola MCM68364 / 68A364 mask ROM",
+              "warning": "The BackBit has no 68364 setting. The MCM68364 has the same pin layout as the 2364 (A11 on Pin 18, A12 on Pin 21, chip select on Pin 20), so it is read with the 2364 setting. Its chip-select polarity is set at the factory: if the read is blank, use an interposer socket to tie Pin 20 to Pin 24 (+5V) for an active-high select, or to Pin 12 (GND) for an active-low one."
             },
             {
-              "setting": "68764",
+              "setting": "2364",
               "pins": 24,
-              "chip": "MCM68764 / 68766 24-pin EPROM"
+              "chip": "MCM68764 / 68766 24-pin EPROM",
+              "warning": "The BackBit has no 68764 / 68766 setting. These EPROMs have the 2364 pin layout (A11 on Pin 18, A12 on Pin 21, /E or /G on Pin 20), so they are read with the 2364 setting. If the read is blank, use an interposer socket to tie Pin 20 to Pin 12 (GND)."
             },
             {
               "setting": "2764",
@@ -4512,14 +4577,16 @@
           "chip_type": "MCM68364 / 2364 mask ROM",
           "backbit": [
             {
-              "setting": "68364",
+              "setting": "2364",
               "pins": 24,
-              "chip": "Motorola MCM68364 / 68A364 mask ROM"
+              "chip": "Motorola MCM68364 / 68A364 mask ROM",
+              "warning": "The BackBit has no 68364 setting. The MCM68364 has the same pin layout as the 2364 (A11 on Pin 18, A12 on Pin 21, chip select on Pin 20), so it is read with the 2364 setting. Its chip-select polarity is set at the factory: if the read is blank, use an interposer socket to tie Pin 20 to Pin 24 (+5V) for an active-high select, or to Pin 12 (GND) for an active-low one."
             },
             {
-              "setting": "68764",
+              "setting": "2364",
               "pins": 24,
-              "chip": "MCM68764 / 68766 24-pin EPROM"
+              "chip": "MCM68764 / 68766 24-pin EPROM",
+              "warning": "The BackBit has no 68764 / 68766 setting. These EPROMs have the 2364 pin layout (A11 on Pin 18, A12 on Pin 21, /E or /G on Pin 20), so they are read with the 2364 setting. If the read is blank, use an interposer socket to tie Pin 20 to Pin 12 (GND)."
             },
             {
               "setting": "2764",
@@ -4550,14 +4617,16 @@
           "chip_type": "MCM68364 / 2364 mask ROM",
           "backbit": [
             {
-              "setting": "68364",
+              "setting": "2364",
               "pins": 24,
-              "chip": "Motorola MCM68364 / 68A364 mask ROM"
+              "chip": "Motorola MCM68364 / 68A364 mask ROM",
+              "warning": "The BackBit has no 68364 setting. The MCM68364 has the same pin layout as the 2364 (A11 on Pin 18, A12 on Pin 21, chip select on Pin 20), so it is read with the 2364 setting. Its chip-select polarity is set at the factory: if the read is blank, use an interposer socket to tie Pin 20 to Pin 24 (+5V) for an active-high select, or to Pin 12 (GND) for an active-low one."
             },
             {
-              "setting": "68764",
+              "setting": "2364",
               "pins": 24,
-              "chip": "MCM68764 / 68766 24-pin EPROM"
+              "chip": "MCM68764 / 68766 24-pin EPROM",
+              "warning": "The BackBit has no 68764 / 68766 setting. These EPROMs have the 2364 pin layout (A11 on Pin 18, A12 on Pin 21, /E or /G on Pin 20), so they are read with the 2364 setting. If the read is blank, use an interposer socket to tie Pin 20 to Pin 12 (GND)."
             },
             {
               "setting": "2764",
@@ -4588,14 +4657,16 @@
           "chip_type": "MCM68364 / 2364 mask ROM",
           "backbit": [
             {
-              "setting": "68364",
+              "setting": "2364",
               "pins": 24,
-              "chip": "Motorola MCM68364 / 68A364 mask ROM"
+              "chip": "Motorola MCM68364 / 68A364 mask ROM",
+              "warning": "The BackBit has no 68364 setting. The MCM68364 has the same pin layout as the 2364 (A11 on Pin 18, A12 on Pin 21, chip select on Pin 20), so it is read with the 2364 setting. Its chip-select polarity is set at the factory: if the read is blank, use an interposer socket to tie Pin 20 to Pin 24 (+5V) for an active-high select, or to Pin 12 (GND) for an active-low one."
             },
             {
-              "setting": "68764",
+              "setting": "2364",
               "pins": 24,
-              "chip": "MCM68764 / 68766 24-pin EPROM"
+              "chip": "MCM68764 / 68766 24-pin EPROM",
+              "warning": "The BackBit has no 68764 / 68766 setting. These EPROMs have the 2364 pin layout (A11 on Pin 18, A12 on Pin 21, /E or /G on Pin 20), so they are read with the 2364 setting. If the read is blank, use an interposer socket to tie Pin 20 to Pin 12 (GND)."
             },
             {
               "setting": "2764",
@@ -4626,14 +4697,16 @@
           "chip_type": "MCM68364 / 2364 mask ROM",
           "backbit": [
             {
-              "setting": "68364",
+              "setting": "2364",
               "pins": 24,
-              "chip": "Motorola MCM68364 / 68A364 mask ROM"
+              "chip": "Motorola MCM68364 / 68A364 mask ROM",
+              "warning": "The BackBit has no 68364 setting. The MCM68364 has the same pin layout as the 2364 (A11 on Pin 18, A12 on Pin 21, chip select on Pin 20), so it is read with the 2364 setting. Its chip-select polarity is set at the factory: if the read is blank, use an interposer socket to tie Pin 20 to Pin 24 (+5V) for an active-high select, or to Pin 12 (GND) for an active-low one."
             },
             {
-              "setting": "68764",
+              "setting": "2364",
               "pins": 24,
-              "chip": "MCM68764 / 68766 24-pin EPROM"
+              "chip": "MCM68764 / 68766 24-pin EPROM",
+              "warning": "The BackBit has no 68764 / 68766 setting. These EPROMs have the 2364 pin layout (A11 on Pin 18, A12 on Pin 21, /E or /G on Pin 20), so they are read with the 2364 setting. If the read is blank, use an interposer socket to tie Pin 20 to Pin 12 (GND)."
             },
             {
               "setting": "2764",
@@ -4664,14 +4737,16 @@
           "chip_type": "MCM68364 / 2364 mask ROM",
           "backbit": [
             {
-              "setting": "68364",
+              "setting": "2364",
               "pins": 24,
-              "chip": "Motorola MCM68364 / 68A364 mask ROM"
+              "chip": "Motorola MCM68364 / 68A364 mask ROM",
+              "warning": "The BackBit has no 68364 setting. The MCM68364 has the same pin layout as the 2364 (A11 on Pin 18, A12 on Pin 21, chip select on Pin 20), so it is read with the 2364 setting. Its chip-select polarity is set at the factory: if the read is blank, use an interposer socket to tie Pin 20 to Pin 24 (+5V) for an active-high select, or to Pin 12 (GND) for an active-low one."
             },
             {
-              "setting": "68764",
+              "setting": "2364",
               "pins": 24,
-              "chip": "MCM68764 / 68766 24-pin EPROM"
+              "chip": "MCM68764 / 68766 24-pin EPROM",
+              "warning": "The BackBit has no 68764 / 68766 setting. These EPROMs have the 2364 pin layout (A11 on Pin 18, A12 on Pin 21, /E or /G on Pin 20), so they are read with the 2364 setting. If the read is blank, use an interposer socket to tie Pin 20 to Pin 12 (GND)."
             },
             {
               "setting": "2764",
@@ -4872,14 +4947,16 @@
           "chip_type": "MCM68364 mask ROM (SCM91248C)",
           "backbit": [
             {
-              "setting": "68364",
+              "setting": "2364",
               "pins": 24,
-              "chip": "Motorola MCM68364 / 68A364 mask ROM"
+              "chip": "Motorola MCM68364 / 68A364 mask ROM",
+              "warning": "The BackBit has no 68364 setting. The MCM68364 has the same pin layout as the 2364 (A11 on Pin 18, A12 on Pin 21, chip select on Pin 20), so it is read with the 2364 setting. Its chip-select polarity is set at the factory: if the read is blank, use an interposer socket to tie Pin 20 to Pin 24 (+5V) for an active-high select, or to Pin 12 (GND) for an active-low one."
             },
             {
-              "setting": "68764",
+              "setting": "2364",
               "pins": 24,
-              "chip": "MCM68764 / 68766 24-pin EPROM"
+              "chip": "MCM68764 / 68766 24-pin EPROM",
+              "warning": "The BackBit has no 68764 / 68766 setting. These EPROMs have the 2364 pin layout (A11 on Pin 18, A12 on Pin 21, /E or /G on Pin 20), so they are read with the 2364 setting. If the read is blank, use an interposer socket to tie Pin 20 to Pin 12 (GND)."
             },
             {
               "setting": "2764",
@@ -6264,9 +6341,10 @@
           "chip_type": "23256 mask ROM (TMM23256P)",
           "backbit": [
             {
-              "setting": "23256",
+              "setting": "27256",
               "pins": 28,
-              "chip": "Original 23256 mask ROM"
+              "chip": "Original 23256 mask ROM",
+              "warning": "The BackBit has no 23256 setting, so this mask ROM is read with the 27256 setting. Address and data pins match, but mask ROM chip selects (Pins 20 and 22, and Pin 1 on some makers' parts) have factory-programmed polarity. If the read is blank or every byte is the same, check the chip's data sheet: lift any active-HIGH select out of the tester with an interposer socket and tie it to Pin 28 (+5V)."
             },
             {
               "setting": "27256",
@@ -6295,9 +6373,10 @@
           "chip_type": "23256 mask ROM",
           "backbit": [
             {
-              "setting": "23256",
+              "setting": "27256",
               "pins": 28,
-              "chip": "Original 23256 mask ROM"
+              "chip": "Original 23256 mask ROM",
+              "warning": "The BackBit has no 23256 setting, so this mask ROM is read with the 27256 setting. Address and data pins match, but mask ROM chip selects (Pins 20 and 22, and Pin 1 on some makers' parts) have factory-programmed polarity. If the read is blank or every byte is the same, check the chip's data sheet: lift any active-HIGH select out of the tester with an interposer socket and tie it to Pin 28 (+5V)."
             },
             {
               "setting": "27256",
@@ -6367,9 +6446,10 @@
           "chip_type": "23256 mask ROM (32KB, 8-bit)",
           "backbit": [
             {
-              "setting": "23256",
+              "setting": "27256",
               "pins": 28,
-              "chip": "Original 23256 mask ROM"
+              "chip": "Original 23256 mask ROM",
+              "warning": "The BackBit has no 23256 setting, so this mask ROM is read with the 27256 setting. Address and data pins match, but mask ROM chip selects (Pins 20 and 22, and Pin 1 on some makers' parts) have factory-programmed polarity. If the read is blank or every byte is the same, check the chip's data sheet: lift any active-HIGH select out of the tester with an interposer socket and tie it to Pin 28 (+5V)."
             },
             {
               "setting": "27256",
@@ -6402,9 +6482,10 @@
           "chip_type": "23256 mask ROM (32KB, 8-bit)",
           "backbit": [
             {
-              "setting": "23256",
+              "setting": "27256",
               "pins": 28,
-              "chip": "Original 23256 mask ROM"
+              "chip": "Original 23256 mask ROM",
+              "warning": "The BackBit has no 23256 setting, so this mask ROM is read with the 27256 setting. Address and data pins match, but mask ROM chip selects (Pins 20 and 22, and Pin 1 on some makers' parts) have factory-programmed polarity. If the read is blank or every byte is the same, check the chip's data sheet: lift any active-HIGH select out of the tester with an interposer socket and tie it to Pin 28 (+5V)."
             },
             {
               "setting": "27256",
@@ -7952,6 +8033,46 @@
           ],
           "notes": [
             "Logica Diagnostic 2.0 is a diagnostic ROM fitted in place of Kickstart to test RAM, custom chips and ports - useful on the bench, not a factory ROM."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cd32",
+      "name": "Commodore Amiga CD32",
+      "manufacturer": "Commodore",
+      "year": 1993,
+      "short": "CD32",
+      "roms": [
+        {
+          "id": "cd32_391640",
+          "name": "Kickstart 3.1 (40.60) + CD32 extended ROM",
+          "label": "CD32 391640",
+          "description": "The CD32's single 1MB system ROM: Kickstart 3.1 (40.60) in one half and the CD32 extended ROM (CD boot and CD filesystem) in the other.",
+          "part_numbers": [
+            "391640-03"
+          ],
+          "socket": "U6A",
+          "size": 1048576,
+          "pins": 42,
+          "chip_type": "1MB (8Mbit) 16-bit mask ROM, 42-pin",
+          "backbit": [
+            {
+              "setting": "27800",
+              "pins": 42,
+              "chip": "Original 42-pin 16-bit 1MB mask ROM, or 27C800 EPROM replacement"
+            }
+          ],
+          "sha1": "816ce6c5077875850c7d43452230a9ba3a2902db",
+          "crc32": "a4fbc94a",
+          "source": "MAME amiga/amiga.cpp - 391640-03.u6a (the dump MAME marks as the real chip)",
+          "replacement": "27C800 (42-pin, 16-bit, 1MB) EPROM programmed with the image. Check the byte order your programmer expects.",
+          "warnings": [
+            "The tester's sha.txt lookup only matches if the BackBit saves the bytes in the same order as this database image. If a known-good chip does not show its label, open the dump in Tab 2: if it reports a byte-swapped match, add that dump in Tab 4 so the tester gets the hash in its own byte order.",
+            "16-bit byte order: depending on the reader, a dump may hold the two bytes of every 16-bit word in the opposite order to this database image. Tab 2 (Inspector) and Tab 3 (Compare) detect a byte-swapped image automatically and report it as a match."
+          ],
+          "notes": [
+            "MAME currently boots the CD32 from a modified image (CRC d3837ae4); this entry uses the hash of the original chip dump, which is what a read of a real 391640-03 should give."
           ]
         }
       ]

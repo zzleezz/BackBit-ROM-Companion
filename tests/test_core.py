@@ -50,7 +50,7 @@ class TestShippedDatabase(TempDbMixin, unittest.TestCase):
                 self.assertNotIn(r["id"], ids)
                 ids.add(r["id"])
                 self.assertTrue(r["backbit"], r["id"])
-                self.assertIn(r["pins"], (24, 28, 32, 40), r["id"])
+                self.assertIn(r["pins"], (24, 28, 32, 40, 42), r["id"])
                 self.assertLessEqual(len(r.get("label", "")), 16, r["id"])      # 16x2 LCD line
                 for b in r.get("banks", []):
                     self.assertLessEqual(len(b.get("label", "")), 16, (r["id"], b["name"]))
@@ -423,6 +423,50 @@ class TestZifPlacement(unittest.TestCase):
         hits = db.lookup_sha1("c5839f5cb98a7a8947065c3ed2f14f5f42e334a1")
         self.assertEqual({m.rom.machine_id for m in hits}, {"amiga500", "amiga500p", "amiga600"})
         self.assertEqual({m.rom.label for m in hits}, {"KS2.04 37.175"})
+
+    def test_settings_match_backbit_menu(self):
+        """Every option uses an entry on the tester's ROM menu (store.backbit.io list, confirmed on a real unit)."""
+        from core.database import (NOTE_27100, WARNING_23256, WARNING_531000, WARNING_68364, WARNING_68764,
+                                   normalize_backbit_option)
+        menu = {24: {"2316", "2716", "2332", "2532", "2732", "2364"},
+                28: {"6540", "2564", "2764", "27128", "27256", "27512", "531000"},
+                32: {"27100-0", "27100-1", "27200", "27040", "27080"}, 40: {"271024", "27400"}, 42: {"27800"}}
+        with tempfile.TemporaryDirectory() as tmp:
+            db = RomDatabase(DEFAULT_DB_PATH, Path(tmp) / "i.json")
+        raw = json.loads(DEFAULT_DB_PATH.read_text(encoding="utf-8"))
+        for m in raw["machines"]:
+            for r in m["roms"]:
+                for o in r["backbit"]:
+                    self.assertIn(o["setting"], menu[o["pins"]], (r["id"], o))
+        zx128 = db.rom_by_id("zx128_rom")
+        self.assertEqual((zx128.backbit[0].setting, zx128.backbit[0].warning), ("27256", WARNING_23256))
+        self.assertEqual(zx128.backbit[1].warning, "")                        # the 27256 EPROM option
+        self.assertEqual(db.rom_by_id("bbcm_mos320").backbit[0].warning, WARNING_531000)
+        d32 = db.rom_by_id("d32_lo")
+        self.assertEqual([(o.setting, o.warning) for o in d32.backbit[:2]],
+                         [("2364", WARNING_68364), ("2364", WARNING_68764)])
+        arc = db.rom_by_id("arc200_0")
+        self.assertEqual([o.setting for o in arc.backbit], ["27100-0", "27100-1"])
+        self.assertIn(NOTE_27100, arc.notes)
+        self.assertEqual(db.rom_by_id("arc311_0").backbit[0].setting, "27040")
+        # names typed in the Database Manager or found in old packs are mapped to the menu
+        for typed, want in (("23256", "27256"), ("231024", "531000"), ("68364", "2364"), ("27C010", "27100-0"),
+                            ("27c040", "27040"), ("27C256", "27256"), ("27C800", "27800"), ("2764", "2764")):
+            self.assertEqual(normalize_backbit_option({"setting": typed, "pins": 28, "chip": ""})["setting"],
+                             want, typed)
+        n = normalize_backbit_option({"setting": "27256", "pins": 28, "chip": "Original 23256 mask ROM"})
+        self.assertEqual(n["warning"], WARNING_23256)
+        self.assertNotIn("warning", normalize_backbit_option({"setting": "27C040", "pins": 32, "chip": "EPROM"}))
+
+    def test_cd32(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            db = RomDatabase(DEFAULT_DB_PATH, Path(tmp) / "i.json")
+        r = db.rom_by_id("cd32_391640")
+        self.assertEqual((r.sha1, r.crc32, r.size, r.pins), ("816ce6c5077875850c7d43452230a9ba3a2902db", "a4fbc94a",
+                                                             1024 * 1024, 42))
+        self.assertEqual(r.backbit[0].menu_text, "Menu: ROM -> 42-Pin -> 27800")
+        self.assertTrue(any("byte order" in w for w in r.warnings))
+        self.assertEqual(zif.placement(42).describe()[-1], "Leave EMPTY: ZIF pins 22–27 (bottom 3 rows)")
 
     def test_menu_badge_pin_count_first(self):
         with tempfile.TemporaryDirectory() as tmp:

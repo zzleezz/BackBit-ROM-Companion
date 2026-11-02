@@ -30,6 +30,7 @@ CHIP_HINTS = {
     256 * KB: "27C020 EPROM (32-pin, 8-bit) or a 2Mbit 40-pin 16-bit ROM (Amiga Kickstart 1.x, or one half of "
               "an A1200 / A3000 / A4000 pair)",
     512 * KB: "27C040 EPROM (32-pin, 8-bit) or 27C400 (40-pin, 16-bit - Amiga Kickstart 2.x / 3.x)",
+    1024 * KB: "27C080 EPROM (32-pin, 8-bit) or 27C800 (42-pin, 16-bit - Amiga CD32 system ROM)",
 }
 
 

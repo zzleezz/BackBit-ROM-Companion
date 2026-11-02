@@ -55,7 +55,12 @@ class TestPinTables(unittest.TestCase):
         self.assertEqual(p.data_bits, 16)
 
     def test_aliases(self):
-        self.assertIs(pinout_for("27C1001"), PINOUTS["27C010"])
+        self.assertIs(pinout_for("27C1001"), PINOUTS["27100-0"])
+        self.assertIs(pinout_for("27100-1"), PINOUTS["27100-0"])
+        self.assertIs(pinout_for("27C040"), PINOUTS["27040"])
+        self.assertIs(pinout_for("68364"), PINOUTS["2364"])
+        self.assertIs(pinout_for("23256"), PINOUTS["27256"])
+        self.assertIs(pinout_for("231024"), PINOUTS["531000"])
         self.assertIs(pinout_for("27C256"), PINOUTS["27256"])
         self.assertIs(pinout_for("23128"), PINOUTS["27128"])
         self.assertIsNone(pinout_for("6540"))      # proprietary pinout - no table
@@ -65,7 +70,7 @@ class TestPinTables(unittest.TestCase):
         db = RomDatabase(DEFAULT_DB_PATH)
         settings = {o.setting for r in db.all_roms() for o in r.backbit}
         unknown = {s for s in settings if pinout_for(s) is None}
-        self.assertEqual(unknown, {"6540"})
+        self.assertEqual(unknown, {"6540", "27800"})
 
 
 class TestFaultToPin(unittest.TestCase):

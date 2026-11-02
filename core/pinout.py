@@ -8,13 +8,15 @@ Sources for the tables:
     EPROM footprint charts (sbprojects.net/knowledge/footprints/eprom).
   * MOS / Commodore 2364: Commodore Semiconductor Group 2364 data sheet (2/80).
   * Motorola MCM68364 / MCM68766 / MCM68A332 / MCM68A316E: Motorola MCM68766 data sheet, "industry standard
-    pinouts" figure; 2316 / 2332 mask ROMs follow the same pin layout.
+    pinouts" figure: 2316 / 2332 mask ROMs follow the same pin layout, and the MCM68364 / 68764 / 68766 share the
+    2364's (they are read with the BackBit 2364 setting).
   * 27C400 (40-pin, 16-bit): Atmel AT27C400 data sheet PDIP pin configuration, cross-checked against the
     amiga-stuff.com 4Mbit EPROM socket table.
 
-Only pins confirmed by those sources are listed. Mask ROM chip selects are factory-programmed, so they are named
-CS rather than given a polarity. The MOS 6540 (proprietary pinout) has no table, and the 28-pin 1Mbit mask ROM
-(231024) lists only the address/data pins shared by every 28-pin JEDEC part.
+Tables are keyed by the BackBit menu name (27100-0, 27040, 531000 ...). Only pins confirmed by those sources are
+listed. Mask ROM chip selects are factory-programmed, so they are named CS rather than given a polarity. The MOS
+6540 (proprietary pinout) and the 42-pin 27800 have no table yet, and the 28-pin 1Mbit mask ROM (531000) lists
+only the address/data pins shared by every 28-pin JEDEC part.
 """
 
 from __future__ import annotations
@@ -102,9 +104,6 @@ _TABLES = [
     _make("2316", 24, _dip24({18: "CS3", 19: "A10", 20: "CS1", 21: "CS2"}), ce=(18, 20, 21), note=_MASK_NOTE),
     _make("2332", 24, _dip24({18: "A11", 19: "A10", 20: "CS1", 21: "CS2"}), ce=(20, 21), note=_MASK_NOTE),
     _make("2364", 24, _dip24({18: "A11", 19: "A10", 20: "CS", 21: "A12"}), ce=(20,), note=_MASK_NOTE),
-    _make("68364", 24, _dip24({18: "A11", 19: "A10", 20: "CS", 21: "A12"}), ce=(20,), note=_MASK_NOTE),
-    _make("68764", 24, _dip24({18: "A11", 19: "A10", 20: "/E /VPP", 21: "A12"}), ce=(20,)),
-    _make("68766", 24, _dip24({18: "A11", 19: "A10", 20: "/G /VPP", 21: "A12"}), ce=(), oe=(20,)),
     _make("2716", 24, _dip24({18: "/CE /PGM", 19: "A10", 20: "/OE", 21: "VPP"}), ce=(18,), oe=(20,)),
     _make("2532", 24, _dip24({18: "A11", 19: "A10", 20: "/PD /PGM", 21: "VPP"}), ce=(20,)),
     _make("2732", 24, _dip24({18: "/CE /PGM", 19: "A10", 20: "/OE /VPP", 21: "A11"}), ce=(18,), oe=(20,)),
@@ -113,18 +112,16 @@ _TABLES = [
     _make("27128", 28, _dip28({1: "VPP", 2: "A12", 20: "/CE", 22: "/OE", 26: "A13", 27: "/PGM"}),
           ce=(20,), oe=(22,)),
     _make("27256", 28, _dip28({1: "VPP", 2: "A12", 20: "/CE", 22: "/OE", 26: "A13", 27: "A14"}), ce=(20,), oe=(22,)),
-    _make("23256", 28, _dip28({2: "A12", 20: "CS", 22: "CS / OE", 26: "A13", 27: "A14"}), ce=(20, 22),
-          note=_MASK_NOTE + " Pin 1 varies between makers and is not shown."),
     _make("27512", 28, _dip28({1: "A15", 2: "A12", 20: "/CE", 22: "/OE /VPP", 26: "A13", 27: "A14"}),
           ce=(20,), oe=(22,)),
-    _make("231024", 28, _dip28({}), ce=(),
+    _make("531000", 28, _dip28({}), ce=(),
           note="1Mbit 28-pin mask ROM: only the address/data pins shared by all 28-pin JEDEC parts are shown; "
                "A12-A16 and the chip select are maker-specific."),
     # ---- 32-pin
-    _make("27C010", 32, _dip32({1: "VPP", 24: "/OE", 30: "NC", 31: "/PGM"}), ce=(22,), oe=(24,)),
-    _make("27C020", 32, _dip32({1: "VPP", 24: "/OE", 30: "A17", 31: "/PGM"}), ce=(22,), oe=(24,)),
-    _make("27C040", 32, _dip32({1: "VPP", 24: "/OE", 30: "A17", 31: "A18"}), ce=(22,), oe=(24,)),
-    _make("27C080", 32, _dip32({1: "A19", 24: "/OE /VPP", 30: "A17", 31: "A18"}), ce=(22,), oe=(24,)),
+    _make("27100-0", 32, _dip32({1: "VPP", 24: "/OE", 30: "NC", 31: "/PGM"}), ce=(22,), oe=(24,)),
+    _make("27200", 32, _dip32({1: "VPP", 24: "/OE", 30: "A17", 31: "/PGM"}), ce=(22,), oe=(24,)),
+    _make("27040", 32, _dip32({1: "VPP", 24: "/OE", 30: "A17", 31: "A18"}), ce=(22,), oe=(24,)),
+    _make("27080", 32, _dip32({1: "A19", 24: "/OE /VPP", 30: "A17", 31: "A18"}), ce=(22,), oe=(24,)),
     # ---- 40-pin, 16-bit (read word-wide: BYTE/VPP high, pin 29 is D15)
     _make("27400", 40, {1: "A17", 2: "A7", 3: "A6", 4: "A5", 5: "A4", 6: "A3", 7: "A2", 8: "A1", 9: "A0",
                         10: "/CE", 11: "GND", 12: "/OE", 13: "D0", 14: "D8", 15: "D1", 16: "D9", 17: "D2",
@@ -136,7 +133,13 @@ _TABLES = [
 ]
 
 PINOUTS: dict[str, Pinout] = {p.setting: p for p in _TABLES}
-_ALIASES = {"27C1001": "27C010", "27C4001": "27C040", "27C400": "27400", "23128": "27128", "6540": None}
+# Chip types the BackBit menu lists under another name (see core.database.SETTING_MAP), and parts read with a
+# setting whose pin layout they share.
+_ALIASES = {"27100-1": "27100-0", "27C010": "27100-0", "27C1001": "27100-0", "27C100": "27100-0",
+            "27C020": "27200", "27C2001": "27200", "27C040": "27040", "27C4001": "27040", "27C080": "27080",
+            "27C8001": "27080", "27C400": "27400", "23128": "27128", "23256": "27256", "23512": "27512",
+            "231024": "531000", "68364": "2364", "68A364": "2364", "68764": "2364", "68766": "2364",
+            "6540": None, "27800": None, "27C800": None}
 
 
 def _norm(setting: str) -> str:

@@ -18,7 +18,7 @@ standalone build with no Python required.
 
 | Tab | What it does |
 |-----|--------------|
-| **1 · Machine → BackBit Lookup** | Pick a machine and ROM to see the exact BackBit menu setting (e.g. `Menu: ROM -> 24-Pin -> 2364`; the BackBit lists ROM tests by pin count, then chip number), the motherboard socket, part numbers, size, SHA-1/CRC32, pin-compatibility and polarity warnings, a suggested modern replacement, and a drawing of where the chip sits in the 48-pin ZIF. The tester has no `23128` setting, so 16KB 23128 mask ROMs are listed under `28-Pin -> 27128`, with a red **Hardware / Polarity Warning** to tie pin 27 to pin 28 (+5V) with an interposer socket. Chips are top-justified (chip pin 1 = ZIF pin 1, notch up), the bottom rows stay empty, and the lever is drawn down the left side. Includes a **Database Manager**: Add / Edit / Delete entries. |
+| **1 · Machine → BackBit Lookup** | Pick a machine and ROM to see the exact BackBit menu setting (e.g. `Menu: ROM -> 24-Pin -> 2364`; the BackBit lists ROM tests by pin count, then chip number), the motherboard socket, part numbers, size, SHA-1/CRC32, pin-compatibility and polarity warnings, a suggested modern replacement, and a drawing of where the chip sits in the 48-pin ZIF. Settings use the names on the tester's ROM menu. Chip types the menu doesn't list are shown under the entry to use, with a red **Hardware / Polarity Warning** where pins need attention: 23128 → `27128` (tie pin 27 to pin 28 with an interposer), 23256 → `27256`, 28-pin 1Mbit → `531000`, MCM68364 / 68764 → `2364`, and 27C010 / 27C020 / 27C040 / 27C080 → `27100-0` (or `27100-1`) / `27200` / `27040` / `27080`. Chips are top-justified (chip pin 1 = ZIF pin 1, notch up), the bottom rows stay empty, and the lever is drawn down the left side. Includes a **Database Manager**: Add / Edit / Delete entries. |
 | **2 · ROM File Inspector & Identifier** | Drop in a dump to get SHA-1/MD5/CRC32, database identification (whole chip *or* individual banks of doubled, padded or combined images), repeat/mirror detection, and a data-bit health check (stuck bits, bridged data lines, address-line mirroring). If the file is unrecognised, **Register in Database…** opens the editor with the size, SHA-1 and CRC32 already filled in. |
 | **3 · Smart ROM Compare & Diagnostics** | Compares a ripped dump (A) with a known-good reference (B). The verdict banner shows *Identical*, *Size mismatch / content match* (doubled, quadrupled, padded) or *Different*. Automated fault diagnosis covers stuck data bits, AND/OR-shorted data lines, stuck address lines, small patches, EPROM bit-rot and unrelated files. **Suspect pins:** each line fault is mapped to the chip pin and ZIF pin to check (e.g. *D3 = chip pin 13 → ZIF pin 37*), listed in the diagnosis and highlighted on a ZIF drawing. The chip type comes from the reference's database match or the *Chip type* picker; 40-pin 16-bit ROMs (27C400 / Kickstart) are diagnosed as D0–D15 with word address lines, with a byte-order choice. A side-by-side hex diff shows 16 bytes per row, with highlighted bytes, per-bit detail and a *Show only rows with differences* filter. |
 | **4 · BackBit sha.txt Generator** | Builds a staging list from the built-in database, imported sha.txt files, dropped ROM files or an existing sha.txt (duplicates are removed by SHA-1). Labels are editable, with a live counter against the LCD's 16-character line, and a preview updates as you edit. The output follows the BackBit manual exactly: `sha1sum` format, i.e. a lower-case hash, **two spaces**, then the label (e.g. `b376885ac8452b6cbf9ced81b1080bfd570d9b91  ZEROES`). The file is saved only through a native **Save As…** dialog. Nothing is ever written to an SD card automatically. |
@@ -32,14 +32,14 @@ Other features:
 
 ## Supported machines (built-in database)
 
-48 machines, 224 ROM entries. Hashes are transcribed from MAME driver sources. Combined images are verified from
+49 machines, 225 ROM entries. Hashes are transcribed from MAME driver sources. Combined images are verified from
 their MAME bank hashes.
 
 | Manufacturer | Machines |
 |---|---|
 | Sinclair / Amstrad | ZX80, ZX81, ZX Spectrum 48K, 128K (Toastrack), +2 (grey), +2A / +2B / +3, QL |
 | Commodore | C64 / 64C (incl. 251913-01), 1541 (long board), VIC-20, C16 / Plus/4, C128, PET 2001 (BASIC 1), 2001-N / 3000 (BASIC 2), 4016 / 4032 (BASIC 4), 8032 |
-| Commodore Amiga | A1000 (bootstrap), A500 / A2000 (KS 1.2, 1.3, 2.04, 3.1, 3.2 / 3.2.1 / 3.2.2), A500 Plus, A600 (2.04, 2.05 ×3, 3.1), A3000, A1200, A4000, A4000T (HI / LO pairs), CDTV (KS 1.3), Logica Diagnostic 2.0 |
+| Commodore Amiga | A1000 (bootstrap), A500 / A2000 (KS 1.2, 1.3, 2.04, 3.1, 3.2 / 3.2.1 / 3.2.2), A500 Plus, A600 (2.04, 2.05 ×3, 3.1), A3000, A1200, A4000, A4000T (HI / LO pairs), CDTV (KS 1.3), CD32 (1MB system ROM, 42-pin), Logica Diagnostic 2.0 |
 | Amstrad | CPC 464, CPC 664, CPC 6128, 464 Plus / 6128 Plus |
 | Atari | 400 / 800, 800XL, 65XE / 130XE |
 | Acorn | BBC Micro Model B, BBC Master 128, Electron, Atom, Archimedes A300 / A400 / A3000 |
@@ -53,7 +53,8 @@ OS and the QL MG ROMs, and MAME's "needs verification" note on the Apple II Inte
 **Amiga Kickstart ROMs** are 40-pin 16-bit chips read with `40-Pin -> 27400` (512K). A 256KB chip (KS 1.x and every
 A1200 / A3000 / A4000 HI or LO chip) reads as 512KB with the image twice. 16-bit dumps can also be saved with the two
 bytes of each word in either order, so Tab 2 and Tab 3 recognise **byte-swapped** images as well as doubled ones.
-Not included yet: CD32 (1MB, not a 40-pin part) and the CDTV extended ROMs (package unconfirmed).
+The **CD32** system ROM is a 1MB 42-pin 16-bit chip read with `42-Pin -> 27800`. Not included yet: the CDTV extended
+ROMs (package unconfirmed).
 
 ---
 

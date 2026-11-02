@@ -28,22 +28,33 @@ from core.paths import APP_DIR_NAME, master_db_path, master_db_writable, user_da
 DEFAULT_DB_PATH = master_db_path()
 PACK_FORMAT = "backbit-rom-pack"
 PACK_VERSION = 1
-VALID_PINS = (24, 28, 32, 40)
+VALID_PINS = (24, 28, 32, 40, 42)
 USER_SOURCE = "User entry (Database Manager)"
 
 _SHA_LINE = re.compile(r"^\s*([0-9a-fA-F]{40})(?:\s+\*?(.*?))?\s*$")
 
-# Pin count of common EPROM / mask ROM types, used to guess the package of a BackBit setting.
+# Pin count of common EPROM / mask ROM types and BackBit menu settings, used to guess a setting's package.
 KNOWN_PINS = {
     "2316": 24, "2716": 24, "2332": 24, "2532": 24, "2732": 24, "2364": 24, "68364": 24, "68764": 24, "68766": 24,
-    "2764": 28, "23128": 28, "27128": 28, "23256": 28, "27256": 28, "23512": 28, "27512": 28, "231024": 28,
-    "6540": 28, "27C010": 32, "27C1001": 32, "27C020": 32, "27C040": 32, "27C4001": 32, "27C080": 32,
+    "2564": 28, "2764": 28, "23128": 28, "27128": 28, "23256": 28, "27256": 28, "23512": 28, "27512": 28,
+    "231024": 28, "531000": 28, "6540": 28,
+    "27C010": 32, "27C1001": 32, "27C020": 32, "27C040": 32, "27C4001": 32, "27C080": 32,
+    "27100-0": 32, "27100-1": 32, "27200": 32, "27040": 32, "27080": 32,
+    "27400": 40, "271024": 40, "27800": 42,
 }
 
+# The BackBit ROM menu (store.backbit.io product page, confirmed on a Chip Tester Pro): 24-pin 2316 2716 2332
+# 2532 2732 2364; 28-pin 6540 2564 2764 27128 27256 27512 531000; 32-pin 27100-0 / 27100-1 (128K) 27200 (256K)
+# 27040 (512K) 27080 (1M); 40-pin 271024 27400; 42-pin 27800. Chip types the menu lists under another name, or
+# not at all, are mapped below to the entry to use.
 
-# Mask ROM types the BackBit Chip Tester Pro V2 has no native menu setting for, mapped to the EPROM setting
-# that must be used instead (with an interposer - see the warnings below).
-NO_NATIVE_SETTING = {"23128": "27128"}
+
+def _mask_select_warning(mask: str, setting: str, pins: str) -> str:
+    return (f"The BackBit has no {mask} setting, so this mask ROM is read with the {setting} setting. Address and "
+            f"data pins match, but mask ROM chip selects ({pins}) have factory-programmed polarity. If the read is "
+            f"blank or every byte is the same, check the chip's data sheet: lift any active-HIGH select out of the "
+            f"tester with an interposer socket and tie it to Pin 28 (+5V).")
+
 
 PIN27_WARNING_SINCLAIR = (
     "Use an interposer socket to tie Pin 27 to Pin 28 (+5V). Sinclair 23128 mask ROMs use Pin 27 as an "
@@ -55,24 +66,69 @@ PIN27_WARNING_23128 = (
     "a chip select (CS2, active-high on most parts); failing to pull Pin 27 high will result in a blank read. "
     "Mask ROM select polarities are factory-programmed: if this chip's datasheet shows Pin 27 as an "
     "active-LOW select, tie it to Pin 14 (GND) instead.")
+WARNING_23256 = _mask_select_warning("23256", "27256", "Pins 20 and 22, and Pin 1 on some makers' parts")
+WARNING_23512 = _mask_select_warning("23512", "27512", "Pins 20 and 22")
+WARNING_531000 = (
+    "Read with the BackBit 531000 setting (28-pin 1Mbit mask ROM). 28-pin 1Mbit mask ROMs are not standardised: "
+    "the top address lines and the chip select differ between makers. If the read is blank, or the image repeats "
+    "itself, compare this chip's pinout with a 531000 data sheet before trusting the dump.")
+WARNING_68364 = (
+    "The BackBit has no 68364 setting. The MCM68364 has the same pin layout as the 2364 (A11 on Pin 18, A12 on "
+    "Pin 21, chip select on Pin 20), so it is read with the 2364 setting. Its chip-select polarity is set at the "
+    "factory: if the read is blank, use an interposer socket to tie Pin 20 to Pin 24 (+5V) for an active-high "
+    "select, or to Pin 12 (GND) for an active-low one.")
+WARNING_68764 = (
+    "The BackBit has no 68764 / 68766 setting. These EPROMs have the 2364 pin layout (A11 on Pin 18, A12 on "
+    "Pin 21, /E or /G on Pin 20), so they are read with the 2364 setting. If the read is blank, use an interposer "
+    "socket to tie Pin 20 to Pin 12 (GND).")
+NOTE_27100 = ("The menu has two 128K entries, 27100-0 and 27100-1. Read with 27100-0 first; if the read fails or "
+              "is blank, try 27100-1.")
+
+# chip type -> (BackBit menu setting, warning attached to options read this way, chip text when it lacks the type)
+SETTING_MAP: dict[str, tuple[str, str, str]] = {
+    "23128": ("27128", PIN27_WARNING_23128, "23128 type"),
+    "23256": ("27256", WARNING_23256, "23256 type"),
+    "23512": ("27512", WARNING_23512, "23512 type"),
+    "231024": ("531000", WARNING_531000, ""),
+    "68364": ("2364", WARNING_68364, "MCM68364 type"),
+    "68A364": ("2364", WARNING_68364, "MCM68364 type"),
+    "68764": ("2364", WARNING_68764, "MCM68764 type"),
+    "68766": ("2364", WARNING_68764, "MCM68766 type"),
+    # CMOS / JEDEC EPROM names -> the menu's names (same pinout, no interposer)
+    "27C16": ("2716", "", ""), "27C32": ("2732", "", ""), "27C64": ("2764", "", ""), "27C128": ("27128", "", ""),
+    "27C256": ("27256", "", ""), "27C512": ("27512", "", ""),
+    "27C010": ("27100-0", "", ""), "27C1001": ("27100-0", "", ""), "27C100": ("27100-0", "", ""),
+    "27010": ("27100-0", "", ""), "27C020": ("27200", "", ""), "27C2001": ("27200", "", ""),
+    "27020": ("27200", "", ""), "27C040": ("27040", "", ""), "27C4001": ("27040", "", ""),
+    "27C080": ("27080", "", ""), "27C8001": ("27080", "", ""),
+    "27C400": ("27400", "", ""), "27C1024": ("271024", "", ""), "27C800": ("27800", "", ""),
+}
+# Backwards-compatible view: chip type -> menu setting.
+NO_NATIVE_SETTING = {k: v[0] for k, v in SETTING_MAP.items()}
 
 
 def normalize_backbit_option(opt: dict) -> dict:
-    """Map a mask ROM setting the tester doesn't have (23128) to the setting to use (27128) and make sure such
-    an option carries the Pin 27 interposer warning. Also covers a 27128 option whose chip is a 23128 mask ROM
-    (as entered in the Database Manager). Returns a new dict."""
+    """Map a chip type the tester's menu doesn't list (23128, 23256, 68364, 27C010 ...) to the menu setting to use
+    and make sure a mask ROM read that way carries its interposer / select warning. Also covers an option already
+    on the menu setting whose chip is such a mask ROM (as entered in the Database Manager), e.g. a 27128 option for
+    a "23128 mask ROM". Returns a new dict; an existing warning is kept."""
     opt = dict(opt)
     setting = str(opt.get("setting", "")).strip()
     chip = str(opt.get("chip", ""))
-    native = NO_NATIVE_SETTING.get(setting.upper())
-    is_mask_23128 = native is not None or (setting.upper() == "27128" and "23128" in chip
-                                           and "mask" in chip.lower())
-    if native:
-        opt["setting"] = native
-        if "23128" not in chip:
-            opt["chip"] = f"{chip or 'Original mask ROM'} (23128 type)".strip()
-    if is_mask_23128 and not str(opt.get("warning", "")).strip():
-        opt["warning"] = PIN27_WARNING_23128
+    mapped = SETTING_MAP.get(setting.upper())
+    warning = ""
+    if mapped:
+        target, warning, chip_note = mapped
+        opt["setting"] = target
+        if chip_note and setting.upper() not in chip.upper():
+            opt["chip"] = f"{chip or 'Original mask ROM'} ({chip_note})".strip()
+    else:
+        for src, (target, warn, _note) in SETTING_MAP.items():
+            if warn and setting.upper() == target.upper() and src in chip.upper() and "mask" in chip.lower():
+                warning = warn
+                break
+    if warning and not str(opt.get("warning", "")).strip():
+        opt["warning"] = warning
     return opt
 
 

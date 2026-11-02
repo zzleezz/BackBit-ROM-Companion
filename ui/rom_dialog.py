@@ -18,17 +18,18 @@ from core.database import USER_SOURCE, RomDatabase, RomEntry, guess_pins, normal
 from core.shatxt import DEFAULT_LABEL_LIMIT, auto_label, sanitize_label
 from ui.widgets import mono_font, set_role, set_state
 
-PIN_CHOICES = ["24", "28", "32", "40"]
+PIN_CHOICES = ["24", "28", "32", "40", "42"]
 
-# Default (mask, EPROM) BackBit settings and chip type by size, used to pre-fill new entries.
+# Default (mask, EPROM) BackBit menu settings and chip type by size, used to pre-fill new entries. Mask ROM types
+# the menu doesn't list are read with the matching EPROM setting (core.database.SETTING_MAP adds the warning).
 SIZE_DEFAULTS = {
     2048: ("2316", "2716", 24, "2316 mask ROM"),
     4096: ("2332", "2532", 24, "2332 mask ROM"),
     8192: ("2364", "2764", 24, "2364 mask ROM"),
-    16384: ("27128", "27128", 28, "23128 mask ROM"),   # no native 23128 setting: 27128 + Pin 27 interposer
-    32768: ("23256", "27256", 28, "23256 mask ROM"),
-    65536: ("23512", "27512", 28, "27512 EPROM"),
-    131072: ("231024", "27C010", 28, "1Mbit mask ROM"),
+    16384: ("27128", "27128", 28, "23128 mask ROM"),   # no 23128 setting: 27128 + Pin 27 interposer
+    32768: ("27256", "27256", 28, "23256 mask ROM"),   # no 23256 setting
+    65536: ("27512", "27512", 28, "27512 EPROM"),
+    131072: ("531000", "27100-0", 28, "1Mbit mask ROM"),
 }
 
 
@@ -292,7 +293,8 @@ class RomEditDialog(QDialog):
         mask_opt = normalize_backbit_option(mask_opt)
         backbit = [mask_opt]
         if eprom and (eprom.lower() != mask_opt["setting"].lower() or mask_opt.get("warning")):
-            backbit.append({"setting": eprom, "pins": guess_pins(eprom, pins), "chip": f"{eprom} EPROM equivalent"})
+            backbit.append(normalize_backbit_option({"setting": eprom, "pins": guess_pins(eprom, pins),
+                                                     "chip": f"{eprom} EPROM equivalent"}))
 
         if self.rom:
             base = rom_to_dict(self.rom)

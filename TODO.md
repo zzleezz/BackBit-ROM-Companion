@@ -7,9 +7,10 @@ Open items for BackBit ROM Companion. Each one needs a fact checked on a real Ba
 - [ ] **Kickstart byte order.** Dump one known Kickstart chip with the `27400` setting and load it in Tab 2 (Inspector).
   - If it shows **BYTE-SWAPPED MATCH**, the BackBit saves the other byte order. Store the swapped hashes in the database so the tester's `sha.txt` matches directly.
   - Also check whether a 256 KB Kickstart 1.x chip reads as a doubled 512 KB image.
-- [ ] **CD32 support.** Does the tester have a 42-pin `27800` (1 MB) setting? If it does, add the CD32 Kickstart/extended ROM from MAME.
-- [ ] **Missing mask ROM settings.** Check whether the tester's menu has `23256`, which the A1000 boot ROMs and some older entries use. Also check `2316`, `2332`, `2364`, `23512` and `231024`.
-  - Add each missing setting to `NO_NATIVE_SETTING` in `core/database.py`, mapped to the matching 27-series setting (one line each, like `23128 -> 27128`).
+- [x] **CD32 support.** The tester has `42-Pin -> 27800`; the CD32 system ROM (391640-03) is in the database.
+- [x] **Menu settings.** Checked against the tester's ROM menu. 23256 -> `27256`, 231024 -> `531000`, 68364 / 68764 -> `2364`, 27C010 -> `27100-0` / `27100-1`, 27C020 -> `27200`, 27C040 -> `27040`, 27C080 -> `27080` (`SETTING_MAP` in `core/database.py`).
+- [ ] **27100-0 vs 27100-1.** The menu has two 128K entries and BackBit doesn't document the difference. Read a known 27C010 with each and note which works; then drop the other option from the database.
+- [ ] **Mask ROM select polarity.** The 23256 (now `27256`) and MCM68364 (now `2364`) entries carry a warning to use an interposer if the read is blank. When one of these chips is read for real, record whether it needed one and make the warning specific.
 - [ ] **CDTV extended ROMs.** Confirm the chip package of 391008-01 (U34) and 391009-01 (U35), then add them. They are left out for now.
 
 ## Testing and release
@@ -20,7 +21,7 @@ Open items for BackBit ROM Companion. Each one needs a fact checked on a real Ba
 ## Upgrades
 
 - [x] **Pinpoint faulty pins from a bad dump.** Compare-tab faults (stuck or shorted data lines, stuck address lines, blank reads) now name the chip pin and ZIF pin to check, highlighted on a ZIF drawing. 16-bit 40-pin ROMs are diagnosed as D0-D15.
-  - Follow-up: the MOS 6540 has no pin table (proprietary pinout), and the 28-pin 1Mbit mask ROM (`231024`) only maps A0-A11 and D0-D7. Add them if a data sheet turns up.
+  - Follow-up: the MOS 6540 (proprietary pinout) and the 42-pin `27800` have no pin table, and the 28-pin 1Mbit mask ROM (`531000`) only maps A0-A11 and D0-D7. Add them when a data sheet is checked.
   - Follow-up: once the Kickstart byte order is confirmed on the tester (see above), make it the default in the 16-bit byte-order picker.
 - [ ] **Prepare files for burning a replacement.** Once a chip is identified, produce a burn-ready file and name the EPROM to use: pad small images to fit a larger EPROM, split a Kickstart into HI/LO halves, join halves, swap byte order. Warn about pin differences (e.g. a 2364 replacement needs an adapter).
 - [ ] **Import more machines from MAME.** A built-in importer that reads MAME's ROM lists and adds whole machines with sockets, sizes and hashes, instead of one-off scripts like the Amiga import.
