@@ -111,7 +111,8 @@ def normalize_backbit_option(opt: dict) -> dict:
     """Map a chip type the tester's menu doesn't list (23128, 23256, 68364, 27C010 ...) to the menu setting to use
     and make sure a mask ROM read that way carries its interposer / select warning. Also covers an option already
     on the menu setting whose chip is such a mask ROM (as entered in the Database Manager), e.g. a 27128 option for
-    a "23128 mask ROM". Returns a new dict; an existing warning is kept."""
+    a "23128 mask ROM". A chip described as compatible with the menu setting (e.g. "27256-compatible") gets no
+    warning. Returns a new dict; an existing warning is kept."""
     opt = dict(opt)
     setting = str(opt.get("setting", "")).strip()
     chip = str(opt.get("chip", ""))
@@ -127,6 +128,10 @@ def normalize_backbit_option(opt: dict) -> dict:
             if warn and setting.upper() == target.upper() and src in chip.upper() and "mask" in chip.lower():
                 warning = warn
                 break
+    # a chip documented as pin-compatible with the setting it is read with (e.g. "27256-compatible": Sinclair
+    # specified the Spectrum 128 ROM that way) reads directly, so the generic select-polarity warning is skipped
+    if warning and f"{opt['setting']}-compatible".upper() in str(opt.get("chip", "")).upper():
+        warning = ""
     if warning and not str(opt.get("warning", "")).strip():
         opt["warning"] = warning
     return opt

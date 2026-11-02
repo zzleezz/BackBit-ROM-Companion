@@ -64,16 +64,15 @@
             "23256 mask ROM",
             "27256 EPROM (replacement)"
           ],
-          "socket": "IC5 (single 32KB) / IC5 + IC2 (split 16KB)",
+          "socket": "IC5",
           "size": 32768,
           "pins": 28,
-          "chip_type": "23256 mask ROM",
+          "chip_type": "23256 mask ROM (27256-compatible pinout)",
           "backbit": [
             {
               "setting": "27256",
               "pins": 28,
-              "chip": "Original 23256 mask ROM",
-              "warning": "The BackBit has no 23256 setting, so this mask ROM is read with the 27256 setting. Address and data pins match, but mask ROM chip selects (Pins 20 and 22, and Pin 1 on some makers' parts) have factory-programmed polarity. If the read is blank or every byte is the same, check the chip's data sheet: lift any active-HIGH select out of the tester with an interposer socket and tie it to Pin 28 (+5V)."
+              "chip": "Original 23256 mask ROM (27256-compatible pinout) - reads directly with the 27256 setting, no interposer"
             },
             {
               "setting": "27256",
@@ -107,7 +106,7 @@
             "If only one 16KB half identifies and the other is a mirror of it, suspect the A14 line (pin 27) - poor ZIF contact, a broken track to the ROM paging logic, or a wrong BackBit setting."
           ],
           "notes": [
-            "Boards fitted with two 16KB ROMs split ROM 0 and ROM 1 across IC5 and IC2 - each 16KB chip identifies via its bank hash."
+            "Sinclair's Spectrum 128 service manual specifies this ROM as pin-compatible with a 27256 EPROM: IC5 is enabled by an active-low signal on pin 20 and its outputs by /MREQ. The original chip therefore reads directly with the BackBit 27256 setting - no interposer or lifted pins."
           ],
           "label": "Spec128 ROM IC5"
         }
@@ -128,16 +127,15 @@
             "23256 mask ROM",
             "27256 EPROM (replacement)"
           ],
-          "socket": "IC7",
+          "socket": "IC8",
           "size": 32768,
           "pins": 28,
-          "chip_type": "23256 mask ROM",
+          "chip_type": "23256 mask ROM (27256-compatible pinout)",
           "backbit": [
             {
               "setting": "27256",
               "pins": 28,
-              "chip": "Original 23256 mask ROM",
-              "warning": "The BackBit has no 23256 setting, so this mask ROM is read with the 27256 setting. Address and data pins match, but mask ROM chip selects (Pins 20 and 22, and Pin 1 on some makers' parts) have factory-programmed polarity. If the read is blank or every byte is the same, check the chip's data sheet: lift any active-HIGH select out of the tester with an interposer socket and tie it to Pin 28 (+5V)."
+              "chip": "Original 23256 mask ROM (27256-compatible pinout) - reads directly with the 27256 setting, no interposer"
             },
             {
               "setting": "27256",
@@ -167,8 +165,12 @@
           ],
           "source": "MAME sinclair/spec128.cpp - zxp2_0.rom / zxp2_1.rom; 32KB hash computed from the MAME-verified banks",
           "replacement": "27C256 programmed with ROM 0 at 0x0000 and ROM 1 at 0x4000.",
-          "warnings": [],
-          "notes": [],
+          "warnings": [
+            "The ROM in IC8 is fitted 'upside down', with pin 1 towards the bottom of the board. Note the orientation before removing it, and refit it (or a replacement) the same way round. In the BackBit ZIF it still goes pin 1 at the top as usual."
+          ],
+          "notes": [
+            "A programmed 27C256 replaces this ROM with no PCB modifications (Retroleum), so the board uses the 27256 pinout and the original chip reads directly with the BackBit 27256 setting - no interposer or lifted pins."
+          ],
           "label": "Spec+2 ROM IC7"
         }
       ],
@@ -1069,13 +1071,12 @@
           "socket": "IC7",
           "size": 32768,
           "pins": 28,
-          "chip_type": "23256 mask ROM",
+          "chip_type": "23256 mask ROM (27256-compatible pinout)",
           "backbit": [
             {
               "setting": "27256",
               "pins": 28,
-              "chip": "Original 23256 mask ROM",
-              "warning": "The BackBit has no 23256 setting, so this mask ROM is read with the 27256 setting. Address and data pins match, but mask ROM chip selects (Pins 20 and 22, and Pin 1 on some makers' parts) have factory-programmed polarity. If the read is blank or every byte is the same, check the chip's data sheet: lift any active-HIGH select out of the tester with an interposer socket and tie it to Pin 28 (+5V)."
+              "chip": "Original 23256 mask ROM (27256-compatible pinout) - reads directly with the 27256 setting, no interposer"
             },
             {
               "setting": "27256",
@@ -1090,7 +1091,9 @@
           "warnings": [
             "ROM 0/1 must be in IC7 and ROM 2/3 in IC8 - swapped chips give a garbled or dead boot menu."
           ],
-          "notes": [],
+          "notes": [
+            "A programmed 27C256 replaces this ROM with no PCB modifications (Retroleum), so the board uses the 27256 pinout and the original chip reads directly with the BackBit 27256 setting - no interposer or lifted pins."
+          ],
           "banks": [
             {
               "name": "ROM 0 - editor / menu",
@@ -1121,13 +1124,12 @@
           "socket": "IC8",
           "size": 32768,
           "pins": 28,
-          "chip_type": "23256 mask ROM",
+          "chip_type": "23256 mask ROM (27256-compatible pinout)",
           "backbit": [
             {
               "setting": "27256",
               "pins": 28,
-              "chip": "Original 23256 mask ROM",
-              "warning": "The BackBit has no 23256 setting, so this mask ROM is read with the 27256 setting. Address and data pins match, but mask ROM chip selects (Pins 20 and 22, and Pin 1 on some makers' parts) have factory-programmed polarity. If the read is blank or every byte is the same, check the chip's data sheet: lift any active-HIGH select out of the tester with an interposer socket and tie it to Pin 28 (+5V)."
+              "chip": "Original 23256 mask ROM (27256-compatible pinout) - reads directly with the 27256 setting, no interposer"
             },
             {
               "setting": "27256",
@@ -1142,7 +1144,9 @@
           "warnings": [
             "ROM 0/1 must be in IC7 and ROM 2/3 in IC8 - swapped chips give a garbled or dead boot menu."
           ],
-          "notes": [],
+          "notes": [
+            "A programmed 27C256 replaces this ROM with no PCB modifications (Retroleum), so the board uses the 27256 pinout and the original chip reads directly with the BackBit 27256 setting - no interposer or lifted pins."
+          ],
           "banks": [
             {
               "name": "ROM 2 - +3DOS",
@@ -1173,13 +1177,12 @@
           "socket": "IC7",
           "size": 32768,
           "pins": 28,
-          "chip_type": "23256 mask ROM",
+          "chip_type": "23256 mask ROM (27256-compatible pinout)",
           "backbit": [
             {
               "setting": "27256",
               "pins": 28,
-              "chip": "Original 23256 mask ROM",
-              "warning": "The BackBit has no 23256 setting, so this mask ROM is read with the 27256 setting. Address and data pins match, but mask ROM chip selects (Pins 20 and 22, and Pin 1 on some makers' parts) have factory-programmed polarity. If the read is blank or every byte is the same, check the chip's data sheet: lift any active-HIGH select out of the tester with an interposer socket and tie it to Pin 28 (+5V)."
+              "chip": "Original 23256 mask ROM (27256-compatible pinout) - reads directly with the 27256 setting, no interposer"
             },
             {
               "setting": "27256",
@@ -1194,7 +1197,9 @@
           "warnings": [
             "ROM 0/1 must be in IC7 and ROM 2/3 in IC8 - swapped chips give a garbled or dead boot menu."
           ],
-          "notes": []
+          "notes": [
+            "A programmed 27C256 replaces this ROM with no PCB modifications (Retroleum), so the board uses the 27256 pinout and the original chip reads directly with the BackBit 27256 setting - no interposer or lifted pins."
+          ]
         },
         {
           "id": "p3_41_ic8",
@@ -1207,13 +1212,12 @@
           "socket": "IC8",
           "size": 32768,
           "pins": 28,
-          "chip_type": "23256 mask ROM",
+          "chip_type": "23256 mask ROM (27256-compatible pinout)",
           "backbit": [
             {
               "setting": "27256",
               "pins": 28,
-              "chip": "Original 23256 mask ROM",
-              "warning": "The BackBit has no 23256 setting, so this mask ROM is read with the 27256 setting. Address and data pins match, but mask ROM chip selects (Pins 20 and 22, and Pin 1 on some makers' parts) have factory-programmed polarity. If the read is blank or every byte is the same, check the chip's data sheet: lift any active-HIGH select out of the tester with an interposer socket and tie it to Pin 28 (+5V)."
+              "chip": "Original 23256 mask ROM (27256-compatible pinout) - reads directly with the 27256 setting, no interposer"
             },
             {
               "setting": "27256",
@@ -1228,7 +1232,9 @@
           "warnings": [
             "ROM 0/1 must be in IC7 and ROM 2/3 in IC8 - swapped chips give a garbled or dead boot menu."
           ],
-          "notes": []
+          "notes": [
+            "A programmed 27C256 replaces this ROM with no PCB modifications (Retroleum), so the board uses the 27256 pinout and the original chip reads directly with the BackBit 27256 setting - no interposer or lifted pins."
+          ]
         },
         {
           "id": "p3_40es_ic7",
@@ -1241,13 +1247,12 @@
           "socket": "IC7",
           "size": 32768,
           "pins": 28,
-          "chip_type": "23256 mask ROM",
+          "chip_type": "23256 mask ROM (27256-compatible pinout)",
           "backbit": [
             {
               "setting": "27256",
               "pins": 28,
-              "chip": "Original 23256 mask ROM",
-              "warning": "The BackBit has no 23256 setting, so this mask ROM is read with the 27256 setting. Address and data pins match, but mask ROM chip selects (Pins 20 and 22, and Pin 1 on some makers' parts) have factory-programmed polarity. If the read is blank or every byte is the same, check the chip's data sheet: lift any active-HIGH select out of the tester with an interposer socket and tie it to Pin 28 (+5V)."
+              "chip": "Original 23256 mask ROM (27256-compatible pinout) - reads directly with the 27256 setting, no interposer"
             },
             {
               "setting": "27256",
@@ -1262,7 +1267,9 @@
           "warnings": [
             "ROM 0/1 must be in IC7 and ROM 2/3 in IC8 - swapped chips give a garbled or dead boot menu."
           ],
-          "notes": []
+          "notes": [
+            "A programmed 27C256 replaces this ROM with no PCB modifications (Retroleum), so the board uses the 27256 pinout and the original chip reads directly with the BackBit 27256 setting - no interposer or lifted pins."
+          ]
         },
         {
           "id": "p3_40es_ic8",
@@ -1275,13 +1282,12 @@
           "socket": "IC8",
           "size": 32768,
           "pins": 28,
-          "chip_type": "23256 mask ROM",
+          "chip_type": "23256 mask ROM (27256-compatible pinout)",
           "backbit": [
             {
               "setting": "27256",
               "pins": 28,
-              "chip": "Original 23256 mask ROM",
-              "warning": "The BackBit has no 23256 setting, so this mask ROM is read with the 27256 setting. Address and data pins match, but mask ROM chip selects (Pins 20 and 22, and Pin 1 on some makers' parts) have factory-programmed polarity. If the read is blank or every byte is the same, check the chip's data sheet: lift any active-HIGH select out of the tester with an interposer socket and tie it to Pin 28 (+5V)."
+              "chip": "Original 23256 mask ROM (27256-compatible pinout) - reads directly with the 27256 setting, no interposer"
             },
             {
               "setting": "27256",
@@ -1296,7 +1302,9 @@
           "warnings": [
             "ROM 0/1 must be in IC7 and ROM 2/3 in IC8 - swapped chips give a garbled or dead boot menu."
           ],
-          "notes": []
+          "notes": [
+            "A programmed 27C256 replaces this ROM with no PCB modifications (Retroleum), so the board uses the 27256 pinout and the original chip reads directly with the BackBit 27256 setting - no interposer or lifted pins."
+          ]
         }
       ]
     },

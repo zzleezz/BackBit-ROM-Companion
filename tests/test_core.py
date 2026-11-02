@@ -59,7 +59,7 @@ class TestShippedDatabase(TempDbMixin, unittest.TestCase):
     def test_known_hashes(self):
         self.assertEqual(self.db.lookup_sha1("5ea7c2b824672e914525d1d5c419d71b84a426a2")[0].rom.id, "zx48_rom")
         # Phase 2 combined 32KB hashes and corrected sockets
-        self.assertEqual(self.db.lookup_sha1("8cafb292af58617907b9e6b9093d3588a75849b8")[0].rom.socket, "IC7")
+        self.assertEqual(self.db.lookup_sha1("8cafb292af58617907b9e6b9093d3588a75849b8")[0].rom.socket, "IC8")
         self.assertEqual(self.db.lookup_sha1("16375d42ea109b47edded7a16028de7fdb3013a1")[0].rom.id, "zx128_rom")
         self.assertEqual(self.db.rom_by_id("cpc464_os_basic").socket, "IC104")
         self.assertEqual(self.db.rom_by_id("cpc6128_amsdos").socket, "IC204")
@@ -438,9 +438,20 @@ class TestZifPlacement(unittest.TestCase):
             for r in m["roms"]:
                 for o in r["backbit"]:
                     self.assertIn(o["setting"], menu[o["pins"]], (r["id"], o))
-        zx128 = db.rom_by_id("zx128_rom")
-        self.assertEqual((zx128.backbit[0].setting, zx128.backbit[0].warning), ("27256", WARNING_23256))
-        self.assertEqual(zx128.backbit[1].warning, "")                        # the 27256 EPROM option
+        cpc = db.rom_by_id("cpc464_os_basic")
+        self.assertEqual((cpc.backbit[0].setting, cpc.backbit[0].warning), ("27256", WARNING_23256))
+        self.assertEqual(cpc.backbit[1].warning, "")                          # the 27256 EPROM option
+        # Spectrum 128 / +2 / +2A / +3 ROMs are 27256-compatible by design: read directly, no select warning
+        for rid in ("zx128_rom", "zxp2_rom", "p3_40_ic7", "p3_41_ic8"):
+            r = db.rom_by_id(rid)
+            self.assertEqual((r.backbit[0].setting, r.backbit[0].warning), ("27256", ""), rid)
+            self.assertIn("27256-compatible", r.backbit[0].chip, rid)
+        self.assertEqual(db.rom_by_id("zx128_rom").socket, "IC5")             # IC2 is the Z80, not a ROM
+        p2 = db.rom_by_id("zxp2_rom")
+        self.assertEqual(p2.socket, "IC8")
+        self.assertTrue(any("pin 1 towards the bottom" in w for w in p2.warnings))
+        self.assertNotIn("warning", normalize_backbit_option(
+            {"setting": "23256", "pins": 28, "chip": "Original 23256 mask ROM (27256-compatible pinout)"}))
         self.assertEqual(db.rom_by_id("bbcm_mos320").backbit[0].warning, WARNING_531000)
         d32 = db.rom_by_id("d32_lo")
         self.assertEqual([(o.setting, o.warning) for o in d32.backbit[:2]],
