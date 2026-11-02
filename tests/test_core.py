@@ -450,6 +450,18 @@ class TestZifPlacement(unittest.TestCase):
         p2 = db.rom_by_id("zxp2_rom")
         self.assertEqual(p2.socket, "IC8")
         self.assertTrue(any("pin 1 towards the bottom" in w for w in p2.warnings))
+        # +2A / +2B / +3: two separate 32KB chips per ROM version, IC7 (ROM 0+1) and IC8 (ROM 2+3)
+        for ver, p7, p8 in (("40", "40092", "40093"), ("41", "40092u", "40093u"),
+                            ("40es", "40094", "40101"), ("41es", "40094s", "40101s")):
+            for sock, part in (("IC7", p7), ("IC8", p8)):
+                r = db.rom_by_id(f"p3_{ver}_{sock.lower()}")
+                self.assertEqual((r.socket, r.size, r.part_numbers[0]), (sock, 32768, part))
+                self.assertIn(sock, r.name)
+                self.assertTrue(any("pin 1 towards the bottom" in w and sock in w for w in r.warnings), r.id)
+                self.assertTrue(any(p7 in w and p8 in w for w in r.warnings), r.id)          # names its partner
+        # MAME specpls3.cpp: Spanish v4.1 pair
+        self.assertEqual(db.lookup_sha1("c525bd23f79ca968d34a0efdcc47b2eb342007f5")[0].rom.id, "p3_41es_ic7")
+        self.assertEqual(db.lookup_sha1("56eb124d44ee8c8daef130be4d7e735ec412c4ba")[0].rom.id, "p3_41es_ic8")
         self.assertNotIn("warning", normalize_backbit_option(
             {"setting": "23256", "pins": 28, "chip": "Original 23256 mask ROM (27256-compatible pinout)"}))
         self.assertEqual(db.rom_by_id("bbcm_mos320").backbit[0].warning, WARNING_531000)

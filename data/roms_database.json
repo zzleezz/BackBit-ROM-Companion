@@ -1062,9 +1062,9 @@
       "roms": [
         {
           "id": "p3_40_ic7",
-          "name": "v4.0 English - ROM 0/1",
+          "name": "v4.0 English - IC7 (ROM 0 + 1)",
           "label": "Spec+3 4.0 IC7",
-          "description": "+2A/+2B/+3 32KB system ROM chip.",
+          "description": "One of the two 32KB system ROM chips, in its own socket. IC7 (40092) holds ROM 0 (editor / menu) and ROM 1 (syntax checker); its partner is 40093 in IC8. Remove and read each chip separately - each one identifies on its own.",
           "part_numbers": [
             "40092"
           ],
@@ -1087,9 +1087,10 @@
           "sha1": "5992daf925f6e225fc0d01f7640282954d092ef4",
           "crc32": "9bc85686",
           "source": "MAME sinclair/specpls3.cpp - 40092.ic7",
-          "replacement": "27C256 programmed with the 32KB image.",
+          "replacement": "27C256 programmed with this chip's 32KB image. IC7 and IC8 each need their own EPROM, and both chips must be from the same ROM version and language.",
           "warnings": [
-            "ROM 0/1 must be in IC7 and ROM 2/3 in IC8 - swapped chips give a garbled or dead boot menu."
+            "The ROMs on +2A, +2B and +3 boards are fitted 'upside down', with pin 1 towards the bottom of the board. Note the orientation of the chip in IC7 before removing it, and refit it (or a replacement) the same way round. In the BackBit ZIF it still goes pin 1 at the top as usual.",
+            "This chip is half of a matched pair: 40092 goes in IC7 and 40093 in IC8. Swapped chips, or chips from different ROM versions or languages, give a garbled or dead boot menu."
           ],
           "notes": [
             "A programmed 27C256 replaces this ROM with no PCB modifications (Retroleum), so the board uses the 27256 pinout and the original chip reads directly with the BackBit 27256 setting - no interposer or lifted pins."
@@ -1104,7 +1105,7 @@
               "crc32": "17373da2"
             },
             {
-              "name": "ROM 1 - syntax / +3DOS",
+              "name": "ROM 1 - syntax checker",
               "label": "Spec+3 4.0 ROM1",
               "offset": 16384,
               "size": 16384,
@@ -1115,9 +1116,9 @@
         },
         {
           "id": "p3_40_ic8",
-          "name": "v4.0 English - ROM 2/3",
+          "name": "v4.0 English - IC8 (ROM 2 + 3)",
           "label": "Spec+3 4.0 IC8",
-          "description": "+2A/+2B/+3 32KB system ROM chip.",
+          "description": "One of the two 32KB system ROM chips, in its own socket. IC8 (40093) holds ROM 2 (+3DOS) and ROM 3 (48K BASIC); its partner is 40092 in IC7. Remove and read each chip separately - each one identifies on its own.",
           "part_numbers": [
             "40093"
           ],
@@ -1140,9 +1141,10 @@
           "sha1": "a0432adcca03f849fb39b6dce6414740cf4aecd2",
           "crc32": "db551783",
           "source": "MAME sinclair/specpls3.cpp - 40093.ic8",
-          "replacement": "27C256 programmed with the 32KB image.",
+          "replacement": "27C256 programmed with this chip's 32KB image. IC7 and IC8 each need their own EPROM, and both chips must be from the same ROM version and language.",
           "warnings": [
-            "ROM 0/1 must be in IC7 and ROM 2/3 in IC8 - swapped chips give a garbled or dead boot menu."
+            "The ROMs on +2A, +2B and +3 boards are fitted 'upside down', with pin 1 towards the bottom of the board. Note the orientation of the chip in IC8 before removing it, and refit it (or a replacement) the same way round. In the BackBit ZIF it still goes pin 1 at the top as usual.",
+            "This chip is half of a matched pair: 40092 goes in IC7 and 40093 in IC8. Swapped chips, or chips from different ROM versions or languages, give a garbled or dead boot menu."
           ],
           "notes": [
             "A programmed 27C256 replaces this ROM with no PCB modifications (Retroleum), so the board uses the 27256 pinout and the original chip reads directly with the BackBit 27256 setting - no interposer or lifted pins."
@@ -1168,9 +1170,9 @@
         },
         {
           "id": "p3_41_ic7",
-          "name": "v4.1 English (+2B/+3B) - ROM 0/1",
+          "name": "v4.1 English (+2B/+3B) - IC7 (ROM 0 + 1)",
           "label": "Spec+3 4.1 IC7",
-          "description": "+2A/+2B/+3 32KB system ROM chip.",
+          "description": "One of the two 32KB system ROM chips, in its own socket. IC7 (40092u) holds ROM 0 (editor / menu) and ROM 1 (syntax checker); its partner is 40093u in IC8. Remove and read each chip separately - each one identifies on its own.",
           "part_numbers": [
             "40092u"
           ],
@@ -1193,9 +1195,10 @@
           "sha1": "b9e88ec18f844ce42ecb7802d82c2bda65f9c4f2",
           "crc32": "80808d82",
           "source": "MAME sinclair/specpls3.cpp - 40092u.ic7",
-          "replacement": "27C256 programmed with the 32KB image.",
+          "replacement": "27C256 programmed with this chip's 32KB image. IC7 and IC8 each need their own EPROM, and both chips must be from the same ROM version and language.",
           "warnings": [
-            "ROM 0/1 must be in IC7 and ROM 2/3 in IC8 - swapped chips give a garbled or dead boot menu."
+            "The ROMs on +2A, +2B and +3 boards are fitted 'upside down', with pin 1 towards the bottom of the board. Note the orientation of the chip in IC7 before removing it, and refit it (or a replacement) the same way round. In the BackBit ZIF it still goes pin 1 at the top as usual.",
+            "This chip is half of a matched pair: 40092u goes in IC7 and 40093u in IC8. Swapped chips, or chips from different ROM versions or languages, give a garbled or dead boot menu."
           ],
           "notes": [
             "A programmed 27C256 replaces this ROM with no PCB modifications (Retroleum), so the board uses the 27256 pinout and the original chip reads directly with the BackBit 27256 setting - no interposer or lifted pins."
@@ -1203,9 +1206,9 @@
         },
         {
           "id": "p3_41_ic8",
-          "name": "v4.1 English (+2B/+3B) - ROM 2/3",
+          "name": "v4.1 English (+2B/+3B) - IC8 (ROM 2 + 3)",
           "label": "Spec+3 4.1 IC8",
-          "description": "+2A/+2B/+3 32KB system ROM chip.",
+          "description": "One of the two 32KB system ROM chips, in its own socket. IC8 (40093u) holds ROM 2 (+3DOS) and ROM 3 (48K BASIC); its partner is 40092u in IC7. Remove and read each chip separately - each one identifies on its own.",
           "part_numbers": [
             "40093u"
           ],
@@ -1228,9 +1231,10 @@
           "sha1": "d062765ceb1f3cd2c94ea51cb737cac7ad6151b4",
           "crc32": "61f2b50c",
           "source": "MAME sinclair/specpls3.cpp - 40093u.ic8",
-          "replacement": "27C256 programmed with the 32KB image.",
+          "replacement": "27C256 programmed with this chip's 32KB image. IC7 and IC8 each need their own EPROM, and both chips must be from the same ROM version and language.",
           "warnings": [
-            "ROM 0/1 must be in IC7 and ROM 2/3 in IC8 - swapped chips give a garbled or dead boot menu."
+            "The ROMs on +2A, +2B and +3 boards are fitted 'upside down', with pin 1 towards the bottom of the board. Note the orientation of the chip in IC8 before removing it, and refit it (or a replacement) the same way round. In the BackBit ZIF it still goes pin 1 at the top as usual.",
+            "This chip is half of a matched pair: 40092u goes in IC7 and 40093u in IC8. Swapped chips, or chips from different ROM versions or languages, give a garbled or dead boot menu."
           ],
           "notes": [
             "A programmed 27C256 replaces this ROM with no PCB modifications (Retroleum), so the board uses the 27256 pinout and the original chip reads directly with the BackBit 27256 setting - no interposer or lifted pins."
@@ -1238,9 +1242,9 @@
         },
         {
           "id": "p3_40es_ic7",
-          "name": "v4.0 Spanish - ROM 0/1",
+          "name": "v4.0 Spanish - IC7 (ROM 0 + 1)",
           "label": "Spec+3 4.0es IC7",
-          "description": "+2A/+2B/+3 32KB system ROM chip.",
+          "description": "One of the two 32KB system ROM chips, in its own socket. IC7 (40094) holds ROM 0 (editor / menu) and ROM 1 (syntax checker); its partner is 40101 in IC8. Remove and read each chip separately - each one identifies on its own.",
           "part_numbers": [
             "40094"
           ],
@@ -1263,9 +1267,10 @@
           "sha1": "976ae88951f8d1beb5d107f048950118a7133823",
           "crc32": "392242fb",
           "source": "MAME sinclair/specpls3.cpp - 40094.ic7",
-          "replacement": "27C256 programmed with the 32KB image.",
+          "replacement": "27C256 programmed with this chip's 32KB image. IC7 and IC8 each need their own EPROM, and both chips must be from the same ROM version and language.",
           "warnings": [
-            "ROM 0/1 must be in IC7 and ROM 2/3 in IC8 - swapped chips give a garbled or dead boot menu."
+            "The ROMs on +2A, +2B and +3 boards are fitted 'upside down', with pin 1 towards the bottom of the board. Note the orientation of the chip in IC7 before removing it, and refit it (or a replacement) the same way round. In the BackBit ZIF it still goes pin 1 at the top as usual.",
+            "This chip is half of a matched pair: 40094 goes in IC7 and 40101 in IC8. Swapped chips, or chips from different ROM versions or languages, give a garbled or dead boot menu."
           ],
           "notes": [
             "A programmed 27C256 replaces this ROM with no PCB modifications (Retroleum), so the board uses the 27256 pinout and the original chip reads directly with the BackBit 27256 setting - no interposer or lifted pins."
@@ -1273,9 +1278,9 @@
         },
         {
           "id": "p3_40es_ic8",
-          "name": "v4.0 Spanish - ROM 2/3",
+          "name": "v4.0 Spanish - IC8 (ROM 2 + 3)",
           "label": "Spec+3 4.0es IC8",
-          "description": "+2A/+2B/+3 32KB system ROM chip.",
+          "description": "One of the two 32KB system ROM chips, in its own socket. IC8 (40101) holds ROM 2 (+3DOS) and ROM 3 (48K BASIC); its partner is 40094 in IC7. Remove and read each chip separately - each one identifies on its own.",
           "part_numbers": [
             "40101"
           ],
@@ -1298,9 +1303,82 @@
           "sha1": "09ca25b4dbec064a4964ab7a41d48404199afd77",
           "crc32": "5daaae01",
           "source": "MAME sinclair/specpls3.cpp - 40101.ic8",
-          "replacement": "27C256 programmed with the 32KB image.",
+          "replacement": "27C256 programmed with this chip's 32KB image. IC7 and IC8 each need their own EPROM, and both chips must be from the same ROM version and language.",
           "warnings": [
-            "ROM 0/1 must be in IC7 and ROM 2/3 in IC8 - swapped chips give a garbled or dead boot menu."
+            "The ROMs on +2A, +2B and +3 boards are fitted 'upside down', with pin 1 towards the bottom of the board. Note the orientation of the chip in IC8 before removing it, and refit it (or a replacement) the same way round. In the BackBit ZIF it still goes pin 1 at the top as usual.",
+            "This chip is half of a matched pair: 40094 goes in IC7 and 40101 in IC8. Swapped chips, or chips from different ROM versions or languages, give a garbled or dead boot menu."
+          ],
+          "notes": [
+            "A programmed 27C256 replaces this ROM with no PCB modifications (Retroleum), so the board uses the 27256 pinout and the original chip reads directly with the BackBit 27256 setting - no interposer or lifted pins."
+          ]
+        },
+        {
+          "id": "p3_41es_ic7",
+          "name": "v4.1 Spanish (+2B/+3B) - IC7 (ROM 0 + 1)",
+          "label": "Spec+3 4.1es IC7",
+          "description": "One of the two 32KB system ROM chips, in its own socket. IC7 (40094s) holds ROM 0 (editor / menu) and ROM 1 (syntax checker); its partner is 40101s in IC8. Remove and read each chip separately - each one identifies on its own.",
+          "part_numbers": [
+            "40094s"
+          ],
+          "socket": "IC7",
+          "size": 32768,
+          "pins": 28,
+          "chip_type": "23256 mask ROM (27256-compatible pinout)",
+          "backbit": [
+            {
+              "setting": "27256",
+              "pins": 28,
+              "chip": "Original 23256 mask ROM (27256-compatible pinout) - reads directly with the 27256 setting, no interposer"
+            },
+            {
+              "setting": "27256",
+              "pins": 28,
+              "chip": "27256 / 27C256 EPROM"
+            }
+          ],
+          "sha1": "c525bd23f79ca968d34a0efdcc47b2eb342007f5",
+          "crc32": "9d102acf",
+          "source": "MAME sinclair/specpls3.cpp - 40094s.ic7",
+          "replacement": "27C256 programmed with this chip's 32KB image. IC7 and IC8 each need their own EPROM, and both chips must be from the same ROM version and language.",
+          "warnings": [
+            "The ROMs on +2A, +2B and +3 boards are fitted 'upside down', with pin 1 towards the bottom of the board. Note the orientation of the chip in IC7 before removing it, and refit it (or a replacement) the same way round. In the BackBit ZIF it still goes pin 1 at the top as usual.",
+            "This chip is half of a matched pair: 40094s goes in IC7 and 40101s in IC8. Swapped chips, or chips from different ROM versions or languages, give a garbled or dead boot menu."
+          ],
+          "notes": [
+            "A programmed 27C256 replaces this ROM with no PCB modifications (Retroleum), so the board uses the 27256 pinout and the original chip reads directly with the BackBit 27256 setting - no interposer or lifted pins."
+          ]
+        },
+        {
+          "id": "p3_41es_ic8",
+          "name": "v4.1 Spanish (+2B/+3B) - IC8 (ROM 2 + 3)",
+          "label": "Spec+3 4.1es IC8",
+          "description": "One of the two 32KB system ROM chips, in its own socket. IC8 (40101s) holds ROM 2 (+3DOS) and ROM 3 (48K BASIC); its partner is 40094s in IC7. Remove and read each chip separately - each one identifies on its own.",
+          "part_numbers": [
+            "40101s"
+          ],
+          "socket": "IC8",
+          "size": 32768,
+          "pins": 28,
+          "chip_type": "23256 mask ROM (27256-compatible pinout)",
+          "backbit": [
+            {
+              "setting": "27256",
+              "pins": 28,
+              "chip": "Original 23256 mask ROM (27256-compatible pinout) - reads directly with the 27256 setting, no interposer"
+            },
+            {
+              "setting": "27256",
+              "pins": 28,
+              "chip": "27256 / 27C256 EPROM"
+            }
+          ],
+          "sha1": "56eb124d44ee8c8daef130be4d7e735ec412c4ba",
+          "crc32": "1408ddce",
+          "source": "MAME sinclair/specpls3.cpp - 40101s.ic8",
+          "replacement": "27C256 programmed with this chip's 32KB image. IC7 and IC8 each need their own EPROM, and both chips must be from the same ROM version and language.",
+          "warnings": [
+            "The ROMs on +2A, +2B and +3 boards are fitted 'upside down', with pin 1 towards the bottom of the board. Note the orientation of the chip in IC8 before removing it, and refit it (or a replacement) the same way round. In the BackBit ZIF it still goes pin 1 at the top as usual.",
+            "This chip is half of a matched pair: 40094s goes in IC7 and 40101s in IC8. Swapped chips, or chips from different ROM versions or languages, give a garbled or dead boot menu."
           ],
           "notes": [
             "A programmed 27C256 replaces this ROM with no PCB modifications (Retroleum), so the board uses the 27256 pinout and the original chip reads directly with the BackBit 27256 setting - no interposer or lifted pins."

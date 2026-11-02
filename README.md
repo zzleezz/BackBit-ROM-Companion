@@ -32,7 +32,7 @@ Other features:
 
 ## Supported machines (built-in database)
 
-49 machines, 225 ROM entries. Hashes are transcribed from MAME driver sources. Combined images are verified from
+49 machines, 227 ROM entries. Hashes are transcribed from MAME driver sources. Combined images are verified from
 their MAME bank hashes.
 
 | Manufacturer | Machines |
