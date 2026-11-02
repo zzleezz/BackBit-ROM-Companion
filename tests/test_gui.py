@@ -342,7 +342,7 @@ class TestGui(unittest.TestCase):
         self.assertFalse(self.win.windowIcon().isNull())
         self.assertFalse(appmain.app_icon().isNull())
         dlg = AboutDialog(self.db, appmain.APP_NAME, appmain.APP_VERSION, self.win)
-        self.assertEqual(appmain.APP_VERSION, "1.0.4")
+        self.assertEqual(appmain.APP_VERSION, "1.0.5")
         text = " ".join(lbl.text() for lbl in dlg.value_labels.values())
         self.assertIn(str(len(self.db.machines)), dlg.value_labels["Machines"].text())
         self.assertIn(str(self.db.user_db_path.parent), text)
