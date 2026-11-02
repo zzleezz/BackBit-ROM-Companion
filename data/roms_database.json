@@ -15,8 +15,7 @@
           "description": "Sinclair BASIC / system ROM, 16KB. Standard English 48K ROM.",
           "part_numbers": [
             "NEC D23128C",
-            "Hitachi HN613128P",
-            "27128 EPROM (factory EPROM fit on early boards)"
+            "Hitachi HN613128P"
           ],
           "socket": "IC5",
           "size": 16384,
@@ -32,18 +31,20 @@
             {
               "setting": "27128",
               "pins": 28,
-              "chip": "27128 EPROM (factory EPROM fit or later replacement)"
+              "chip": "27C128 / 27C256 EPROM (a later replacement on a modified board - 48K machines left the factory with a mask ROM)"
             }
           ],
           "sha1": "5ea7c2b824672e914525d1d5c419d71b84a426a2",
           "crc32": "ddee531f",
           "source": "MAME sinclair/spectrum.cpp - spectrum.rom",
-          "replacement": "27128 / 27C128 (16KB) programmed with the 16KB image. A 27C256 can be used with the image doubled (burned into both halves) so the state of A14 / pin 27 does not matter.",
+          "replacement": "27C128 (16KB) or 27C256 (32KB) EPROM - not a drop-in swap: the board must be modified first. Link pin 1 to pin 28 (+5V). Remove the ROM select links and drive EPROM pin 20 from an OR of /ROM_CS and /MREQ (two Schottky diodes such as BAT85 and a 10K resistor). Tie pin 27 to +5V for a 27C128; on a 27C256 pin 27 is A14 and selects the lower (GND) or upper (+5V) 16KB, so burn the image into both halves, or fit a switch to choose between two ROMs. Guide: https://blog.retroleum.co.uk/electronics-articles/how-to-replace-the-rom-of-a-zx-spectrum-with-an-eprom/",
           "warnings": [
-            "EPROM strap: a 27128 uses pin 1 as VPP and pin 27 as /PGM. Boards built with an EPROM have a factory strap tying pin 27 (and pin 1) to pin 28 (+5V). If the board has been converted between mask ROM and EPROM, check the solder links and any bodge wires on pins 1 / 27 / 28 before trusting a dump or fitting a replacement.",
+            "A 48K board fitted with an EPROM has been modified (pin 1 linked to pin 28, an OR gate on pin 20, pin 27 tied high or switched). Check those changes before trusting a dump or fitting a different chip. If pin 20 was wired straight to /ROM_CS without the /MREQ OR gate, programs that read port $FE misbehave - e.g. Zynaps starts on its own during the title tune.",
             "The BackBit has no 23128 setting. An original Sinclair mask ROM is read with the 27128 setting through a Pin 27 -> Pin 28 (+5V) interposer (see the Hardware / Polarity Warning); a genuine 27128 EPROM is read with the 27128 setting directly, without the interposer. Check which chip is fitted (quartz window / part number) first."
           ],
-          "notes": [],
+          "notes": [
+            "EPROM replacement modifications: https://blog.retroleum.co.uk/electronics-articles/how-to-replace-the-rom-of-a-zx-spectrum-with-an-eprom/"
+          ],
           "label": "Spec48 ROM IC5"
         }
       ],
