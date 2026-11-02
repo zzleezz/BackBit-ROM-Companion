@@ -26,6 +26,7 @@ from PyQt6.QtWidgets import QApplication  # noqa: E402
 import main as appmain  # noqa: E402
 from core.database import DEFAULT_DB_PATH, RomDatabase  # noqa: E402
 from core.settings import SETTINGS_FILE, Settings  # noqa: E402
+from qt_helpers import dispose  # noqa: E402
 from ui import theme  # noqa: E402
 from ui.widgets import COLORS, LEVEL_COLORS, ZifSocketWidget  # noqa: E402
 
@@ -123,7 +124,7 @@ class TestThemeSwitching(unittest.TestCase):
         APP.processEvents()
 
     def tearDown(self):
-        self.win.close()
+        dispose(self.win)
         theme.apply(APP, theme.DARK)
         shutil.rmtree(self.tmp, ignore_errors=True)
 
@@ -159,7 +160,7 @@ class TestThemeSwitching(unittest.TestCase):
         w2 = appmain.MainWindow(RomDatabase(self.tmp / "db.json", self.tmp / "imp.json", self.tmp / "user.json"))
         self.assertEqual(theme.current(), "light")
         self.assertEqual(w2.theme_button.text(), "\U0001f319 Dark")
-        w2.close()
+        dispose(w2)
 
         w.theme_toggle_action.trigger()                          # Ctrl+T / View menu
         self.assertEqual(theme.current(), "dark")
@@ -296,7 +297,7 @@ class TestWideZif(unittest.TestCase):
             win.show_rom_in_lookup("d64_1")
             win.lookup.zif.grab()
             self.assertLessEqual(win.lookup.zif._geometry["right_label_end"], win.lookup.zif.width())
-            win.close()
+            dispose(win)
         finally:
             shutil.rmtree(tmp, ignore_errors=True)
 

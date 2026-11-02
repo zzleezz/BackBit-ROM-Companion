@@ -11,6 +11,7 @@ import shutil
 import sys
 import tempfile
 import unittest
+from unittest import mock
 from pathlib import Path
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
@@ -24,6 +25,7 @@ from PyQt6.QtWidgets import QApplication  # noqa: E402
 
 import main as appmain  # noqa: E402
 from core.database import DEFAULT_DB_PATH, RomDatabase  # noqa: E402
+from qt_helpers import dispose  # noqa: E402
 
 APP = QApplication.instance() or QApplication(sys.argv)
 appmain.apply_dark_theme(APP)
@@ -46,7 +48,7 @@ class TestGui(unittest.TestCase):
         APP.processEvents()
 
     def tearDown(self):
-        self.win.close()
+        dispose(self.win)
         shutil.rmtree(self.tmp, ignore_errors=True)
 
     def shot(self, name):
@@ -59,6 +61,37 @@ class TestGui(unittest.TestCase):
         self.assertEqual(self.win.tabs.count(), 4)
         for i in range(4):
             self.assertTrue(self.win.tabs.isTabEnabled(i))
+
+    def test_closed_window_does_not_break_theme_switch(self):
+        """Regression: a theme switch with a closed earlier window around, and a garbage collection landing
+        inside the repaint, must not tear that window down under its own theme handler."""
+        import gc
+        from ui import compare_tab
+        d = self.tmp / "old"
+        d.mkdir()
+        shutil.copy(DEFAULT_DB_PATH, d / "db.json")
+        orig = compare_tab.CompareTab.run_compare
+
+        def run_compare(tab, *a, **k):
+            gc.collect()                      # the collection lands inside the theme handler
+            return orig(tab, *a, **k)
+        dispose(self.win)                     # the old window must be older than the one switching theme,
+        gc.disable()                          # as on CI; and only reclaimed by the collection above
+        try:
+            old = self.win = appmain.MainWindow(RomDatabase(d / "db.json", d / "imp.json", d / "user.json"))
+            old.show()
+            APP.processEvents()
+            dispose(old)
+            del old
+            self.win = appmain.MainWindow(self.db)
+            self.win.show()
+            APP.processEvents()
+            with mock.patch.object(compare_tab.CompareTab, "run_compare", run_compare):
+                for name in ("light", "dark"):
+                    self.win.set_theme(name, save=False)
+        finally:
+            gc.enable()
+        self.assertTrue(self.win.compare.banner.text())
 
     def test_lookup_tree_order_and_collapse(self):
         lk = self.win.lookup
@@ -388,7 +421,7 @@ class TestGui(unittest.TestCase):
         hit = fresh.lookup_sha1(hashlib.sha1(data).hexdigest())[0].rom
         self.assertEqual(hit.machine_name, "Shared Bench")
         self.assertIn(hit.id, {r.id for r in win.lookup.db.all_roms()})
-        win.close()
+        dispose(win)
 
     def test_rom_dialog_read_only_master(self):
         from ui.rom_dialog import RomEditDialog
